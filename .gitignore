@@ -1,0 +1,12 @@
+*.pyc
+*.pyo
+*.swp
+*~
+
+/*.egg-info
+
+/.testrepository
+/.tox
+/.venv
+/AUTHORS
+/ChangeLog
