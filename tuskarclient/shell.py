@@ -19,26 +19,59 @@ from __future__ import print_function
 import logging
 import logging.handlers
 import sys
+import tuskarclient.v1_0.argparsers
 
 logger = logging.getLogger(__name__)
 
 
 class TuskarShell(object):
 
-    def __init__(self, args):
-        self.args = args
+    def __init__(self, raw_args):
+        self.raw_args = raw_args
 
     def run(self):
-        pass
+        parser = tuskarclient.v1_0.argparsers.create_top_parser()
+        args = parser.parse_args(self.raw_args)
+
+        if args.help or not self.raw_args:
+            parser.print_help()
+            return 0
+
+        self._ensure_auth_info(args)
+
+    def _ensure_auth_info(self, args):
+        if not args.os_username:
+            raise UsageError("You must provide username via either "
+                             "--os-username or env[OS_USERNAME]")
+
+        if not args.os_password:
+            raise UsageError("You must provide password via either "
+                             "--os-password or env[OS_PASSWORD]")
+
+        if not args.os_tenant_id and not args.os_tenant_name:
+            raise UsageError("You must provide tenant via either "
+                             "--os-tenant-name or --os-tenant-id or "
+                             "env[OS_TENANT_NAME] or env[OS_TENANT_ID]")
+
+        if not args.os_auth_url:
+            raise UsageError("You must provide auth URL via either "
+                             "--os-auth-url or env[OS_AUTH_URL]")
+
+
+class UsageError(Exception):
+    pass
 
 
 def main():
     logger.addHandler(logging.StreamHandler(sys.stderr))
     try:
         TuskarShell(sys.argv[1:]).run()
+    except UsageError as e:
+        print(e.message, file=sys.stderr)
     except Exception as e:
         logger.exception("Exiting due to an error:")
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()
