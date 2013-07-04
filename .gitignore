@@ -4,9 +4,13 @@
 *~
 
 /*.egg-info
+/*.egg
 
 /.testrepository
 /.tox
 /.venv
 /AUTHORS
 /ChangeLog
+
+.coverage
+/cover
