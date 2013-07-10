@@ -17,3 +17,18 @@ class Rack(base.Resource):
 
     def __repr__(self):
         return "<Rack {0}>".format(self._info)
+
+
+class RackManager(base.Manager):
+
+    resource_class = Rack
+
+    @staticmethod
+    def _path(id=None):
+        return '/v1/racks/%s' % id if id else '/v1/racks'
+
+    def get(self, rack_id):
+        return self._get(self._path(rack_id))
+
+    def list(self):
+        return self._list(self._path())
