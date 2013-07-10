@@ -52,6 +52,13 @@ class Manager(object):
         if body:
             return self.resource_class(self, body)
 
+    def _get(self, url, **kwargs):
+        kwargs.setdefault('expect_single', True)
+        try:
+            return self._list(url, **kwargs)[0]
+        except IndexError:
+            return None
+
     def _list(self, url, response_key=None, obj_class=None, body=None,
               expect_single=False):
         resp, body = self.api.json_request('GET', url)
