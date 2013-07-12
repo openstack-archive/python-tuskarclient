@@ -19,7 +19,7 @@ from __future__ import print_function
 import logging
 import logging.handlers
 import sys
-import tuskarclient.v1_0.argparsers
+import tuskarclient.v1.argparsers
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class TuskarShell(object):
         self.raw_args = raw_args
 
     def run(self):
-        parser = tuskarclient.v1_0.argparsers.create_top_parser()
+        parser = tuskarclient.v1.argparsers.create_top_parser()
         args = parser.parse_args(self.raw_args)
 
         if args.help or not self.raw_args:

@@ -11,8 +11,8 @@
 #    under the License.
 
 from tuskarclient.common import http
-from tuskarclient.v1_0 import racks
-from tuskarclient.v1_0 import resource_classes
+from tuskarclient.v1 import racks
+from tuskarclient.v1 import resource_classes
 
 
 class Client(http.HTTPClient):
