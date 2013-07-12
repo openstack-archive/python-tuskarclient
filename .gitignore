@@ -12,5 +12,5 @@
 /AUTHORS
 /ChangeLog
 
-.coverage
+/.coverage*
 /cover
