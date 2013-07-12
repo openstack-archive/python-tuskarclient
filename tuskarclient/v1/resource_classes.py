@@ -30,3 +30,6 @@ class ResourceClassManager(base.Manager):
 
     def get(self, id):
         return self._get(self._path(id))
+
+    def create(self, **kwargs):
+        return self._create(self._path(), kwargs)

@@ -33,3 +33,14 @@ class ResourceClassManagerTest(tutils.TestCase):
 
         self.assertEqual(self.rcm.list(), ['fake_resource_class'])
         self.rcm._list.assert_called_with('/v1/resource_classes')
+
+    def test_create(self):
+        self.rcm._create = mock.Mock(return_value=['fake_resource_class'])
+
+        self.assertEqual(
+            self.rcm.create(dummy='dummy resource class data'),
+            ['fake_resource_class'])
+
+        self.rcm._create.assert_called_with(
+            '/v1/resource_classes',
+            {'dummy': 'dummy resource class data'})
