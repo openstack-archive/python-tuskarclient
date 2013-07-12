@@ -42,3 +42,14 @@ class ManagerTest(tutils.TestCase):
         self.m._list.assert_called_with('url', response_key='response_key',
                                         obj_class='obj_class',
                                         body='body', expect_single=True)
+
+    def test_path(self):
+        self.assertRaises(NotImplementedError, self.m._path)
+
+    def test_single_path(self):
+        self.m._path = mock.Mock(return_value='/v1/somethings/42')
+        self.m._single_path(42)
+        self.m._path.assert_called_with(42)
+
+    def test_single_path_without_id(self):
+        self.assertRaises(ValueError, self.m._single_path, None)
