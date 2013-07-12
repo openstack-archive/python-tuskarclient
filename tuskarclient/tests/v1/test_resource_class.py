@@ -12,7 +12,7 @@
 
 import mock
 
-from tuskarclient.v1_0 import resource_classes
+from tuskarclient.v1 import resource_classes
 import tuskarclient.tests.utils as tutils
 
 

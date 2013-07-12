@@ -12,7 +12,7 @@
 
 import mock
 
-from tuskarclient.v1_0 import racks
+from tuskarclient.v1 import racks
 import tuskarclient.tests.utils as tutils
 
 

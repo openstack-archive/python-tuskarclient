@@ -11,7 +11,7 @@
 #    under the License.
 
 from tuskarclient.tests import utils as tutils
-from tuskarclient.v1_0 import client
+from tuskarclient.v1 import client
 
 
 class ClientTest(tutils.TestCase):
