@@ -34,3 +34,9 @@ class RackManagerTest(tutils.TestCase):
 
         self.assertEqual(self.rm.list(), ['fake_rack'])
         self.rm._list.assert_called_with('/v1/racks')
+
+    def test_delete(self):
+        self.rm._delete = mock.Mock(return_value=None)
+
+        self.assertEqual(self.rm.delete(42), None)
+        self.rm._delete.assert_called_with('/v1/racks/42')

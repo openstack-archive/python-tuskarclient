@@ -47,6 +47,26 @@ class Manager(object):
     def __init__(self, api):
         self.api = api
 
+    @staticmethod
+    def _path(id=None):
+        """Helper method to be defined in subclasses. It returns the
+        resource/collection path. If id is given, then single resource
+        path is returned. Otherwise the collection path is returned.
+
+        :param id: id of the resource (optional)
+        """
+        raise NotImplementedError("_path method not implemented.")
+
+    def _single_path(self, id):
+        """This is like the _path method, but it asserts that the rack_id
+        parameter is not None. This is useful e.g. when you want to make sure
+        that you can't issue a DELETE request on a collection URL.
+        """
+        if not id:
+            raise ValueError("{0} id for deletion must not be null."
+                             .format(self.resource_class))
+        return self._path(id)
+
     def _create(self, url, body):
         resp, body = self.api.json_request('POST', url, body=body)
         if body:

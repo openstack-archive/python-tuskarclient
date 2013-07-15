@@ -29,7 +29,7 @@ class ResourceClassManager(base.Manager):
         return self._list(self._path())
 
     def get(self, id):
-        return self._get(self._path(id))
+        return self._get(self._single_path(id))
 
     def create(self, **kwargs):
         return self._create(self._path(), kwargs)

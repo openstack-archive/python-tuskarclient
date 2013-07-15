@@ -28,7 +28,10 @@ class RackManager(base.Manager):
         return '/v1/racks/%s' % id if id else '/v1/racks'
 
     def get(self, rack_id):
-        return self._get(self._path(rack_id))
+        return self._get(self._single_path(rack_id))
 
     def list(self):
         return self._list(self._path())
+
+    def delete(self, rack_id):
+        return self._delete(self._single_path(rack_id))
