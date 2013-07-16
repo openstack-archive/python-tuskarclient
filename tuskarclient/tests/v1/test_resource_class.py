@@ -45,6 +45,17 @@ class ResourceClassManagerTest(tutils.TestCase):
             '/v1/resource_classes',
             {'dummy': 'dummy resource class data'})
 
+    def test_update(self):
+        self.rcm._update = mock.Mock(return_value=['fake_resource_class'])
+
+        self.assertEqual(
+            self.rcm.update(42, dummy='dummy resource class data'),
+            ['fake_resource_class'])
+
+        self.rcm._update.assert_called_with(
+            '/v1/resource_classes/42',
+            {'dummy': 'dummy resource class data'})
+
     def test_delete(self):
         self.rcm._delete = mock.Mock(return_value=None)
 

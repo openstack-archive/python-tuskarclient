@@ -34,5 +34,8 @@ class ResourceClassManager(base.Manager):
     def create(self, **kwargs):
         return self._create(self._path(), kwargs)
 
+    def update(self, id, **kwargs):
+        return self._update(self._single_path(id), kwargs)
+
     def delete(self, id):
         return self._delete(self._single_path(id))
