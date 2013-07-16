@@ -33,5 +33,11 @@ class RackManager(base.Manager):
     def list(self):
         return self._list(self._path())
 
+    def create(self, **kwargs):
+        return self._create(self._path(), kwargs)
+
+    def update(self, rack_id, **kwargs):
+        return self._update(self._single_path(rack_id), kwargs)
+
     def delete(self, rack_id):
         return self._delete(self._single_path(rack_id))
