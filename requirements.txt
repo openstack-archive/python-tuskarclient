@@ -4,6 +4,6 @@ pbr>=0.5,<0.6
 argparse
 iso8601>=0.1.4
 prettytable>=0.6,<0.8
-python-keystoneclient>=0.2,<0.3
+python-keystoneclient>=0.2,<0.4
 requests>=0.8
 simplejson
