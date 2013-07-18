@@ -11,6 +11,7 @@
 #    under the License.
 
 from tuskarclient.common import http
+from tuskarclient.v1 import flavors
 from tuskarclient.v1 import racks
 from tuskarclient.v1 import resource_classes
 
@@ -27,3 +28,4 @@ class Client(http.HTTPClient):
         super(Client, self).__init__(*args, **kwargs)
         self.racks = racks.RackManager(self)
         self.resource_classes = resource_classes.ResourceClassManager(self)
+        self.flavors = flavors.FlavorManager(self)

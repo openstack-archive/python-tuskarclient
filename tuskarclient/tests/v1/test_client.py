@@ -25,6 +25,11 @@ class ClientTest(tutils.TestCase):
         self.assertEqual("RackManager",
                          self.client.racks.__class__.__name__)
         self.assertEqual(self.client, self.client.racks.api)
+
         self.assertEqual("ResourceClassManager",
                          self.client.resource_classes.__class__.__name__)
         self.assertEqual(self.client, self.client.resource_classes.api)
+
+        self.assertEqual("FlavorManager",
+                         self.client.flavors.__class__.__name__)
+        self.assertEqual(self.client, self.client.flavors.api)
