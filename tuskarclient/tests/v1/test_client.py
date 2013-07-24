@@ -33,3 +33,7 @@ class ClientTest(tutils.TestCase):
         self.assertEqual("FlavorManager",
                          self.client.flavors.__class__.__name__)
         self.assertEqual(self.client, self.client.flavors.api)
+
+        self.assertEqual("DataCenterManager",
+                         self.client.data_centers.__class__.__name__)
+        self.assertEqual(self.client, self.client.data_centers.api)
