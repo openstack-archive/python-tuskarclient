@@ -70,4 +70,18 @@ def create_top_parser():
                         help=argparse.SUPPRESS,
                         )
 
+    parser.add_argument('--os-auth-token',
+                        default=utils.env('OS_AUTH_TOKEN'),
+                        help='Defaults to env[OS_AUTH_TOKEN]')
+
+    parser.add_argument('--os_auth_token',
+                        help=argparse.SUPPRESS)
+
+    parser.add_argument('--tuskar-url',
+                        default=utils.env('TUSKAR_URL'),
+                        help='Defaults to env[TUSKAR_URL]')
+
+    parser.add_argument('--tuskar_url',
+                        help=argparse.SUPPRESS)
+
     return parser

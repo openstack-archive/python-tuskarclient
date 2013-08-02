@@ -40,22 +40,33 @@ class TuskarShell(object):
         self._ensure_auth_info(args)
 
     def _ensure_auth_info(self, args):
-        if not args.os_username:
-            raise UsageError("You must provide username via either "
-                             "--os-username or env[OS_USERNAME]")
+        '''Ensure that authentication information is provided. Two variants
+        of authentication are supported:
+        - provide username, password, tenant and auth url
+        - provide token and tuskar url (or auth url instead of tuskar url)
+        '''
+        if not args.os_auth_token:
+            if not args.os_username:
+                raise UsageError("You must provide username via either "
+                                 "--os-username or env[OS_USERNAME]")
 
-        if not args.os_password:
-            raise UsageError("You must provide password via either "
-                             "--os-password or env[OS_PASSWORD]")
+            if not args.os_password:
+                raise UsageError("You must provide password via either "
+                                 "--os-password or env[OS_PASSWORD]")
 
-        if not args.os_tenant_id and not args.os_tenant_name:
-            raise UsageError("You must provide tenant via either "
-                             "--os-tenant-name or --os-tenant-id or "
-                             "env[OS_TENANT_NAME] or env[OS_TENANT_ID]")
+            if not args.os_tenant_id and not args.os_tenant_name:
+                raise UsageError("You must provide tenant via either "
+                                 "--os-tenant-name or --os-tenant-id or "
+                                 "env[OS_TENANT_NAME] or env[OS_TENANT_ID]")
 
-        if not args.os_auth_url:
-            raise UsageError("You must provide auth URL via either "
-                             "--os-auth-url or env[OS_AUTH_URL]")
+            if not args.os_auth_url:
+                raise UsageError("You must provide auth URL via either "
+                                 "--os-auth-url or env[OS_AUTH_URL]")
+        else:
+            if not args.tuskar_url and not args.os_auth_url:
+                raise UsageError("You must provide either "
+                                 "--tuskar_url or --os_auth_url or "
+                                 "env[TUSKAR_URL] or env[OS_AUTH_URL]")
 
 
 class UsageError(Exception):
