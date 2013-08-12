@@ -1,10 +1,12 @@
 language: python
-python:
-  - 2.7
-install:
-  - pip install -q -r requirements.txt --use-mirrors
-  - pip install -q -r test-requirements.txt --use-mirrors
+env:
+  - TOX_ENV=py27
+  - TOX_ENV=pep8
+  - TOX_ENV=cover
+before_install:
+  - pip install tox --use-mirrors
+  - if [ "x$TOX_ENV" = 'xcover' ]; then pip install coveralls --use-mirrors; fi
 script:
-  - python setup.py testr --coverage
+  - tox -e $TOX_ENV
 after_success:
-  - coveralls
+  - if [ "x$TOX_ENV" = 'xcover' ]; then coveralls; fi
