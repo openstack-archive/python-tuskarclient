@@ -12,8 +12,8 @@
 
 import mock
 
-from tuskarclient.v1 import data_centers
 import tuskarclient.tests.utils as tutils
+from tuskarclient.v1 import data_centers
 
 
 class DataCenterManagerTest(tutils.TestCase):

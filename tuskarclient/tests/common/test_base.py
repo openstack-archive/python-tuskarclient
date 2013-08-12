@@ -12,8 +12,8 @@
 
 import mock
 
-from tuskarclient.tests import utils as tutils
 from tuskarclient.common import base
+from tuskarclient.tests import utils as tutils
 
 
 class ManagerTest(tutils.TestCase):

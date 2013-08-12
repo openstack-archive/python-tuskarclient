@@ -10,8 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tuskarclient.common import utils
 from keystoneclient.v2_0 import client as ksclient
+from tuskarclient.common import utils
 
 
 def _get_ksclient(**kwargs):

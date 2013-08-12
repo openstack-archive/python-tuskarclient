@@ -12,8 +12,8 @@
 
 import mock
 
-from tuskarclient.v1 import flavors
 import tuskarclient.tests.utils as tutils
+from tuskarclient.v1 import flavors
 
 
 class FlavorManagerTest(tutils.TestCase):

@@ -25,7 +25,7 @@ class ShellTest(tutils.TestCase):
         args_attributes = [
             'os_username', 'os_password', 'os_tenant_name', 'os_tenant_id',
             'os_auth_url', 'os_auth_token', 'tuskar_url',
-            ]
+        ]
         for attr in args_attributes:
             setattr(args, attr, None)
 

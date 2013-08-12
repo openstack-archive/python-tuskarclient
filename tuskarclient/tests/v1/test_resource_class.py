@@ -12,8 +12,8 @@
 
 import mock
 
-from tuskarclient.v1 import resource_classes
 import tuskarclient.tests.utils as tutils
+from tuskarclient.v1 import resource_classes
 
 
 class ResourceClassManagerTest(tutils.TestCase):

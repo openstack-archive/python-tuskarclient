@@ -12,8 +12,8 @@
 
 import mock
 
-from tuskarclient.v1 import racks
 import tuskarclient.tests.utils as tutils
+from tuskarclient.v1 import racks
 
 
 class RackManagerTest(tutils.TestCase):
