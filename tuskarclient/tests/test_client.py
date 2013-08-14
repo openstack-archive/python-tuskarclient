@@ -46,3 +46,44 @@ class ClientGetEndpointTest(tutils.TestCase):
             service_type='service_type_value',
             endpoint_type='endpoint_type_value',
         )
+
+
+class ClientGetKSClientTest(tutils.TestCase):
+
+    @mock.patch.object(client.ksclient, 'Client')
+    def test_selects_proper_values(self, mocked_ksclient):
+        mocked_ksclient.return_value = 'mocked ksclient'
+        keys = set([  # keys for KeystoneClient constructor
+            'username',
+            'password',
+            'tenant_id',
+            'tenant_name',
+            'auth_url',
+            'insecure',
+        ])
+        redundant_keys = set([  # key added to see if not passed to constructor
+            'some_other_key',
+            'any_other_key',
+        ])
+        missing_keys = set([  # missing to see if its val. defaults to None
+            'username',
+            'auth_url',
+        ])
+
+        kwargs = {}
+        # contruct testing dictionary with redunant keys and missing some
+        for key in keys | redundant_keys:
+            if key not in missing_keys:
+                kwargs[key] = key + '_value'
+
+        # construct dict containing expected values - no reduntant keys and
+        # default for missing keys
+        expected_args = kwargs.copy()
+        for key in redundant_keys:
+            del expected_args[key]
+
+        for key in missing_keys:
+            expected_args[key] = None
+
+        self.assertEqual(client._get_ksclient(**kwargs), 'mocked ksclient')
+        mocked_ksclient.assert_called_with(**expected_args)
