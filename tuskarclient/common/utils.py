@@ -24,6 +24,34 @@ from tuskarclient import exc
 from tuskarclient.openstack.common import importutils
 
 
+def define_commands_from_module(subparsers, command_module):
+    '''Find all methods beginning with 'do_' in a module, and add them
+    as commands into a subparsers collection.
+    '''
+    for method_name in (a for a in dir(command_module) if a.startswith('do_')):
+        # Commands should be hypen-separated instead of underscores.
+        command = method_name[3:].replace('_', '-')
+        callback = getattr(command_module, method_name)
+        define_command(subparsers, command, callback)
+
+
+def define_command(subparsers, command, callback):
+    '''Define a command in the subparsers collection.
+
+    :param subparsers: subparsers collection where the command will go
+    :param command: command name
+    :param callback: function that will be used to process the command
+    '''
+    desc = callback.__doc__ or ''
+    help = desc.strip().split('\n')[0]
+    arguments = getattr(callback, 'arguments', [])
+
+    subparser = subparsers.add_parser(command, help=help, description=desc)
+    for (args, kwargs) in arguments:
+        subparser.add_argument(*args, **kwargs)
+    subparser.set_defaults(func=callback)
+
+
 # Decorator for cli-args
 def arg(*args, **kwargs):
     def _decorator(func):
