@@ -10,11 +10,17 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from tuskarclient import exc
 from tuskarclient import shell
 import tuskarclient.tests.utils as tutils
 
 
 class ShellTest(tutils.TestCase):
+
+    args_attributes = [
+        'os_username', 'os_password', 'os_tenant_name', 'os_tenant_id',
+        'os_auth_url', 'os_auth_token', 'tuskar_url', 'tuskar_api_version',
+    ]
 
     def setUp(self):
         super(ShellTest, self).setUp()
@@ -22,35 +28,44 @@ class ShellTest(tutils.TestCase):
 
     def empty_args(self):
         args = lambda: None  # i'd use object(), but it can't have attributes
-        args_attributes = [
-            'os_username', 'os_password', 'os_tenant_name', 'os_tenant_id',
-            'os_auth_url', 'os_auth_token', 'tuskar_url',
-            ]
-        for attr in args_attributes:
+        for attr in self.args_attributes:
             setattr(args, attr, None)
 
         return args
 
     def test_ensure_auth_info_with_credentials(self):
         ensure = self.s._ensure_auth_info
-        usage_error = shell.UsageError
+        command_error = exc.CommandError
         args = self.empty_args()
 
         args.os_username = 'user'
         args.os_password = 'pass'
         args.os_tenant_name = 'tenant'
-        self.assertRaises(usage_error, ensure, args)
+        self.assertRaises(command_error, ensure, args)
 
         args.os_auth_url = 'keystone'
         ensure(args)  # doesn't raise
 
     def test_ensure_auth_info_with_token(self):
         ensure = self.s._ensure_auth_info
-        usage_error = shell.UsageError
+        command_error = exc.CommandError
         args = self.empty_args()
 
         args.os_auth_token = 'token'
-        self.assertRaises(usage_error, ensure, args)
+        self.assertRaises(command_error, ensure, args)
 
         args.tuskar_url = 'tuskar'
         ensure(args)  # doesn't raise
+
+    def test_parser_v1(self):
+        v1_commands = [
+            'rack-list', 'rack-show',
+        ]
+        parser = self.s._parser(1)
+        tuskar_help = parser.format_help()
+
+        for arg in map(lambda a: a.replace('_', '-'), self.args_attributes):
+            self.assertIn(arg, tuskar_help)
+
+        for command in v1_commands:
+            self.assertIn(command, tuskar_help)

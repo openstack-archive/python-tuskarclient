@@ -15,6 +15,7 @@
 
 
 import cStringIO
+import mock
 import sys
 
 from tuskarclient.common import utils
@@ -45,3 +46,31 @@ class UtilsTest(test_utils.TestCase):
 | Key      | Value |
 +----------+-------+
 ''')
+
+
+class DefineCommandsTest(test_utils.TestCase):
+
+    def test_define_commands_from_module(self):
+        subparsers = mock.Mock()
+        subparser = mock.MagicMock()
+        subparsers.add_parser.return_value = subparser
+        dummy_module = self.dummy_command_module()
+
+        utils.define_commands_from_module(subparsers, dummy_module)
+        subparsers.add_parser.assert_called_with(
+            'dummy-list', help="Docstring", description="Docstring")
+        subparser.add_argument.assert_called_with(
+            '-a', metavar='<NUMBER>', help="Add a number.")
+        subparser.set_defaults.assert_called_with(
+            func=dummy_module.do_dummy_list)
+
+    def dummy_command_module(self):
+        @utils.arg('-a', metavar='<NUMBER>', help="Add a number.")
+        def do_dummy_list():
+            '''Docstring'''
+            return 42
+
+        dummy = mock.Mock()
+        dummy.do_dummy_list = do_dummy_list
+        dummy.other_method = mock.Mock('other_method', return_value=43)
+        return dummy
