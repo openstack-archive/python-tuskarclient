@@ -69,3 +69,55 @@ class FakeResponse(object):
 
     def read(self, amt):
         return self.body.read(amt)
+
+
+def create_test_dictionary_pair(default_keys, redundant_keys, missing_keys,
+                                **kwargs):
+    """Creates a pair of dictionaries for testing
+
+    This function creates two dictionaries from three sets of keys.
+
+    The first returned dictionary contains keys from default_keys,
+    keys from redundant_keys but is missing keys from missing_keys.
+    All with value of key + '_value'.
+
+    The second returned dictionary contains keys from default_keys
+    with value of key + '_value' except for keys from missing_keys.
+    These contains value None.
+
+    These two dictionaries can be used in test cases when testing
+    if tested function filters out set of keys from kwargs
+    and passes it to other function.
+
+    :param default_keys: set of keys expected to be passed on
+    :param redundant_keys: set of keys expected to be filtered out
+    :param missing_keys: set of keys missing from passed_dictionary
+    and expected to be set to None
+    :param kwargs: key translation pairs. original=new_one will create
+    original='original_value' in passed_dictionary and
+    new_one='original_value' in called_dictionary.
+    """
+    passed_dictionary = {}
+    translations = kwargs
+
+    for key in default_keys | redundant_keys:
+        if key not in missing_keys:
+            passed_dictionary[key] = key + '_value'
+
+    called_dictionary = passed_dictionary.copy()
+
+    for key in redundant_keys:
+        del called_dictionary[key]
+
+    for key in missing_keys:
+        called_dictionary[key] = None
+
+    for key in translations:
+        if key in called_dictionary:
+            # create new key with name from translations dict
+            # with original value
+            called_dictionary[translations[key]] = called_dictionary[key]
+            # delete original key
+            del called_dictionary[key]
+
+    return passed_dictionary, called_dictionary
