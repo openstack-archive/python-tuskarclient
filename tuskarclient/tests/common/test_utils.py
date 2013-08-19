@@ -14,38 +14,10 @@
 #    under the License.
 
 
-import cStringIO
 import mock
-import sys
 
 from tuskarclient.common import utils
 from tuskarclient.tests import utils as test_utils
-
-
-class UtilsTest(test_utils.TestCase):
-
-    def test_prettytable(self):
-        class Struct:
-            def __init__(self, **entries):
-                self.__dict__.update(entries)
-
-        # test that the prettytable output is wellformatted (left-aligned)
-        saved_stdout = sys.stdout
-        try:
-            sys.stdout = output_dict = cStringIO.StringIO()
-            utils.print_dict({'K': 'k', 'Key': 'Value'})
-
-        finally:
-            sys.stdout = saved_stdout
-
-        self.assertEqual(output_dict.getvalue(), '''\
-+----------+-------+
-| Property | Value |
-+----------+-------+
-| K        | k     |
-| Key      | Value |
-+----------+-------+
-''')
 
 
 class DefineCommandsTest(test_utils.TestCase):

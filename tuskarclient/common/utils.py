@@ -15,10 +15,7 @@
 
 import os
 import sys
-import textwrap
 import uuid
-
-import prettytable
 
 from tuskarclient import exc
 from tuskarclient.openstack.common import importutils
@@ -60,50 +57,6 @@ def arg(*args, **kwargs):
         func.__dict__.setdefault('arguments', []).insert(0, (args, kwargs))
         return func
     return _decorator
-
-
-def pretty_choice_list(l):
-    return ', '.join("'%s'" % i for i in l)
-
-
-def print_list(objs, fields, field_labels, formatters={}, sortby=0):
-    pt = prettytable.PrettyTable([f for f in field_labels],
-                                 caching=False, print_empty=False)
-    pt.align = 'l'
-
-    for o in objs:
-        row = []
-        for field in fields:
-            if field in formatters:
-                row.append(formatters[field](o))
-            else:
-                data = getattr(o, field, '')
-                row.append(data)
-        pt.add_row(row)
-    print pt.get_string(sortby=field_labels[sortby])
-
-
-def print_dict(d, dict_property="Property", wrap=0):
-    pt = prettytable.PrettyTable([dict_property, 'Value'],
-                                 caching=False, print_empty=False)
-    pt.align = 'l'
-    for k, v in d.iteritems():
-        # convert dict to str to check length
-        if isinstance(v, dict):
-            v = str(v)
-        if wrap > 0:
-            v = textwrap.fill(str(v), wrap)
-        # if value has a newline, add in multiple rows
-        # e.g. fault with stacktrace
-        if v and isinstance(v, basestring) and r'\n' in v:
-            lines = v.strip().split(r'\n')
-            col1 = k
-            for line in lines:
-                pt.add_row([col1, line])
-                col1 = ''
-        else:
-            pt.add_row([k, v])
-    print pt.get_string()
 
 
 def find_resource(manager, name_or_id):

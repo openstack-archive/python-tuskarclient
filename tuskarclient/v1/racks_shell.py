@@ -10,6 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import tuskarclient.common.formatting as fmt
 from tuskarclient.common import utils
 from tuskarclient import exc
 
@@ -21,15 +22,28 @@ def do_rack_show(tuskar, args):
         rack = utils.find_resource(tuskar.racks, args.id)
     except exc.HTTPNotFound:
         raise exc.CommandError("Rack not found: %s" % args.id)
+    formatters = {
+        'capacities': fmt.capacities_formatter,
+        'chassis': fmt.resource_link_formatter,
+        'links': fmt.links_formatter,
+        'nodes': fmt.resource_links_formatter,
+        'resource_class': fmt.resource_link_formatter,
+    }
 
-    utils.print_dict(rack.to_dict())
+    rack_dict = rack.to_dict()
+    # Workaround for API inconsistency, where empty chassis link
+    # prints out as '{}'.
+    if 'chassis' in rack_dict and not rack_dict['chassis']:
+        del rack_dict['chassis']
+
+    fmt.print_dict(rack_dict, formatters)
 
 
 # TODO(jistr): This is PoC, not final implementation
 def do_rack_list(tuskar, args):
     racks = tuskar.racks.list()
-    fields = ['name', 'subnet', 'state', 'nodes']
-    labels = ["Name", "Subnet", "State", "Nodes"]
-    formatters = {'nodes': lambda rack: len(rack.nodes)}
+    fields = ['id', 'name', 'subnet', 'state', 'nodes']
+    labels = {'nodes': '# of nodes'}
+    formatters = {'nodes': len}
 
-    utils.print_list(racks, fields, labels, formatters, 0)
+    fmt.print_list(racks, fields, formatters, labels)
