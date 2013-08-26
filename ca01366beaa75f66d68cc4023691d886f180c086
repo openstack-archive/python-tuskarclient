@@ -1,0 +1,9 @@
+Verified+2: Jenkins
+Approved+1: Petr Blaho <pblaho@redhat.com>
+Code-Review+2: Petr Blaho <pblaho@redhat.com>
+Code-Review+1: Marios Andreou <marios@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Mon, 26 Aug 2013 10:22:10 +0000
+Reviewed-on: https://review.openstack.org/43127
+Project: stackforge/python-tuskarclient
+Branch: refs/heads/master
