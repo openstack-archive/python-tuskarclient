@@ -39,6 +39,71 @@ def _get_endpoint(client, **kwargs):
         endpoint_type=kwargs.get('endpoint_type') or 'publicURL')
 
 
+def _get_token_and_endpoint(**kwargs):
+    token = kwargs.get('os_auth_token')
+    endpoint = kwargs.get('tuskar_url')
+    ks_kwargs = {
+        'username': kwargs.get('os_username'),
+        'password': kwargs.get('os_password'),
+        'tenant_id': kwargs.get('os_tenant_id'),
+        'tenant_name': kwargs.get('os_tenant_name'),
+        'auth_url': kwargs.get('os_auth_url'),
+        'service_type': kwargs.get('os_service_type'),
+        'endpoint_type': kwargs.get('os_endpoint_type'),
+        'insecure': kwargs.get('insecure'),
+    }
+    # create Keystone Client if we miss token or endpoint
+    if not (token and endpoint):
+        _ksclient = _get_ksclient(**ks_kwargs)
+        # get token if needed
+        if not token:
+            token = _ksclient.auth_token
+        # get endpoint if needed
+        if not endpoint:
+            endpoint = _get_endpoint(_ksclient, **ks_kwargs)
+    return token, endpoint
+
+
+def _get_client_with_token(api_version, **kwargs):
+    token = kwargs.get('os_auth_token')
+    endpoint = kwargs.get('tuskar_url')
+    # test if we have all needed parameters
+    if token and endpoint:
+        client_kwargs = {
+            'token': token,
+            'insecure': kwargs.get('insecure'),
+            'timeout': kwargs.get('timeout'),
+            'ca_file': kwargs.get('ca_file'),
+            'cert_file': kwargs.get('cert_file'),
+            'key_file': kwargs.get('key_file'),
+        }
+        # return new Client
+        return Client(api_version, endpoint, **client_kwargs)
+    # return None if we do not have all needed parameters
+    else:
+        return None
+
+
+def _get_client_with_credentials(api_version, **kwargs):
+    username = kwargs.get('os_username')
+    password = kwargs.get('os_password')
+    auth_url = kwargs.get('os_auth_url')
+    tenant_id = kwargs.get('os_tenant_id')
+    tenant_name = kwargs.get('os_tenant_name')
+
+    # test if we have all needed parameters
+    if (username and password and auth_url and
+            (tenant_id or tenant_name)):
+        token, endpoint = _get_token_and_endpoint(**kwargs)
+
+        # call for a client with token and endpoint
+        return _get_client_with_token(api_version, endpoint=endpoint,
+                                      token=token, **kwargs)
+    # returns None if we do not have needed parameters
+    else:
+        return None
+
+
 def get_client(api_version, **kwargs):
     """Get an authtenticated client, based on the credentials
        in the keyword args.
@@ -54,40 +119,16 @@ def get_client(api_version, **kwargs):
             * insecure: allow insecure SSL (no cert verification)
             * os_tenant_{name|id}: name or ID of tenant
     """
-    if kwargs.get('os_auth_token') and kwargs.get('tuskar_url'):
-        token = kwargs.get('os_auth_token')
-        endpoint = kwargs.get('tuskar_url')
-    elif (kwargs.get('os_username') and
-          kwargs.get('os_password') and
-          kwargs.get('os_auth_url') and
-          (kwargs.get('os_tenant_id') or kwargs.get('os_tenant_name'))):
-
-        ks_kwargs = {
-            'username': kwargs.get('os_username'),
-            'password': kwargs.get('os_password'),
-            'tenant_id': kwargs.get('os_tenant_id'),
-            'tenant_name': kwargs.get('os_tenant_name'),
-            'auth_url': kwargs.get('os_auth_url'),
-            'service_type': kwargs.get('os_service_type'),
-            'endpoint_type': kwargs.get('os_endpoint_type'),
-            'insecure': kwargs.get('insecure'),
-        }
-        _ksclient = _get_ksclient(**ks_kwargs)
-        token = kwargs.get('os_auth_token') or _ksclient.auth_token
-
-        endpoint = kwargs.get('tuskar_url') or \
-            _get_endpoint(_ksclient, **ks_kwargs)
-
-    cli_kwargs = {
-        'token': token,
-        'insecure': kwargs.get('insecure'),
-        'timeout': kwargs.get('timeout'),
-        'ca_file': kwargs.get('ca_file'),
-        'cert_file': kwargs.get('cert_file'),
-        'key_file': kwargs.get('key_file'),
-    }
-
-    return Client(api_version, endpoint, **cli_kwargs)
+    # Try call for client with token and endpoint.
+    # If it returns None, call for client with credentials
+    client = (_get_client_with_token(api_version, **kwargs) or
+              _get_client_with_credentials(api_version, **kwargs))
+    # If we have a client, return it
+    if client:
+        return client
+    # otherwise raise error
+    else:
+        raise ValueError("Need correct set of parameters")
 
 
 def Client(version, *args, **kwargs):
