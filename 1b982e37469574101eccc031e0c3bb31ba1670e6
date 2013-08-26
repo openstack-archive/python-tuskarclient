@@ -1,0 +1,9 @@
+Verified+2: Jenkins
+Code-Review+1: Matt Wagner <matt.wagner@redhat.com>
+Approved+1: Jiri Stransky <jistr@redhat.com>
+Code-Review+2: Jiri Stransky <jistr@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Mon, 26 Aug 2013 12:45:18 +0000
+Reviewed-on: https://review.openstack.org/42833
+Project: stackforge/python-tuskarclient
+Branch: refs/heads/master
