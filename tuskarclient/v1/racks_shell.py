@@ -63,6 +63,35 @@ def do_rack_delete(tuskar, args):
     print('Deleted rack "%s".' % rack.name)
 
 
+@utils.arg('rack_id', metavar="<RACK NAME or ID>", help="Name or ID of rack.")
+@utils.arg('node_id', metavar="<NODE ID>", help="ID of node to be added.")
+def do_rack_add_node(tuskar, args):
+    rack = utils.find_resource(tuskar.racks, args.rack_id)
+    if args.node_id in map(lambda n: n['id'], rack.nodes):
+        utils.exit('Node "{0}" is already in rack "{1}".'
+                   .format(args.node_id, rack.name))
+
+    nodes = list(rack.nodes)
+    nodes.append({'id': args.node_id})
+    rack_dict = {'nodes': nodes}
+    updated_rack = tuskar.racks.update(args.rack_id, **rack_dict)
+    print_rack_detail(updated_rack)
+
+
+@utils.arg('rack_id', metavar="<RACK NAME or ID>", help="Name or ID of rack.")
+@utils.arg('node_id', metavar="<NODE ID>", help="ID of node to be removed.")
+def do_rack_remove_node(tuskar, args):
+    rack = utils.find_resource(tuskar.racks, args.rack_id)
+    if args.node_id not in map(lambda n: n['id'], rack.nodes):
+        utils.exit('Node "{0}" is not in rack "{1}".'
+                   .format(args.node_id, rack.name))
+
+    nodes = [n for n in rack.nodes if n['id'] != args.node_id]
+    rack_dict = {'nodes': nodes}
+    updated_rack = tuskar.racks.update(args.rack_id, **rack_dict)
+    print_rack_detail(updated_rack)
+
+
 def create_rack_dict(args):
     '''Create a rack dict for use with API requests from supplied command
     line args.

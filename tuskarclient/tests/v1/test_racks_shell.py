@@ -113,3 +113,34 @@ class RacksShellTest(tutils.TestCase):
         racks_shell.do_rack_delete(self.tuskar, args)
         self.tuskar.racks.delete.assert_called_with('5')
         self.assertEqual('Deleted rack "test_rack".\n', mock_stdout.getvalue())
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
+    @mock.patch('tuskarclient.v1.racks_shell.print_rack_detail')
+    def test_rack_remove_node(self, mock_print_detail, mock_find_resource):
+        rack = mock_find_resource.return_value = self.mock_rack()
+        rack.nodes = [{'id': '7'}, {'id': '11'}, {'id': '5'}]
+
+        args = mock.Mock(spec=[])
+        args.rack_id = '3'
+        args.node_id = '11'
+
+        racks_shell.do_rack_remove_node(self.tuskar, args)
+        self.tuskar.racks.update.assert_called_with(
+            '3', nodes=[{'id': '7'}, {'id': '5'}])
+        mock_print_detail.assert_called_with(
+            self.tuskar.racks.update.return_value)
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
+    @mock.patch('tuskarclient.common.utils.exit')
+    def test_rack_remove_node_already_added(self, mock_exit,
+                                            mock_find_resource):
+        rack = mock_find_resource.return_value = self.mock_rack()
+        rack.nodes = [{'id': '7'}, {'id': '11'}]
+
+        args = mock.Mock(spec=[])
+        args.rack_id = '3'
+        args.node_id = '5'
+
+        racks_shell.do_rack_remove_node(self.tuskar, args)
+        mock_exit.assert_called_with(
+            'Node "5" is not in rack "test_rack".')
