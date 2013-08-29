@@ -73,7 +73,11 @@ def find_resource(manager, name_or_id):
         uuid.UUID(str(name_or_id))
         return manager.get(name_or_id)
     except (ValueError, exc.NotFound):
-        pass
+        # This is temporary measure to prevent ugly errors on CLI.
+        # Make this just 'pass' after we implement finding by name.
+        msg = "No %s with ID of '%s' exists." % \
+              (manager.resource_class.__name__.lower(), name_or_id)
+        raise exc.CommandError(msg)
 
     # finally try to find entity by name
     try:
