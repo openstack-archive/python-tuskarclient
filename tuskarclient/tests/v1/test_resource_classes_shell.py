@@ -221,3 +221,105 @@ class ResourceClassesShellTest(tutils.TestCase):
         resource_class_dict = resource_classes_shell. \
             create_resource_class_dict(args)
         self.assertEqual(resource_class_dict, expected_resource_class_dict)
+
+    @mock.patch.object(resource_classes_shell.utils, 'find_resource')
+    @mock.patch.object(resource_classes_shell, 'print_resource_class_detail')
+    def test_add_rack_works(self,
+                            mocked_print_resource_class_detail,
+                            mocked_find_resource):
+        tuskar = mock.MagicMock()
+        resource_class_id = 3
+
+        resource_class = mocked_find_resource.return_value = mock.MagicMock()
+        resource_class.id = resource_class_id
+        resource_class.racks = [{'id': '7'}, {'id': '11'}]
+
+        args = self.empty_args()
+        args.resource_class_id = '3'
+        # rack is in resource_class
+        args.rack_id = '12'
+
+        resource_classes_shell.do_resource_class_add_rack(tuskar, args)
+        tuskar.resource_classes.update.assert_called_with(
+            '3', racks=[{'id': '7'}, {'id': '11'}, {'id': '12'}])
+        mocked_print_resource_class_detail.assert_called_with(
+            tuskar.resource_classes.update.return_value)
+
+    @mock.patch.object(resource_classes_shell.utils, 'find_resource')
+    @mock.patch.object(resource_classes_shell, 'print_resource_class_detail')
+    def test_add_rack_do_not_adds_existing_rack(
+            self,
+            mocked_print_resource_class_detail,
+            mocked_find_resource):
+        tuskar = mock.MagicMock()
+        resource_class_id = 3
+
+        resource_class = mocked_find_resource.return_value
+        resource_class.id = resource_class_id
+        resource_class.name = 'resource class 3'
+        resource_class.racks = [{'id': '7'}, {'id': '11'}]
+
+        args = self.empty_args()
+        args.resource_class_id = '3'
+        # rack is not in resource_class
+        args.rack_id = '11'
+
+        self.assertRaises(
+            resource_classes_shell.exc.CommandError,
+            resource_classes_shell.do_resource_class_add_rack,
+            tuskar, args)
+        self.assertEqual(tuskar.resource_classes.update.call_count,
+                         0)
+        self.assertEqual(mocked_print_resource_class_detail.call_count,
+                         0)
+
+    @mock.patch.object(resource_classes_shell.utils, 'find_resource')
+    @mock.patch.object(resource_classes_shell, 'print_resource_class_detail')
+    def test_remove_rack_works(self,
+                               mocked_print_resource_class_detail,
+                               mocked_find_resource):
+        tuskar = mock.MagicMock()
+        resource_class_id = 3
+
+        resource_class = mocked_find_resource.return_value = mock.MagicMock()
+        resource_class.id = resource_class_id
+        resource_class.racks = [{'id': '7'}, {'id': '11'}, {'id': '5'}]
+
+        args = self.empty_args()
+        args.resource_class_id = '3'
+        # rack is in resource_class
+        args.rack_id = '11'
+
+        resource_classes_shell.do_resource_class_remove_rack(tuskar, args)
+        tuskar.resource_classes.update.assert_called_with(
+            '3', racks=[{'id': '7'}, {'id': '5'}])
+        mocked_print_resource_class_detail.assert_called_with(
+            tuskar.resource_classes.update.return_value)
+
+    @mock.patch.object(resource_classes_shell.utils, 'find_resource')
+    @mock.patch.object(resource_classes_shell, 'print_resource_class_detail')
+    def test_remove_rack_do_not_removes_nonexisting_rack(
+            self,
+            mocked_print_resource_class_detail,
+            mocked_find_resource):
+        tuskar = mock.MagicMock()
+        resource_class_id = 3
+
+        resource_class = mocked_find_resource.return_value
+        resource_class.id = resource_class_id
+        resource_class.name = 'resource class 3'
+        resource_class.racks = [{'id': '7'}, {'id': '11'}, {'id': '5'}]
+
+        args = self.empty_args()
+        args.resource_class_id = '3'
+        # rack is not in resource_class
+        args.rack_id = '12'
+
+        self.assertRaises(
+            resource_classes_shell.exc.CommandError,
+            resource_classes_shell.do_resource_class_remove_rack,
+            tuskar, args)
+        self.assertEqual(tuskar.resource_classes.update.call_count,
+                         0)
+        self.assertEqual(mocked_print_resource_class_detail.call_count,
+                         0)
