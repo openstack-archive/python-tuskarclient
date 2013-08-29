@@ -65,6 +65,44 @@ def do_resource_class_delete(tuskar, args):
     print('Deleted resource class "%s".' % resource_class.name)
 
 
+@utils.arg('resource_class_id', metavar="<RESOURCE CLASS NAME or ID>",
+           help="Name or ID of resource class.")
+@utils.arg('rack_id', metavar="<RACK ID>", help="ID of rack to be added.")
+def do_resource_class_add_rack(tuskar, args):
+    resource_class = utils.find_resource(tuskar.resource_classes,
+                                         args.resource_class_id)
+    if args.rack_id in map(lambda n: n['id'], resource_class.racks):
+        raise exc.CommandError('Rack "{0}" is already in resrouce class "{1}".'
+                               .format(args.rack_id, resource_class.name))
+
+    racks = list(resource_class.racks)
+    racks.append({'id': args.rack_id})
+    resource_class_dict = {'racks': racks}
+    updated_resource_class = tuskar.resource_classes.update(
+        args.resource_class_id, **resource_class_dict)
+    print_resource_class_detail(updated_resource_class)
+
+
+@utils.arg('resource_class_id', metavar="<RESOURCE CLASS NAME or ID>",
+           help="Name or ID of resource class.")
+@utils.arg('rack_id', metavar="<RACK ID>", help="ID of rack to be removed.")
+def do_resource_class_remove_rack(tuskar, args):
+    resource_class = utils.find_resource(tuskar.resource_classes,
+                                         args.resource_class_id)
+
+    if str(args.rack_id) not in map(lambda n: str(n['id']),
+                                    resource_class.racks):
+        raise exc.CommandError('Rack "{0}" is not in resource class "{1}".'
+                               .format(args.rack_id, resource_class.name))
+
+    racks = [n for n in resource_class.racks
+             if str(n['id']) != str(args.rack_id)]
+    resource_class_dict = {'racks': racks}
+    updated_resource_class = tuskar.resource_classes.update(
+        args.resource_class_id, **resource_class_dict)
+    print_resource_class_detail(updated_resource_class)
+
+
 def print_resource_class_detail(resource_class):
     formatters = {
         'links': fmt.links_formatter,
