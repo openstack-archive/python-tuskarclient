@@ -30,6 +30,10 @@ class ClientTest(tutils.TestCase):
                          self.client.resource_classes.__class__.__name__)
         self.assertEqual(self.client, self.client.resource_classes.api)
 
+        self.assertEqual("NodeManager",
+                         self.client.nodes.__class__.__name__)
+        self.assertEqual(self.client, self.client.nodes.api)
+
         self.assertEqual("FlavorManager",
                          self.client.flavors.__class__.__name__)
         self.assertEqual(self.client, self.client.flavors.api)
