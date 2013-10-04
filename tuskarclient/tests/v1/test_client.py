@@ -41,3 +41,7 @@ class ClientTest(tutils.TestCase):
         self.assertEqual("DataCenterManager",
                          self.client.data_centers.__class__.__name__)
         self.assertEqual(self.client, self.client.data_centers.api)
+
+        self.assertEqual("EndpointsManager",
+                         self.client.endpoints.__class__.__name__)
+        self.assertEqual(self.client, self.client.endpoints.api)

@@ -12,6 +12,7 @@
 
 from tuskarclient.common import http
 from tuskarclient.v1 import data_centers
+from tuskarclient.v1 import endpoints
 from tuskarclient.v1 import flavors
 from tuskarclient.v1 import nodes
 from tuskarclient.v1 import racks
@@ -33,3 +34,4 @@ class Client(http.HTTPClient):
         self.flavors = flavors.FlavorManager(self)
         self.nodes = nodes.NodeManager(self)
         self.data_centers = data_centers.DataCenterManager(self)
+        self.endpoints = endpoints.EndpointsManager(self)
