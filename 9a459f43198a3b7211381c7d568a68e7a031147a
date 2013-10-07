@@ -1,0 +1,8 @@
+Verified+2: Jenkins
+Approved+1: Devananda van der Veen <devananda.vdv@gmail.com>
+Code-Review+2: Devananda van der Veen <devananda.vdv@gmail.com>
+Submitted-by: Jenkins
+Submitted-at: Mon, 07 Oct 2013 00:50:56 +0000
+Reviewed-on: https://review.openstack.org/49964
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
