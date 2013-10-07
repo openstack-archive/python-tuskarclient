@@ -3,7 +3,7 @@ python-tuskarclient
 ===================
 
 python-tuskarclient is a Python client and a command-line interface
-for `Tuskar <https://github.com/stackforge/tuskar>`_.
+for `Tuskar <https://github.com/openstack/tuskar>`_.
 
 
 Getting Started
@@ -11,7 +11,7 @@ Getting Started
 
 Clone the repo::
 
-    $ git clone https://github.com/stackforge/python-tuskarclient.git
+    $ git clone https://github.com/openstack/python-tuskarclient.git
 
 Then, use ``tox`` to set up a virtual environment and run tests::
 
