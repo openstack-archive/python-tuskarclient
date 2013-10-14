@@ -6,3 +6,4 @@ prettytable>=0.6,<0.8
 python-keystoneclient>=0.2,<0.4
 requests>=0.8
 simplejson
+six>=1.4.1

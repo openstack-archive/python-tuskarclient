@@ -10,8 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import cStringIO
 import mock
+import six
 
 import tuskarclient.common.formatting as fmt
 import tuskarclient.tests.utils as tutils
@@ -19,7 +19,7 @@ import tuskarclient.tests.utils as tutils
 
 class PrintTest(tutils.TestCase):
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=six.StringIO)
     def test_print_dict(self, mock_out):
         dict_ = {'k': 'v', 'key': 'value'}
         formatters = {'key': lambda v: 'custom ' + v}
@@ -36,7 +36,7 @@ class PrintTest(tutils.TestCase):
             mock_out.getvalue()
         )
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=six.StringIO)
     def test_print_list(self, mock_out):
         fields = ['thing', 'color', '!artistic_name']
         formatters = {
@@ -57,7 +57,7 @@ class PrintTest(tutils.TestCase):
             mock_out.getvalue()
         )
 
-    @mock.patch('sys.stdout', new_callable=cStringIO.StringIO)
+    @mock.patch('sys.stdout', new_callable=six.StringIO)
     def test_print_list_custom_field_without_formatter(self, mock_out):
         fields = ['!artistic_name']
 

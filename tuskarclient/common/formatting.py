@@ -53,7 +53,7 @@ def print_list(objs, fields, formatters={}, custom_labels={}, sortby=0):
                 else:
                     row.append(getattr(o, field, ''))
         pt.add_row(row)
-    print pt.get_string(sortby=field_labels[sortby])
+    print(pt.get_string(sortby=field_labels[sortby]))
 
 
 def print_dict(d, formatters={}, custom_labels={}):
@@ -77,7 +77,7 @@ def print_dict(d, formatters={}, custom_labels={}):
             pt.add_row([label, formatters[field](d[field])])
         else:
             pt.add_row([label, d[field]])
-    print pt.get_string(sortby='Property')
+    print(pt.get_string(sortby='Property'))
 
 
 def attr_proxy(attr, formatter=lambda a: a, allow_undefined=True):
@@ -109,7 +109,7 @@ def capacities_formatter(capacities):
     containing 'name', 'value' and 'unit' keys.
     '''
     sorted_capacities = sorted(capacities,
-                               lambda c1, c2: cmp(c1['name'], c2['name']))
+                               key=lambda c1: c1['name'])
     return '\n'.join(['{0}: {1} {2}'.format(c['name'], c['value'], c['unit'])
                       for c in sorted_capacities])
 
@@ -118,7 +118,7 @@ def links_formatter(links):
     '''Formats a list of links. Link is a dict that has 'href' and
     'rel' keys.
     '''
-    sorted_links = sorted(links, lambda l1, l2: cmp(l1['rel'], l2['rel']))
+    sorted_links = sorted(links, key=lambda l1: l1['rel'])
     return '\n'.join(['{0}: {1}'.format(l['rel'], l['href'])
                       for l in sorted_links])
 
@@ -131,7 +131,7 @@ def resource_links_formatter(links):
     one. (We cannot fetch by 'rel', values in 'rel' are not used
     consistently.)
     '''
-    sorted_links = sorted(links, lambda l1, l2: cmp(l1['id'], l2['id']))
+    sorted_links = sorted(links, key=lambda l1: l1['id'])
     return '\n'.join(['{0}: {1}'.format(l['id'], l['links'][0]['href'])
                       for l in sorted_links])
 

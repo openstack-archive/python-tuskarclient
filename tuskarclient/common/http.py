@@ -14,12 +14,12 @@
 #    under the License.
 
 import copy
-import httplib
 import logging
 import os
+import six
+from six import moves
+from six.moves.urllib import parse as urlparse
 import socket
-import StringIO
-import urlparse
 
 try:
     import ssl
@@ -68,7 +68,7 @@ class HTTPClient(object):
             _kwargs['key_file'] = kwargs.get('key_file', None)
             _kwargs['insecure'] = kwargs.get('insecure', False)
         elif parts.scheme == 'http':
-            _class = httplib.HTTPConnection
+            _class = moves.http_client.HTTPConnection
         else:
             msg = 'Unsupported scheme: %s' % parts.scheme
             raise exc.InvalidEndpoint(msg)
@@ -80,7 +80,7 @@ class HTTPClient(object):
         try:
             return _class(*self.connection_params[1][0:2],
                           **self.connection_params[2])
-        except httplib.InvalidURL:
+        except moves.http_client.InvalidURL:
             raise exc.InvalidEndpoint()
 
     def log_curl_request(self, method, url, kwargs):
@@ -127,8 +127,8 @@ class HTTPClient(object):
     def _http_request(self, url, method, **kwargs):
         """Send an http request with the specified characteristics.
 
-        Wrapper around httplib.HTTP(S)Connection.request to handle tasks such
-        as setting headers and error handling.
+        Wrapper around http_client.HTTP(S)Connection.request to handle tasks
+        such as setting headers and error handling.
         """
         # Copy the kwargs so we can reuse the original in case of redirects
         kwargs['headers'] = copy.deepcopy(kwargs.get('headers', {}))
@@ -157,7 +157,7 @@ class HTTPClient(object):
         if resp.getheader('content-type', None) != 'application/octet-stream':
             body_str = ''.join([chunk for chunk in body_iter])
             self.log_http_response(resp, body_str)
-            body_iter = StringIO.StringIO(body_str)
+            body_iter = six.StringIO.StringIO(body_str)
         else:
             self.log_http_response(resp)
 
@@ -204,17 +204,18 @@ class HTTPClient(object):
         return self._http_request(url, method, **kwargs)
 
 
-class VerifiedHTTPSConnection(httplib.HTTPSConnection):
-    """httplib-compatibile connection using client-side SSL authentication
+class VerifiedHTTPSConnection(moves.http_client.HTTPSConnection):
+    """http_client-compatibile connection using client-side SSL authentication
 
     :see http://code.activestate.com/recipes/
-            577548-https-httplib-client-connection-with-certificate-v/
+            577548-https-http_client-client-connection-with-certificate-v/
     """
 
     def __init__(self, host, port, key_file=None, cert_file=None,
                  ca_file=None, timeout=None, insecure=False):
-        httplib.HTTPSConnection.__init__(self, host, port, key_file=key_file,
-                                         cert_file=cert_file)
+        moves.http_client.HTTPSConnection.__init__(self, host, port,
+                                                   key_file=key_file,
+                                                   cert_file=cert_file)
         self.key_file = key_file
         self.cert_file = cert_file
         if ca_file is not None:
@@ -228,7 +229,7 @@ class VerifiedHTTPSConnection(httplib.HTTPSConnection):
         """Connect to a host on a given (SSL) port.
         If ca_file is pointing somewhere, use it to check Server Certificate.
 
-        Redefined/copied and extended from httplib.py:1105 (Python 2.6.x).
+        Redefined/copied and extended from http_client.py:1105 (Python 2.6.x).
         This is needed to pass cert_reqs=ssl.CERT_REQUIRED as parameter to
         ssl.wrap_socket(), which forces SSL to check server certificate against
         our client certificate.
