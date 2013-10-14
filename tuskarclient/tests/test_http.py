@@ -27,25 +27,25 @@ class HttpClientUrlGenerationTest(tutils.TestCase):
     def test_url_generation_trailing_slash_in_base(self):
         client = http.HTTPClient('http://localhost/')
         url = client._make_connection_url('/v1/resources')
-        print client.connection_params
+        print(client.connection_params)
         self.assertEqual(url, '/v1/resources')
 
     def test_url_generation_without_trailing_slash_in_base(self):
         client = http.HTTPClient('http://localhost')
         url = client._make_connection_url('/v1/resources')
-        print client.connection_params
+        print(client.connection_params)
         self.assertEqual(url, '/v1/resources')
 
     def test_url_generation_prefix_slash_in_path(self):
         client = http.HTTPClient('http://localhost/')
         url = client._make_connection_url('/v1/resources')
-        print client.connection_params
+        print(client.connection_params)
         self.assertEqual(url, '/v1/resources')
 
     def test_url_generation_without_prefix_slash_in_path(self):
         client = http.HTTPClient('http://localhost')
         url = client._make_connection_url('v1/resources')
-        print client.connection_params
+        print(client.connection_params)
         self.assertEqual(url, '/v1/resources')
 
 
