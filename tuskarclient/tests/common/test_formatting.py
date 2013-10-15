@@ -10,8 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import io
 import mock
-from six import StringIO
 
 import tuskarclient.common.formatting as fmt
 import tuskarclient.tests.utils as tutils
@@ -19,13 +19,17 @@ import tuskarclient.tests.utils as tutils
 
 class PrintTest(tutils.TestCase):
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
-    def test_print_dict(self, mock_out):
+    def setUp(self):
+        super(PrintTest, self).setUp()
+        self.outfile = io.StringIO()
+
+    def test_print_dict(self):
         dict_ = {'k': 'v', 'key': 'value'}
         formatters = {'key': lambda v: 'custom ' + v}
         custom_labels = {'k': 'custom_key'}
 
-        fmt.print_dict(dict_, formatters, custom_labels)
+        fmt.print_dict(dict_, formatters, custom_labels,
+                       outfile=self.outfile)
         self.assertEqual(
             ('+------------+--------------+\n'
              '| Property   | Value        |\n'
@@ -33,11 +37,10 @@ class PrintTest(tutils.TestCase):
              '| custom_key | v            |\n'
              '| key        | custom value |\n'
              '+------------+--------------+\n'),
-            mock_out.getvalue()
+            self.outfile.getvalue()
         )
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
-    def test_print_list(self, mock_out):
+    def test_print_list(self):
         fields = ['thing', 'color', '!artistic_name']
         formatters = {
             '!artistic_name': lambda obj: '{0} {1}'.format(obj.color,
@@ -46,7 +49,8 @@ class PrintTest(tutils.TestCase):
         }
         custom_labels = {'thing': 'name', '!artistic_name': 'artistic name'}
 
-        fmt.print_list(self.objects(), fields, formatters, custom_labels)
+        fmt.print_list(self.objects(), fields, formatters, custom_labels,
+                       outfile=self.outfile)
         self.assertEqual(
             ('+------+-------+-----------------+\n'
              '| name | color | artistic name   |\n'
@@ -54,11 +58,10 @@ class PrintTest(tutils.TestCase):
              '| moon | green | dark green moon |\n'
              '| sun  | blue  | bright blue sun |\n'
              '+------+-------+-----------------+\n'),
-            mock_out.getvalue()
+            self.outfile.getvalue()
         )
 
-    @mock.patch('sys.stdout', new_callable=StringIO)
-    def test_print_list_custom_field_without_formatter(self, mock_out):
+    def test_print_list_custom_field_without_formatter(self):
         fields = ['!artistic_name']
 
         self.assertRaises(KeyError, fmt.print_list, self.objects(), fields)

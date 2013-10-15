@@ -10,6 +10,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
+import sys
+
 import prettytable
 
 
@@ -17,7 +21,8 @@ def pretty_choice_list(l):
     return ', '.join("'%s'" % i for i in l)
 
 
-def print_list(objs, fields, formatters={}, custom_labels={}, sortby=0):
+def print_list(objs, fields, formatters={}, custom_labels={}, sortby=0,
+               outfile=sys.stdout):
     '''Prints a list of objects.
 
     :param objs: list of objects to print
@@ -53,10 +58,10 @@ def print_list(objs, fields, formatters={}, custom_labels={}, sortby=0):
                 else:
                     row.append(getattr(o, field, ''))
         pt.add_row(row)
-    print(pt.get_string(sortby=field_labels[sortby]))
+    print(pt.get_string(sortby=field_labels[sortby]), file=outfile)
 
 
-def print_dict(d, formatters={}, custom_labels={}):
+def print_dict(d, formatters={}, custom_labels={}, outfile=sys.stdout):
     '''Prints a dict.
 
     :param d: dict to print
@@ -77,7 +82,7 @@ def print_dict(d, formatters={}, custom_labels={}):
             pt.add_row([label, formatters[field](d[field])])
         else:
             pt.add_row([label, d[field]])
-    print(pt.get_string(sortby='Property'))
+    print(pt.get_string(sortby='Property'), file=outfile)
 
 
 def attr_proxy(attr, formatter=lambda a: a, allow_undefined=True):
