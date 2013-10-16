@@ -1,0 +1,9 @@
+Verified+2: Jenkins
+Approved+1: lifeless <robertc@robertcollins.net>
+Code-Review+2: lifeless <robertc@robertcollins.net>
+Code-Review+2: Jiri Stransky <jistr@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Wed, 16 Oct 2013 21:56:20 +0000
+Reviewed-on: https://review.openstack.org/45065
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
