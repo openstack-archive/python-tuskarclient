@@ -21,23 +21,18 @@ class ClientTest(tutils.TestCase):
         self.endpoint = "http://fakeurl:1234"
         self.client = client.Client(self.endpoint)
 
+    def assert_manager_present(self, cls_name, obj):
+        self.assertEqual(cls_name,
+                         obj.__class__.__name__)
+        self.assertEqual(self.client, obj.api)
+
     def test_managers_present(self):
-        self.assertEqual("RackManager",
-                         self.client.racks.__class__.__name__)
-        self.assertEqual(self.client, self.client.racks.api)
-
-        self.assertEqual("ResourceClassManager",
-                         self.client.resource_classes.__class__.__name__)
-        self.assertEqual(self.client, self.client.resource_classes.api)
-
-        self.assertEqual("NodeManager",
-                         self.client.nodes.__class__.__name__)
-        self.assertEqual(self.client, self.client.nodes.api)
-
-        self.assertEqual("FlavorManager",
-                         self.client.flavors.__class__.__name__)
-        self.assertEqual(self.client, self.client.flavors.api)
-
-        self.assertEqual("DataCenterManager",
-                         self.client.data_centers.__class__.__name__)
-        self.assertEqual(self.client, self.client.data_centers.api)
+        self.assert_manager_present("RackManager", self.client.racks)
+        self.assert_manager_present("ResourceClassManager",
+                                    self.client.resource_classes)
+        self.assert_manager_present("NodeManager", self.client.nodes)
+        self.assert_manager_present("FlavorManager", self.client.flavors)
+        self.assert_manager_present("DataCenterManager",
+                                    self.client.data_centers)
+        self.assert_manager_present("OvercloudManager",
+                                    self.client.overclouds)
