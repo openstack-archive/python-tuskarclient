@@ -14,6 +14,38 @@ from tuskarclient.tests import utils as tutils
 from tuskarclient.v1 import client
 
 
+class HasManager(object):
+
+    def __init__(self, cls_name, attr_name):
+        self.cls_name = cls_name
+        self.attr_name = attr_name
+
+    def match(self, client):
+        if not hasattr(client, self.attr_name):
+            return ManagerClassMismatch(client, self.cls_name, self.attr_name)
+
+        obj = getattr(client, self.attr_name)
+        if (client != obj.api or self.cls_name != obj.__class__.__name__):
+            return ManagerClassMismatch(client, self.cls_name, self.attr_name)
+        else:
+            return None
+
+
+class ManagerClassMismatch(object):
+
+    def __init__(self, client, cls_name, attr_name):
+        self.client = client
+        self.cls_name = cls_name
+        self.attr_name = attr_name
+
+    def describe(self):
+        return "Class %r mismatch for attribute %r on %r" % (
+            self.cls_name, self.attr_name, self.client)
+
+    def get_details(self):
+        return {}
+
+
 class ClientTest(tutils.TestCase):
 
     def setUp(self):
@@ -22,22 +54,12 @@ class ClientTest(tutils.TestCase):
         self.client = client.Client(self.endpoint)
 
     def test_managers_present(self):
-        self.assertEqual("RackManager",
-                         self.client.racks.__class__.__name__)
-        self.assertEqual(self.client, self.client.racks.api)
-
-        self.assertEqual("ResourceClassManager",
-                         self.client.resource_classes.__class__.__name__)
-        self.assertEqual(self.client, self.client.resource_classes.api)
-
-        self.assertEqual("NodeManager",
-                         self.client.nodes.__class__.__name__)
-        self.assertEqual(self.client, self.client.nodes.api)
-
-        self.assertEqual("FlavorManager",
-                         self.client.flavors.__class__.__name__)
-        self.assertEqual(self.client, self.client.flavors.api)
-
-        self.assertEqual("DataCenterManager",
-                         self.client.data_centers.__class__.__name__)
-        self.assertEqual(self.client, self.client.data_centers.api)
+        self.assertThat(self.client, HasManager('RackManager', 'racks'))
+        self.assertThat(self.client, HasManager('ResourceClassManager',
+                                                'resource_classes'))
+        self.assertThat(self.client, HasManager('NodeManager', 'nodes'))
+        self.assertThat(self.client, HasManager('FlavorManager', 'flavors'))
+        self.assertThat(self.client, HasManager('DataCenterManager',
+                                                'data_centers'))
+        self.assertThat(self.client, HasManager('OvercloudManager',
+                                                'overclouds'))
