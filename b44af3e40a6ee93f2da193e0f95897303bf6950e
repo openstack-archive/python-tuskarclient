@@ -1,0 +1,10 @@
+Verified+2: Jenkins
+Approved+1: Tzu-Mainn Chen <tzumainn@redhat.com>
+Code-Review+2: Tzu-Mainn Chen <tzumainn@redhat.com>
+Approved+1: Imre Farkas <ifarkas@redhat.com>
+Code-Review+2: Jiri Stransky <jistr@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Thu, 17 Oct 2013 15:41:37 +0000
+Reviewed-on: https://review.openstack.org/52414
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
