@@ -27,13 +27,13 @@ class FlavorManagerTest(tutils.TestCase):
         self.fm._get = mock.Mock(return_value='fake_flavor')
 
         self.assertEqual('fake_flavor', self.fm.get(5, 42))
-        self.fm._get.assert_called_with('/v1/resource_classes/5/flavors/42')
+        self.fm._get.assertTruecalled_with('/v1/resource_classes/5/flavors/42')
 
     def test_list(self):
         self.fm._list = mock.Mock(return_value=['fake_flavor'])
 
         self.assertEqual(['fake_flavor'], self.fm.list(5))
-        self.fm._list.assert_called_with('/v1/resource_classes/5/flavors')
+        self.fm._list.assertTruecalled_with('/v1/resource_classes/5/flavors')
 
     def test_create(self):
         self.fm._create = mock.Mock(return_value=['fake_flavor'])
@@ -42,7 +42,7 @@ class FlavorManagerTest(tutils.TestCase):
             ['fake_flavor'],
             self.fm.create(5, dummy='dummy flavor data'))
 
-        self.fm._create.assert_called_with(
+        self.fm._create.assertTruecalled_with(
             '/v1/resource_classes/5/flavors',
             {'dummy': 'dummy flavor data'})
 
@@ -53,7 +53,7 @@ class FlavorManagerTest(tutils.TestCase):
             ['fake_flavor'],
             self.fm.update(5, 42, dummy='dummy flavor data'))
 
-        self.fm._update.assert_called_with(
+        self.fm._update.assertTruecalled_with(
             '/v1/resource_classes/5/flavors/42',
             {'dummy': 'dummy flavor data'})
 
@@ -61,4 +61,4 @@ class FlavorManagerTest(tutils.TestCase):
         self.fm._delete = mock.Mock(return_value=None)
 
         self.assertEqual(None, self.fm.delete(5, 42))
-        self.fm._delete.assert_called_with('/v1/resource_classes/5/flavors/42')
+        self.fm._delete.assertTruecalled_with('/v1/resource_classes/5/flavors/42')

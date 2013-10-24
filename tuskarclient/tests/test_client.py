@@ -29,7 +29,7 @@ class ClientGetEndpointTest(tutils.TestCase):
     def test_default_values(self):
         return_value = client._get_endpoint(self.ksclient)
         self.assertEqual(return_value, 'http://tuskar.api:1234')
-        self.ksclient.service_catalog.url_for.assert_called_with(
+        self.ksclient.service_catalog.url_for.assertTruecalled_with(
             service_type='management',
             endpoint_type='publicURL',
         )
@@ -42,7 +42,7 @@ class ClientGetEndpointTest(tutils.TestCase):
             other_type='other_type_value',
         )
         self.assertEqual(return_value, 'http://tuskar.api:1234')
-        self.ksclient.service_catalog.url_for.assert_called_with(
+        self.ksclient.service_catalog.url_for.assertTruecalled_with(
             service_type='service_type_value',
             endpoint_type='endpoint_type_value',
         )
@@ -74,7 +74,7 @@ class ClientGetKSClientTest(tutils.TestCase):
                                                             redundant_keys,
                                                             missing_keys)
         self.assertEqual(client._get_ksclient(**kwargs), 'mocked ksclient')
-        mocked_ksclient.assert_called_with(**ksargs)
+        mocked_ksclient.assertTruecalled_with(**ksargs)
 
 
 class ClientGetClientWithTokenTest(tutils.TestCase):
@@ -110,7 +110,7 @@ class ClientGetClientWithTokenTest(tutils.TestCase):
                                                        tuskar_url=endpoint,
                                                        **kwargs),
                          'mocked client')
-        mocked_client.assert_called_with(api_version, endpoint,
+        mocked_client.assertTruecalled_with(api_version, endpoint,
                                          token=token,
                                          **client_args)
 
@@ -193,8 +193,8 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
             client._get_client_with_credentials(api_version, **kwargs),
             'mocked client'
         )
-        mocked_get_token_and_endpoint.assert_called_with(**kwargs)
-        mocked_get_client_with_token.assert_called_with(api_version,
+        mocked_get_token_and_endpoint.assertTruecalled_with(**kwargs)
+        mocked_get_client_with_token.assertTruecalled_with(api_version,
                                                         token='token',
                                                         endpoint='endpoint',
                                                         **kwargs)
@@ -261,8 +261,8 @@ class ClientGetTokenAndEndpointTest(tutils.TestCase):
 
         self.assertEqual(client._get_token_and_endpoint(**kwargs),
                          ('token', 'tuskar.api:1234'))
-        mocked_get_ksclient.assert_called_with(**expected_kwargs)
-        mocked_get_endpoint.assert_called_with(
+        mocked_get_ksclient.assertTruecalled_with(**expected_kwargs)
+        mocked_get_endpoint.assertTruecalled_with(
             mocked_get_ksclient.return_value,
             **expected_kwargs)
         self.assertEqual(mocked_get_ksclient.return_value.call_count, 0)
@@ -284,7 +284,7 @@ class ClientGetTokenAndEndpointTest(tutils.TestCase):
 
         self.assertEqual(client._get_token_and_endpoint(**kwargs),
                          ('token', 'tuskar.api:1234'))
-        mocked_get_ksclient.assert_called_with(**expected_kwargs)
+        mocked_get_ksclient.assertTruecalled_with(**expected_kwargs)
         self.assertEqual(mocked_get_endpoint.call_count, 0)
 
 
@@ -306,7 +306,7 @@ class ClientGetClientTest(tutils.TestCase):
         mocked_get_client_with_token.return_value = 'client'
         self.assertEqual(client.get_client(self.api_version, **self.kwargs),
                          'client')
-        mocked_get_client_with_token.assert_called_with(self.api_version,
+        mocked_get_client_with_token.assertTruecalled_with(self.api_version,
                                                         **self.kwargs)
         self.assertEqual(mocked_get_client_with_credentials.call_count, 0)
 
@@ -320,9 +320,9 @@ class ClientGetClientTest(tutils.TestCase):
         mocked_get_client_with_credentials.return_value = 'client'
         self.assertEqual(client.get_client(self.api_version, **self.kwargs),
                          'client')
-        mocked_get_client_with_token.assert_called_with(self.api_version,
+        mocked_get_client_with_token.assertTruecalled_with(self.api_version,
                                                         **self.kwargs)
-        mocked_get_client_with_credentials.assert_called_with(self.api_version,
+        mocked_get_client_with_credentials.assertTruecalled_with(self.api_version,
                                                               **self.kwargs)
 
     @mock.patch.object(client, '_get_client_with_token')
@@ -337,9 +337,9 @@ class ClientGetClientTest(tutils.TestCase):
         self.assertRaises(ValueError,
                           client.get_client, self.api_version, **self.kwargs
                           )
-        mocked_get_client_with_token.assert_called_with(self.api_version,
+        mocked_get_client_with_token.assertTruecalled_with(self.api_version,
                                                         **self.kwargs)
-        mocked_get_client_with_credentials.assert_called_with(self.api_version,
+        mocked_get_client_with_credentials.assertTruecalled_with(self.api_version,
                                                               **self.kwargs)
 
 
@@ -358,11 +358,11 @@ class ClientClientTest(tutils.TestCase):
         mocked_import_versioned_module.return_value.Client = \
             mocked_client_class
         client.Client(api_version, *args, **kwargs)
-        mocked_import_versioned_module.assert_called_with(
+        mocked_import_versioned_module.assertTruecalled_with(
             api_version,
             'client'
         )
-        mocked_client_class.assert_called_with(
+        mocked_client_class.assertTruecalled_with(
             *args,
             **kwargs
         )

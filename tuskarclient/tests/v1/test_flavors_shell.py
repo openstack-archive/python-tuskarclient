@@ -36,9 +36,9 @@ class FlavorsShellListTest(tutils.TestCase):
         args.resource_class_id = 1
 
         flavors_shell.do_flavor_list(tuskar, args)
-        tuskar.flavors.list.assert_called_with(
+        tuskar.flavors.list.assertTruecalled_with(
             mocked_fetch_resource_class.return_value.id)
-        mocked_fmt.print_list.assert_called_with(
+        mocked_fmt.print_list.assertTruecalled_with(
             tuskar.flavors.list.return_value,
             mock.ANY, mock.ANY, mock.ANY
         )
@@ -69,10 +69,10 @@ class FlavorsShellListTest(tutils.TestCase):
         args.resource_class_id = resource_class_id
 
         flavors_shell.do_flavor_show(tuskar, args)
-        mocked_fetch_flavor.assert_called_with(tuskar,
+        mocked_fetch_flavor.assertTruecalled_with(tuskar,
                                                resource_class_id,
                                                args.id)
-        mocked_print_flavor_detail.assert_called_with(
+        mocked_print_flavor_detail.assertTruecalled_with(
             mocked_fetch_flavor.return_value,
         )
 
@@ -96,8 +96,8 @@ class FlavorsShellListTest(tutils.TestCase):
         args.id = flavor_id
 
         flavors_shell.do_flavor_delete(tuskar, args)
-        mocked_fetch_flavor.assert_called_with(tuskar, args.id)
-        tuskar.flavors.delete.assert_called_with(args.id)
+        mocked_fetch_flavor.assertTruecalled_with(tuskar, args.id)
+        tuskar.flavors.delete.assertTruecalled_with(args.id)
 
     def test_create_works_with_name(self):
         self.create_works_with({'resource_class_id': 1,
@@ -141,11 +141,11 @@ class FlavorsShellListTest(tutils.TestCase):
 
         flavors_shell.do_flavor_create(tuskar,
                                        args)
-        tuskar.flavors.create.assert_called_with(
+        tuskar.flavors.create.assertTruecalled_with(
             resource_class_id,
             **expected_params
         )
-        mocked_print_flavor_detail.assert_called_with(
+        mocked_print_flavor_detail.assertTruecalled_with(
             tuskar.flavors.create.return_value
         )
 
@@ -241,15 +241,15 @@ class FlavorsShellListTest(tutils.TestCase):
         args.capacities = capacities
 
         flavors_shell.do_flavor_update(tuskar, args)
-        mocked_fetch_flavor.assert_called_with(tuskar,
+        mocked_fetch_flavor.assertTruecalled_with(tuskar,
                                                resource_class_id,
                                                args.id)
-        tuskar.flavors.update.assert_called_with(
+        tuskar.flavors.update.assertTruecalled_with(
             resource_class_id,
             flavor_id,
             **expected_parameters
         )
-        mocked_print_flavor_detail.assert_called_with(
+        mocked_print_flavor_detail.assertTruecalled_with(
             tuskar.flavors.update.return_value
         )
 
@@ -262,7 +262,7 @@ class FlavorsShellListTest(tutils.TestCase):
 
         return_value = flavors_shell.fetch_flavor(
             tuskar, resource_class_id, flavor_id)
-        tuskar.flavors.get.assert_called_with(resource_class_id,
+        tuskar.flavors.get.assertTruecalled_with(resource_class_id,
                                               flavor_id)
         self.assertEqual(return_value, tuskar.flavors.get.return_value)
 
@@ -280,7 +280,7 @@ class FlavorsShellListTest(tutils.TestCase):
         self.assertRaises(flavors_shell.exc.CommandError,
                           flavors_shell.fetch_flavor,
                           tuskar, resource_class_id, flavor_id)
-        tuskar.flavors.get.assert_called_with(resource_class_id,
+        tuskar.flavors.get.assertTruecalled_with(resource_class_id,
                                               flavor_id)
 
     @mock.patch.object(flavors_shell, 'fmt')
@@ -289,7 +289,7 @@ class FlavorsShellListTest(tutils.TestCase):
         flavor = mock.MagicMock()
 
         flavors_shell.print_flavor_detail(flavor)
-        mocked_fmt.print_dict.assert_called_with(
+        mocked_fmt.print_dict.assertTruecalled_with(
             flavor.to_dict.return_value,
             mock.ANY)
 

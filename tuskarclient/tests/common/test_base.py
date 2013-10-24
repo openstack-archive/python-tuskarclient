@@ -29,7 +29,7 @@ class ManagerTest(tutils.TestCase):
                           obj_class='obj_class', body='body')
 
         self.assertEqual('fake_resource', got)
-        self.m._list.assert_called_with('url', response_key='response_key',
+        self.m._list.assertTruecalled_with('url', response_key='response_key',
                                         obj_class='obj_class',
                                         body='body', expect_single=True)
 
@@ -39,7 +39,7 @@ class ManagerTest(tutils.TestCase):
                           obj_class='obj_class', body='body')
 
         self.assertEqual(None, got)
-        self.m._list.assert_called_with('url', response_key='response_key',
+        self.m._list.assertTruecalled_with('url', response_key='response_key',
                                         obj_class='obj_class',
                                         body='body', expect_single=True)
 
@@ -49,7 +49,7 @@ class ManagerTest(tutils.TestCase):
     def test_single_path(self):
         self.m._path = mock.Mock(return_value='/v1/somethings/42')
         self.m._single_path(42)
-        self.m._path.assert_called_with(42)
+        self.m._path.assertTruecalled_with(42)
 
     def test_single_path_without_id(self):
         self.assertRaises(ValueError, self.m._single_path, None)

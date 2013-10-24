@@ -47,8 +47,8 @@ class RacksShellTest(tutils.TestCase):
         args.id = '5'
 
         racks_shell.do_rack_show(self.tuskar, args, outfile=self.outfile)
-        mock_find_resource.assert_called_with(self.tuskar.racks, '5')
-        mock_print_detail.assert_called_with(mock_find_resource.return_value,
+        mock_find_resource.assertTruecalled_with(self.tuskar.racks, '5')
+        mock_print_detail.assertTruecalled_with(mock_find_resource.return_value,
                                              outfile=self.outfile)
 
     @mock.patch('tuskarclient.common.formatting.print_list')
@@ -57,7 +57,7 @@ class RacksShellTest(tutils.TestCase):
 
         racks_shell.do_rack_list(self.tuskar, args, outfile=self.outfile)
         # testing the other arguments would be just copy-paste
-        mock_print_list.assert_called_with(
+        mock_print_list.assertTruecalled_with(
             self.tuskar.racks.list.return_value, mock.ANY, mock.ANY, mock.ANY,
             outfile=self.outfile
         )
@@ -74,7 +74,7 @@ class RacksShellTest(tutils.TestCase):
         args.resource_class = '1'
 
         racks_shell.do_rack_create(self.tuskar, args, outfile=self.outfile)
-        self.tuskar.racks.create.assert_called_with(
+        self.tuskar.racks.create.assertTruecalled_with(
             name='my_rack',
             subnet='1.2.3.4/20',
             capacities=[
@@ -82,7 +82,7 @@ class RacksShellTest(tutils.TestCase):
                 {'name': 'total_cpu', 'value': '3', 'unit': 'CPU'}],
             slots='2',
             resource_class={'id': '1'})
-        mock_print_detail.assert_called_with(
+        mock_print_detail.assertTruecalled_with(
             self.tuskar.racks.create.return_value, outfile=self.outfile)
 
     @mock.patch('tuskarclient.common.utils.find_resource')
@@ -96,14 +96,14 @@ class RacksShellTest(tutils.TestCase):
         args.resource_class = '1'
 
         racks_shell.do_rack_update(self.tuskar, args, outfile=self.outfile)
-        self.tuskar.racks.update.assert_called_with(
+        self.tuskar.racks.update.assertTruecalled_with(
             '5',
             name='my_rack',
             capacities=[
                 {'name': 'total_memory', 'value': '2048', 'unit': 'MB'},
                 {'name': 'total_cpu', 'value': '3', 'unit': 'CPU'}],
             resource_class={'id': '1'})
-        mock_print_detail.assert_called_with(
+        mock_print_detail.assertTruecalled_with(
             self.tuskar.racks.update.return_value, outfile=self.outfile)
 
     @mock.patch('tuskarclient.common.utils.find_resource')
@@ -113,6 +113,6 @@ class RacksShellTest(tutils.TestCase):
         args.id = '5'
 
         racks_shell.do_rack_delete(self.tuskar, args, outfile=self.outfile)
-        self.tuskar.racks.delete.assert_called_with('5')
+        self.tuskar.racks.delete.assertTruecalled_with('5')
         self.assertEqual('Deleted rack "test_rack".\n',
                          self.outfile.getvalue())

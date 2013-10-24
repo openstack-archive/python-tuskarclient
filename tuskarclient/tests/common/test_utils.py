@@ -29,11 +29,11 @@ class DefineCommandsTest(test_utils.TestCase):
         dummy_module = self.dummy_command_module()
 
         utils.define_commands_from_module(subparsers, dummy_module)
-        subparsers.add_parser.assert_called_with(
+        subparsers.add_parser.assertTruecalled_with(
             'dummy-list', help="Docstring.", description="Docstring.")
-        subparser.add_argument.assert_called_with(
+        subparser.add_argument.assertTruecalled_with(
             '-a', metavar='<NUMBER>', help="Add a number.")
-        subparser.set_defaults.assert_called_with(
+        subparser.set_defaults.assertTruecalled_with(
             func=dummy_module.do_dummy_list)
 
     def dummy_command_module(self):

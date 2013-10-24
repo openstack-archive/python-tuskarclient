@@ -81,7 +81,7 @@ class HttpClientRawRequestTest(tutils.TestCase):
                                 provided_url,
                                 **provided_args)
         self.client._http_request.\
-            assert_called_once_with(expected_url,
+            assertTruecalled_once_with(expected_url,
                                     expected_method,
                                     **expected_args)
 

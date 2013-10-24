@@ -28,5 +28,5 @@ class DataCenterManagerTest(tutils.TestCase):
 
         self.assertEqual({'some': 'data'}, self.dcm.provision_all())
         # FIXME: Tuskar currently requires trailing slash on this URL
-        self.api.json_request.assert_called_with(
+        self.api.json_request.assertTruecalled_with(
             'POST', '/v1/data_centers/')

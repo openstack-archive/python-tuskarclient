@@ -26,10 +26,10 @@ class NodeManagerTest(tutils.TestCase):
         self.nm._get = mock.Mock(return_value='fake_node')
 
         self.assertEqual(self.nm.get(42), 'fake_node')
-        self.nm._get.assert_called_with('/v1/nodes/42')
+        self.nm._get.assertTruecalled_with('/v1/nodes/42')
 
     def test_list(self):
         self.nm._list = mock.Mock(return_value=['fake_node'])
 
         self.assertEqual(self.nm.list(), ['fake_node'])
-        self.nm._list.assert_called_with('/v1/nodes')
+        self.nm._list.assertTruecalled_with('/v1/nodes')

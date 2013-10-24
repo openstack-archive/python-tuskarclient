@@ -26,13 +26,13 @@ class ResourceClassManagerTest(tutils.TestCase):
         self.rcm._get = mock.Mock(return_value='fake_resource_class')
 
         self.assertEqual(self.rcm.get(42), 'fake_resource_class')
-        self.rcm._get.assert_called_with('/v1/resource_classes/42')
+        self.rcm._get.assertTruecalled_with('/v1/resource_classes/42')
 
     def test_list(self):
         self.rcm._list = mock.Mock(return_value=['fake_resource_class'])
 
         self.assertEqual(self.rcm.list(), ['fake_resource_class'])
-        self.rcm._list.assert_called_with('/v1/resource_classes')
+        self.rcm._list.assertTruecalled_with('/v1/resource_classes')
 
     def test_create(self):
         self.rcm._create = mock.Mock(return_value=['fake_resource_class'])
@@ -41,7 +41,7 @@ class ResourceClassManagerTest(tutils.TestCase):
             self.rcm.create(dummy='dummy resource class data'),
             ['fake_resource_class'])
 
-        self.rcm._create.assert_called_with(
+        self.rcm._create.assertTruecalled_with(
             '/v1/resource_classes',
             {'dummy': 'dummy resource class data'})
 
@@ -52,7 +52,7 @@ class ResourceClassManagerTest(tutils.TestCase):
             self.rcm.update(42, dummy='dummy resource class data'),
             ['fake_resource_class'])
 
-        self.rcm._update.assert_called_with(
+        self.rcm._update.assertTruecalled_with(
             '/v1/resource_classes/42',
             {'dummy': 'dummy resource class data'})
 
@@ -60,4 +60,4 @@ class ResourceClassManagerTest(tutils.TestCase):
         self.rcm._delete = mock.Mock(return_value=None)
 
         self.assertEqual(self.rcm.delete(42), None)
-        self.rcm._delete.assert_called_with('/v1/resource_classes/42')
+        self.rcm._delete.assertTruecalled_with('/v1/resource_classes/42')

@@ -27,13 +27,13 @@ class RackManagerTest(tutils.TestCase):
         self.rm._get = mock.Mock(return_value='fake_rack')
 
         self.assertEqual(self.rm.get(42), 'fake_rack')
-        self.rm._get.assert_called_with('/v1/racks/42')
+        self.rm._get.assertTruecalled_with('/v1/racks/42')
 
     def test_list(self):
         self.rm._list = mock.Mock(return_value=['fake_rack'])
 
         self.assertEqual(self.rm.list(), ['fake_rack'])
-        self.rm._list.assert_called_with('/v1/racks')
+        self.rm._list.assertTruecalled_with('/v1/racks')
 
     def test_create(self):
         self.rm._create = mock.Mock(return_value=['fake_rack'])
@@ -42,7 +42,7 @@ class RackManagerTest(tutils.TestCase):
             self.rm.create(dummy='dummy rack data'),
             ['fake_rack'])
 
-        self.rm._create.assert_called_with(
+        self.rm._create.assertTruecalled_with(
             '/v1/racks',
             {'dummy': 'dummy rack data'})
 
@@ -53,7 +53,7 @@ class RackManagerTest(tutils.TestCase):
             self.rm.update(42, dummy='dummy rack data'),
             ['fake_rack'])
 
-        self.rm._update.assert_called_with(
+        self.rm._update.assertTruecalled_with(
             '/v1/racks/42',
             {'dummy': 'dummy rack data'})
 
@@ -61,4 +61,4 @@ class RackManagerTest(tutils.TestCase):
         self.rm._delete = mock.Mock(return_value=None)
 
         self.assertEqual(self.rm.delete(42), None)
-        self.rm._delete.assert_called_with('/v1/racks/42')
+        self.rm._delete.assertTruecalled_with('/v1/racks/42')
