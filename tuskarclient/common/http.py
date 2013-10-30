@@ -121,6 +121,10 @@ class HTTPClient(object):
         LOG.debug('\n'.join(dump))
 
     def _make_connection_url(self, url):
+        # if we got absolute http path, we should do nothing with it
+        if url.startswith('http://') or url.startswith('https://'):
+            return url
+
         (_class, _args, _kwargs) = self.connection_params
         base_url = _args[2]
         return '%s/%s' % (base_url.rstrip('/'), url.lstrip('/'))
@@ -167,7 +171,8 @@ class HTTPClient(object):
             raise exc.from_response(resp)
         elif resp.status in (301, 302, 305):
             # Redirected. Reissue the request to the new location.
-            return self._http_request(resp['location'], method, **kwargs)
+            new_location = resp.getheader('location')
+            return self._http_request(new_location, method, **kwargs)
         elif resp.status == 300:
             raise exc.from_response(resp)
 
