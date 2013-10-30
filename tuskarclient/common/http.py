@@ -121,6 +121,10 @@ class HTTPClient(object):
         LOG.debug('\n'.join(dump))
 
     def _make_connection_url(self, url):
+        # if we got absolute http path, we should do nothing with it
+        if url.startswith('http://'):
+            return url
+
         (_class, _args, _kwargs) = self.connection_params
         base_url = _args[2]
         return '%s/%s' % (base_url.rstrip('/'), url.lstrip('/'))
@@ -162,12 +166,19 @@ class HTTPClient(object):
         else:
             self.log_http_response(resp)
 
-        if 400 <= resp.status < 600:
+        if resp.status == 401:
+            self.auth_token = None
+            # new authentification
+            kwargs['headers']['X-Auth-Token'] = self.auth_token
+            import pdb; pdb.set_trace()
+            raise exc.from_response(resp)
+        elif 400 <= resp.status < 600:
             LOG.warn("Request returned failure status.")
             raise exc.from_response(resp)
         elif resp.status in (301, 302, 305):
             # Redirected. Reissue the request to the new location.
-            return self._http_request(resp['location'], method, **kwargs)
+            new_location = dict(resp.getheaders())['location']
+            return self._http_request(new_location, method, **kwargs)
         elif resp.status == 300:
             raise exc.from_response(resp)
 
