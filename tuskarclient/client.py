@@ -98,7 +98,7 @@ def _get_client_with_credentials(api_version, **kwargs):
 
         # call for a client with token and endpoint
         return _get_client_with_token(api_version, endpoint=endpoint,
-                                      token=token, **kwargs)
+                                      os_auth_token=token, **kwargs)
     # returns None if we do not have needed parameters
     else:
         return None
@@ -121,8 +121,15 @@ def get_client(api_version, **kwargs):
     """
     # Try call for client with token and endpoint.
     # If it returns None, call for client with credentials
-    client = (_get_client_with_token(api_version, **kwargs) or
-              _get_client_with_credentials(api_version, **kwargs))
+    client = _get_client_with_token(api_version, **kwargs)
+    if not client:
+        # NOTE(viktors): If we got no client with token we should suppose,
+        #                that something wront with token. Probably, it
+        #                unvalidated, expired or missing. So we should remove
+        #                old token and get client, using credentials.
+        if 'os_auth_token' in kwargs:
+            del kwargs['os_auth_token']
+        client = _get_client_with_credentials(api_version, **kwargs)
     # If we have a client, return it
     if client:
         return client
