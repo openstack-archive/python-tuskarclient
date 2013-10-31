@@ -194,9 +194,11 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
             'mocked client'
         )
         mocked_get_token_and_endpoint.assert_called_with(**kwargs)
+        del kwargs['tuskar_url']
+        del kwargs['os_auth_token']
         mocked_get_client_with_token.assert_called_with(api_version,
-                                                        token='token',
-                                                        endpoint='endpoint',
+                                                        os_auth_token='token',
+                                                        tuskar_url='endpoint',
                                                         **kwargs)
 
 

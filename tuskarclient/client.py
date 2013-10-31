@@ -94,11 +94,13 @@ def _get_client_with_credentials(api_version, **kwargs):
     # test if we have all needed parameters
     if (username and password and auth_url and
             (tenant_id or tenant_name)):
+        # obtain a user token and API endpoint from keystone
         token, endpoint = _get_token_and_endpoint(**kwargs)
+        kwargs['os_auth_token'] = token
+        kwargs['tuskar_url'] = endpoint
 
         # call for a client with token and endpoint
-        return _get_client_with_token(api_version, endpoint=endpoint,
-                                      token=token, **kwargs)
+        return _get_client_with_token(api_version, **kwargs)
     # returns None if we do not have needed parameters
     else:
         return None
