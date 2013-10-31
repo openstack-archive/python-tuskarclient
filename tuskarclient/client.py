@@ -95,10 +95,12 @@ def _get_client_with_credentials(api_version, **kwargs):
     if (username and password and auth_url and
             (tenant_id or tenant_name)):
         token, endpoint = _get_token_and_endpoint(**kwargs)
+        # add new token and endpoint to kwargs
+        kwargs['os_auth_token'] = token
+        kwargs['tuskar_url'] = endpoint
 
         # call for a client with token and endpoint
-        return _get_client_with_token(api_version, endpoint=endpoint,
-                                      token=token, **kwargs)
+        return _get_client_with_token(api_version, **kwargs)
     # returns None if we do not have needed parameters
     else:
         return None
