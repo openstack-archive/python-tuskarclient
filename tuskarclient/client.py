@@ -98,7 +98,7 @@ def _get_client_with_credentials(api_version, **kwargs):
 
         # call for a client with token and endpoint
         return _get_client_with_token(api_version, endpoint=endpoint,
-                                      token=token, **kwargs)
+                                      os_auth_token=token, **kwargs)
     # returns None if we do not have needed parameters
     else:
         return None

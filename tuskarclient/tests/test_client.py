@@ -140,7 +140,6 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
             'os_tenant_id': 'tenant_id',
             'os_tenant_name': 'tenant_name',
             'os_auth_url': 'auth_url',
-            'os_auth_token': 'auth_token',
             'tuskar_url': 'tuskar_url',
             'os_service_type': 'service_type',
             'os_endpoint_type': 'endpoint_type',
@@ -195,7 +194,7 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
         )
         mocked_get_token_and_endpoint.assert_called_with(**kwargs)
         mocked_get_client_with_token.assert_called_with(api_version,
-                                                        token='token',
+                                                        os_auth_token='token',
                                                         endpoint='endpoint',
                                                         **kwargs)
 
