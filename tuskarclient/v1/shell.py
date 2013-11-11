@@ -11,18 +11,12 @@
 #    under the License.
 
 from tuskarclient.common import utils
-from tuskarclient.v1 import data_centers_shell
 from tuskarclient.v1 import flavors_shell
-from tuskarclient.v1 import nodes_shell
 from tuskarclient.v1 import racks_shell
-from tuskarclient.v1 import resource_classes_shell
 
 COMMAND_MODULES = [
-    data_centers_shell,
     flavors_shell,
-    nodes_shell,
     racks_shell,
-    resource_classes_shell,
 ]
 
 
