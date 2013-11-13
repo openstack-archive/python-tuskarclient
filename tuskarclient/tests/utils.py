@@ -13,6 +13,8 @@
 import copy
 import fixtures
 import os
+import subprocess
+import sys
 
 from six import StringIO
 import testtools
@@ -32,6 +34,21 @@ class TestCase(testtools.TestCase):
                 os.environ.get('OS_STDERR_CAPTURE') == '1'):
             stderr = self.useFixture(fixtures.StringStream('stderr')).stream
             self.useFixture(fixtures.MonkeyPatch('sys.stderr', stderr))
+
+
+class CommandTestCase(TestCase):
+    def setUp(self):
+        super(CommandTestCase, self).setUp()
+        self.tuskar_bin = os.path.join(
+            os.path.dirname(os.path.realpath(sys.executable)),
+            'tuskar')
+
+    def run_tuskar(self, params=''):
+        args = [self.tuskar_bin] + params.split()
+        command = subprocess.Popen(
+            args,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return command.communicate()
 
 
 class FakeAPI(object):
