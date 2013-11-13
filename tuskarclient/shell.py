@@ -39,12 +39,21 @@ class TuskarShell(object):
         nonversioned_parser = self._nonversioned_parser()
         partial_args = nonversioned_parser.parse_known_args(self.raw_args)[0]
         parser = self._parser(partial_args.tuskar_api_version)
+        self.parser = parser
 
-        if partial_args.help or not self.raw_args:
-            parser.print_help()
+        # run self.do_help() if we have no raw_args at all or just -h/--help
+        if not self.raw_args\
+                or self.raw_args == ['-h'] or self.raw_args == ['--help']:
+            self.do_help(partial_args)
             return 0
 
         args = parser.parse_args(self.raw_args)
+
+        # run self.do_help() if we have help subcommand or -h/--help option
+        if args.func == self.do_help or args.help:
+            self.do_help(args)
+            return 0
+
         self._ensure_auth_info(args)
 
         tuskar_client = client.get_client(partial_args.tuskar_api_version,
@@ -89,8 +98,10 @@ class TuskarShell(object):
         '''
         parser = self._nonversioned_parser()
         subparsers = parser.add_subparsers(metavar='<subcommand>')
+        self.subparsers = subparsers
         versioned_shell = utils.import_versioned_module(version, 'shell')
         versioned_shell.enhance_parser(parser, subparsers)
+        utils.define_commands_from_module(subparsers, self)
         return parser
 
     def _nonversioned_parser(self):
@@ -179,6 +190,22 @@ class TuskarShell(object):
                             help=argparse.SUPPRESS)
 
         return parser
+
+    @utils.arg(
+        'command', metavar='<subcommand>', nargs='?',
+        help='Display help for <subcommand>')
+    def do_help(self, args):
+        """Display help about this program or one of its subcommands."""
+        if getattr(args, 'command', None):
+            if args.command in self.subparsers.choices:
+                # print help for subcommand
+                self.subparsers.choices[args.command].print_help()
+            else:
+                raise exc.CommandError("'%s' is not a valid subcommand" %
+                                       args.command)
+        else:
+            # print general help
+            self.parser.print_help()
 
 
 def main():
