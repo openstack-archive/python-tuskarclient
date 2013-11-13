@@ -10,14 +10,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import argparse
 import copy
 import fixtures
+from gettext import gettext as _
 import os
+import sys
 
 from six import StringIO
 import testtools
 
 from tuskarclient.common import http
+from tuskarclient import shell
 
 
 class TestCase(testtools.TestCase):
@@ -32,6 +36,196 @@ class TestCase(testtools.TestCase):
                 os.environ.get('OS_STDERR_CAPTURE') == '1'):
             stderr = self.useFixture(fixtures.StringStream('stderr')).stream
             self.useFixture(fixtures.MonkeyPatch('sys.stderr', stderr))
+
+
+class CommandTestCase(TestCase):
+    def setUp(self):
+        super(CommandTestCase, self).setUp()
+        self.tuskar_bin = os.path.join(
+            os.path.dirname(os.path.realpath(sys.executable)),
+            'tuskar')
+
+    def run_tuskar(self, params=''):
+        args = params.split()
+        out = StringIO()
+        err = StringIO()
+        ArgumentParserForTests.OUT = out
+        ArgumentParserForTests.ERR = err
+        try:
+            shell.TuskarShell(
+                args, argument_parser_class=ArgumentParserForTests).run()
+        except TestExit:
+            pass
+        outvalue = out.getvalue()
+        errvalue = err.getvalue()
+        return [outvalue, errvalue]
+
+
+class CommandOutputMatches(object):
+    def __init__(self,
+                 out_str=None, out_inc=None, out_exc=None,
+                 err_str=None, err_inc=None, err_exc=None,
+                 return_code=None):
+        self.out_str = out_str
+        self.out_inc = out_inc or []
+        self.out_exc = out_exc or []
+        self.err_str = err_str
+        self.err_inc = err_inc or []
+        self.err_exc = err_exc or []
+        self.return_code = return_code
+
+    def match(self, outputs):
+        out, err = outputs[0], outputs[1]
+        errors = []
+
+        # tests for exact output and error output match
+        errors.append(self.match_output(out, self.out_str, type='output'))
+        errors.append(self.match_output(err, self.err_str, type='error'))
+
+        # tests for what output should include and what it should not
+        errors.append(self.match_includes(out, self.out_inc, type='output'))
+        errors.append(self.match_excludes(out, self.out_exc, type='output'))
+
+        # tests for what error output should include and what it should not
+        errors.append(self.match_includes(err, self.err_inc, type='error'))
+        errors.append(self.match_excludes(err, self.err_exc, type='error'))
+
+        # get first non None item or None if none is found and return it
+        return next((item for item in errors if item is not None), None)
+
+    def match_return_code(self, return_code, expected_return_code):
+        if expected_return_code is not None:
+            if expected_return_code != return_code:
+                return CommandOutputReturnCodeMismatch(
+                    return_code, expected_return_code)
+
+    def match_output(self, output, expected_output, type='output'):
+        if expected_output is not None:
+            if expected_output != output:
+                return CommandOutputMismatch(
+                    output, expected_output, type=type)
+
+    def match_includes(self, output, includes, type='output'):
+        for part in includes:
+            if part not in output:
+                return CommandOutputMissingMismatch(output, part, type=type)
+
+    def match_excludes(self, output, excludes, type='error'):
+        for part in excludes:
+            if part in output:
+                return CommandOutputExtraMismatch(output, part, type=type)
+
+
+class CommandOutputMismatch(object):
+    def __init__(self, out, out_str, type='output'):
+        if type == 'error':
+            self.type = 'Error output'
+        else:
+            self.type = 'Output'
+        self.out = out
+        self.out_str = out_str
+
+    def describe(self):
+        return "%s '%s' should be '%s'" % (self.type, self.out, self.out_str)
+
+    def get_details(self):
+        return {}
+
+
+class CommandOutputMissingMismatch(object):
+    def __init__(self, out, out_inc, type='output'):
+        if type == 'error':
+            self.type = 'Error output'
+        else:
+            self.type = 'Output'
+        self.out = out
+        self.out_inc = out_inc
+
+    def describe(self):
+        return "%s '%s' should contain '%s'"\
+            % (self.type, self.out, self.out_inc)
+
+    def get_details(self):
+        return {}
+
+
+class CommandOutputExtraMismatch(object):
+    def __init__(self, out, out_exc, type='output'):
+        if type == 'error':
+            self.type = 'Error output'
+        else:
+            self.type = 'Output'
+        self.out = out
+        self.out_exc = out_exc
+
+    def describe(self):
+        return "%s '%s' should not contain '%s'"\
+            % (self.type, self.out, self.out_exc)
+
+    def get_details(self):
+        return {}
+
+
+class CommandOutputReturnCodeMismatch(object):
+    def __init__(self, ret, ret_exp):
+        self.ret = ret
+        self.ret_exp = ret_exp
+
+    def describe(self):
+        return "Return code is '%s' but expected '%s'"\
+            % (self.ret, self.ret_exp)
+
+    def get_details(self):
+        return {}
+
+
+class TestExit(Exception):
+    pass
+
+
+class ArgumentParserForTests(argparse.ArgumentParser):
+    OUT = sys.stdout
+    ERR = sys.stderr
+
+    def __init__(self, **kwargs):
+        self.out = ArgumentParserForTests.OUT
+        self.err = ArgumentParserForTests.ERR
+
+        super(ArgumentParserForTests, self).__init__(**kwargs)
+
+    def error(self, message):
+        self.print_usage(self.err)
+        self.exit(2, _('%(prog)s: error: %(message)s\n') %
+                  {'prog': self.prog, 'message': message})
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, self.err)
+        raise TestExit
+
+    def print_usage(self, file=None):
+        if file is None:
+            file = self.out
+        self._print_message(self.format_usage(), file)
+
+    def print_help(self, file=None):
+        if file is None:
+            file = self.out
+        self._print_message(self.format_help(), file)
+
+    def print_version(self, file=None):
+        import warnings
+        warnings.warn(
+            'The print_version method is deprecated -- the "version" '
+            'argument to ArgumentParser is no longer supported.',
+            DeprecationWarning)
+        self._print_message(self.format_version(), file)
+
+    def _print_message(self, message, file=None):
+        if message:
+            if file is None:
+                file = self.err
+            file.write(message)
 
 
 class FakeAPI(object):
