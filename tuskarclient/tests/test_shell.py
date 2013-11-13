@@ -24,7 +24,7 @@ class ShellTest(tutils.TestCase):
 
     def setUp(self):
         super(ShellTest, self).setUp()
-        self.s = shell.TuskarShell({})
+        self.s = shell.TuskarShell([])
 
     def empty_args(self):
         args = lambda: None  # i'd use object(), but it can't have attributes
@@ -61,7 +61,7 @@ class ShellTest(tutils.TestCase):
         v1_commands = [
             'rack-list', 'rack-show',
         ]
-        parser = self.s._parser(1)
+        parser, subparsers = self.s._parser(1)
         tuskar_help = parser.format_help()
 
         for arg in map(lambda a: a.replace('_', '-'), self.args_attributes):

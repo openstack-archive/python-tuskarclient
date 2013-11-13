@@ -13,11 +13,13 @@
 import copy
 import fixtures
 import os
+import sys
 
 from six import StringIO
 import testtools
 
 from tuskarclient.common import http
+from tuskarclient import shell
 
 
 class TestCase(testtools.TestCase):
@@ -32,6 +34,152 @@ class TestCase(testtools.TestCase):
                 os.environ.get('OS_STDERR_CAPTURE') == '1'):
             stderr = self.useFixture(fixtures.StringStream('stderr')).stream
             self.useFixture(fixtures.MonkeyPatch('sys.stderr', stderr))
+
+
+class CommandTestCase(TestCase):
+    def setUp(self):
+        super(CommandTestCase, self).setUp()
+        self.tuskar_bin = os.path.join(
+            os.path.dirname(os.path.realpath(sys.executable)),
+            'tuskar')
+        shell.CustomOutErrArgumentParser.ERROR_EXIT_STATUS = 0
+
+    def run_tuskar(self, params=''):
+        args = params.split()
+        out = StringIO()
+        err = StringIO()
+        shell.TuskarShell(args, out=out, err=err).run()
+        return [out.getvalue(), err.getvalue()]
+
+
+class CommandOutput(object):
+    def __init__(self,
+                 out_str=None, out_inc=None, out_exc=None,
+                 err_str=None, err_inc=None, err_exc=None,
+                 return_code=None):
+        if out_inc is None:
+            out_inc = []
+        if out_exc is None:
+            out_exc = []
+        if err_inc is None:
+            err_inc = []
+        if err_exc is None:
+            err_exc = []
+        self.out_str = out_str
+        self.out_inc = out_inc
+        self.out_exc = out_exc
+        self.err_str = err_str
+        self.err_inc = err_inc
+        self.err_exc = err_exc
+        self.return_code = return_code
+
+    def match(self, outputs):
+        #out, err, ret = outputs[0], outputs[1], outputs[2]
+        out, err = outputs[0], outputs[1]
+        errors = []
+
+        # tests for exact output and error output match
+        errors.append(self.match_output(out, self.out_str, type='output'))
+        errors.append(self.match_output(err, self.err_str, type='error'))
+
+        # tests for what output should include and what it should not
+        errors.append(self.match_includes(out, self.out_inc, type='output'))
+        errors.append(self.match_excludes(out, self.out_exc, type='output'))
+
+        # tests for what error output should include and what it should not
+        errors.append(self.match_includes(err, self.err_inc, type='error'))
+        errors.append(self.match_excludes(err, self.err_exc, type='error'))
+
+        # test for return code
+        #errors.append(self.match_return_code(ret, self.return_code))
+
+        # get first non None item or None if none is found and return it
+        return next((item for item in errors if item is not None), None)
+
+    def match_return_code(self, return_code, expected_return_code):
+        if expected_return_code is not None:
+            if expected_return_code != return_code:
+                return CommandOutputReturnCodeMismatch(
+                    return_code, expected_return_code)
+
+    def match_output(self, output, expected_output, type='output'):
+        if expected_output is not None:
+            if expected_output != output:
+                return CommandOutputMismatch(
+                    output, expected_output, type=type)
+
+    def match_includes(self, output, includes, type='output'):
+        for part in includes:
+            if part not in output:
+                return CommandOutputMissingMismatch(output, part, type=type)
+
+    def match_excludes(self, output, excludes, type='error'):
+        for part in excludes:
+            if part in output:
+                return CommandOutputExtraMismatch(output, part, type=type)
+
+
+class CommandOutputMismatch(object):
+    def __init__(self, out, out_str, type='output'):
+        if type == 'error':
+            self.type = 'Error output'
+        else:
+            self.type = 'Output'
+        self.out = out
+        self.out_str = out_str
+
+    def describe(self):
+        return "%s '%s' should be '%s'" % (self.type, self.out, self.out_str)
+
+    def get_details(self):
+        return {}
+
+
+class CommandOutputMissingMismatch(object):
+    def __init__(self, out, out_inc, type='output'):
+        if type == 'error':
+            self.type = 'Error output'
+        else:
+            self.type = 'Output'
+        self.out = out
+        self.out_inc = out_inc
+
+    def describe(self):
+        return "%s '%s' should contain '%s'"\
+            % (self.type, self.out, self.out_inc)
+
+    def get_details(self):
+        return {}
+
+
+class CommandOutputExtraMismatch(object):
+    def __init__(self, out, out_exc, type='output'):
+        if type == 'error':
+            self.type = 'Error output'
+        else:
+            self.type = 'Output'
+        self.out = out
+        self.out_exc = out_exc
+
+    def describe(self):
+        return "%s '%s' should not contain '%s'"\
+            % (self.type, self.out, self.out_exc)
+
+    def get_details(self):
+        return {}
+
+
+class CommandOutputReturnCodeMismatch(object):
+    def __init__(self, ret, ret_exp):
+        self.ret = ret
+        self.ret_exp = ret_exp
+
+    def describe(self):
+        return "Return code is '%s' but expected '%s'"\
+            % (self.ret, self.ret_exp)
+
+    def get_details(self):
+        return {}
 
 
 class FakeAPI(object):
