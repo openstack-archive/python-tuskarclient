@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import print_function
+
 import os
 import sys
 import uuid
@@ -134,5 +136,5 @@ def import_versioned_module(version, submodule=None):
 
 def exit(msg=''):
     if msg:
-        print >> sys.stderr, msg
+        print(msg, file=sys.stderr)
     sys.exit(1)
