@@ -1,0 +1,13 @@
+Verified+2: Jenkins
+Approved+1: lifeless <robertc@robertcollins.net>
+Code-Review+2: lifeless <robertc@robertcollins.net>
+Code-Review+1: Chris Jones <cmsj@tenshu.net>
+Code-Review+1: Dirk Mueller <dirk@dmllr.de>
+Code-Review+1: Roman Podoliaka <rpodolyaka@mirantis.com>
+Code-Review+2: Imre Farkas <ifarkas@redhat.com>
+Code-Review+1: Dougal Matthews <dougal@dougalmatthews.com>
+Submitted-by: Jenkins
+Submitted-at: Mon, 16 Dec 2013 21:33:51 +0000
+Reviewed-on: https://review.openstack.org/62315
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
