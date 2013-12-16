@@ -19,7 +19,7 @@ from tuskarclient.v1 import racks
 from tuskarclient.v1 import resource_classes
 
 
-class Client(http.HTTPClient):
+class Client(object):
     """Client for the Tuskar v1 HTTP API.
 
     :param string endpoint: Endpoint URL for the tuskar service.
@@ -28,10 +28,11 @@ class Client(http.HTTPClient):
     """
 
     def __init__(self, *args, **kwargs):
-        super(Client, self).__init__(*args, **kwargs)
-        self.racks = racks.RackManager(self)
-        self.resource_classes = resource_classes.ResourceClassManager(self)
-        self.flavors = flavors.FlavorManager(self)
-        self.nodes = nodes.NodeManager(self)
-        self.data_centers = data_centers.DataCenterManager(self)
-        self.overclouds = overclouds.OvercloudManager(self)
+        self.http_client = http.HTTPClient(*args, **kwargs)
+        self.racks = racks.RackManager(self.http_client)
+        self.resource_classes = resource_classes.ResourceClassManager(
+            self.http_client)
+        self.flavors = flavors.FlavorManager(self.http_client)
+        self.nodes = nodes.NodeManager(self.http_client)
+        self.data_centers = data_centers.DataCenterManager(self.http_client)
+        self.overclouds = overclouds.OvercloudManager(self.http_client)
