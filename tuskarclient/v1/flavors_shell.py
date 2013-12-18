@@ -84,7 +84,7 @@ def do_flavor_update(tuskar, args):
 
 
 def do_flavor_delete(tuskar, args):
-    fetch_flavor(tuskar, args.id)
+    fetch_flavor(tuskar, args.resource_class_id, args.id)
 
     tuskar.flavors.delete(args.id)
 

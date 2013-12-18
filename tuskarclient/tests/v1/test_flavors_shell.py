@@ -96,7 +96,8 @@ class FlavorsShellListTest(tutils.TestCase):
         args.id = flavor_id
 
         flavors_shell.do_flavor_delete(tuskar, args)
-        mocked_fetch_flavor.assert_called_with(tuskar, args.id)
+        mocked_fetch_flavor.assert_called_with(
+            tuskar, args.resource_class_id, args.id)
         tuskar.flavors.delete.assert_called_with(args.id)
 
     def test_create_works_with_name(self):
