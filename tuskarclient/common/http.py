@@ -38,8 +38,8 @@ if not hasattr(urlparse, 'parse_qsl'):
     import cgi
     urlparse.parse_qsl = cgi.parse_qsl
 
-
-from tuskarclient import exc
+from tuskarclient import exc as tuskar_exc
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 
 LOG = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ class HTTPClient(object):
             _class = httplib.HTTPConnection
         else:
             msg = 'Unsupported scheme: %s' % parts.scheme
-            raise exc.InvalidEndpoint(msg)
+            raise tuskar_exc.InvalidEndpoint(msg)
 
         return (_class, _args, _kwargs)
 
@@ -82,7 +82,7 @@ class HTTPClient(object):
             return _class(*self.connection_params[1][0:2],
                           **self.connection_params[2])
         except httplib.InvalidURL:
-            raise exc.InvalidEndpoint()
+            raise tuskar_exc.InvalidEndpoint()
 
     def log_curl_request(self, method, url, kwargs):
         curl = ['curl -i -X %s' % method]
@@ -149,11 +149,11 @@ class HTTPClient(object):
             conn.request(method, conn_url, **kwargs)
             resp = conn.getresponse()
         except socket.gaierror as e:
-            raise exc.InvalidEndpoint(
+            raise tuskar_exc.InvalidEndpoint(
                 message="Error finding address for %(url)s: %(e)s" % {
                         'url': url, 'e': e})
         except (socket.error, socket.timeout) as e:
-            raise exc.CommunicationError(
+            raise tuskar_exc.CommunicationError(
                 message="Error communicating with %(endpoint)s %(e)s" % {
                     'endpoint': self.endpoint, 'e': e})
 
@@ -169,13 +169,19 @@ class HTTPClient(object):
 
         if 400 <= resp.status < 600:
             LOG.warn("Request returned failure status.")
-            raise exc.from_response(resp)
+            # NOTE(viktors): from_response() method checks for `status_code`
+            # attribute, instead of `status`, so we should add it to response
+            resp.status_code = resp.status
+            raise exc.from_response(resp, method, conn_url)
         elif resp.status in (301, 302, 305):
             # Redirected. Reissue the request to the new location.
             new_location = resp.getheader('location')
             return self._http_request(new_location, method, **kwargs)
         elif resp.status == 300:
-            raise exc.from_response(resp)
+            # TODO(viktors): we should use exception for status 300 from common
+            #                code, when we will have required exception in Oslo
+            #                See patch https://review.openstack.org/#/c/63111/
+            raise tuskar_exc.from_response(resp)
 
         return resp, body_iter
 

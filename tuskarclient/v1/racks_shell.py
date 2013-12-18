@@ -16,7 +16,7 @@ import sys
 
 import tuskarclient.common.formatting as fmt
 from tuskarclient.common import utils
-from tuskarclient import exc
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 
 @utils.arg('id', metavar="<NAME or ID>", help="Name or ID of rack to show.")

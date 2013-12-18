@@ -12,7 +12,7 @@
 
 import tuskarclient.common.formatting as fmt
 from tuskarclient.common import utils
-from tuskarclient import exc
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 
 @utils.arg('resource_class_id', metavar="<RESOURCE CLASS NAME or ID>",
@@ -104,7 +104,7 @@ def print_flavor_detail(flavor):
 def fetch_flavor(tuskar, resource_class_id, flavor_id):
     try:
         flavor = tuskar.flavors.get(resource_class_id, flavor_id)
-    except exc.HTTPNotFound:
+    except exc.NotFound:
         raise exc.CommandError(
             "Flavor not found: %s" % flavor_id)
 
@@ -118,7 +118,7 @@ def fetch_resource_class(tuskar, resource_class_id):
     try:
         resource_class = utils.find_resource(tuskar.resource_classes,
                                              resource_class_id)
-    except exc.HTTPNotFound:
+    except exc.NotFound:
         raise exc.CommandError(
             "Resource Class not found: %s" % resource_class_id)
 

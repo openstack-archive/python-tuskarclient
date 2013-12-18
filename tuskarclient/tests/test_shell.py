@@ -10,7 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tuskarclient import exc
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 from tuskarclient import shell
 import tuskarclient.tests.utils as tutils
 
