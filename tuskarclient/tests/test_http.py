@@ -16,7 +16,8 @@
 from tuskarclient.tests import utils as tutils
 
 from tuskarclient.common import http
-from tuskarclient import exc
+from tuskarclient import exc as tuskar_exc
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 import mock
 
@@ -166,7 +167,8 @@ class HttpClientHTTPRequestTest(tutils.TestCase):
         self.mock_response.status = 300
 
         args = self.call_args.copy()
-        self.assertRaises(exc.HTTPMultipleChoices, self.client._http_request,
+        self.assertRaises(tuskar_exc.HTTPMultipleChoices,
+                          self.client._http_request,
                           args['provided_url'], args['provided_method'],
                           **args['provided_args'])
 
@@ -200,7 +202,7 @@ class HttpClientHTTPRequestTest(tutils.TestCase):
         self.mock_response.status = 500
 
         args = self.call_args.copy()
-        self.assertRaises(exc.HTTPInternalServerError,
+        self.assertRaises(exc.InternalServerError,
                           self.client._http_request,
                           args['provided_url'], args['provided_method'],
                           **args['provided_args'])

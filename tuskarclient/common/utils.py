@@ -19,7 +19,7 @@ import os
 import sys
 import uuid
 
-from tuskarclient import exc
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 from tuskarclient.openstack.common import importutils
 
 

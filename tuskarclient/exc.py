@@ -12,6 +12,8 @@
 
 import sys
 
+from tuskarclient.openstack.common.apiclient import exceptions as exc
+
 
 class BaseException(Exception):
     """An error occurred."""
@@ -22,10 +24,6 @@ class BaseException(Exception):
         return self.message or self.__class__.__doc__
 
 
-class CommandError(BaseException):
-    """Invalid usage of CLI."""
-
-
 class InvalidEndpoint(BaseException):
     """The provided endpoint is invalid."""
 
@@ -34,22 +32,7 @@ class CommunicationError(BaseException):
     """Unable to communicate with server."""
 
 
-class ClientException(Exception):
-    """DEPRECATED."""
-
-
-class HTTPException(ClientException):
-    """Base exception for all HTTP-derived exceptions."""
-    code = 'N/A'
-
-    def __init__(self, details=None):
-        self.details = details
-
-    def __str__(self):
-        return "%s (HTTP %s)" % (self.__class__.__name__, self.code)
-
-
-class HTTPMultipleChoices(HTTPException):
+class HTTPMultipleChoices(exc.HttpError):
     code = 300
 
     def __str__(self):
@@ -57,85 +40,6 @@ class HTTPMultipleChoices(HTTPException):
                         "available.")
         return "%s (HTTP %s) %s" % (self.__class__.__name__, self.code,
                                     self.details)
-
-
-class BadRequest(HTTPException):
-    """DEPRECATED."""
-    code = 400
-
-
-class HTTPBadRequest(BadRequest):
-    pass
-
-
-class Unauthorized(HTTPException):
-    """DEPRECATED."""
-    code = 401
-
-
-class HTTPUnauthorized(Unauthorized):
-    pass
-
-
-class Forbidden(HTTPException):
-    """DEPRECATED."""
-    code = 403
-
-
-class HTTPForbidden(Forbidden):
-    pass
-
-
-class NotFound(HTTPException):
-    """DEPRECATED."""
-    code = 404
-
-
-class HTTPNotFound(NotFound):
-    pass
-
-
-class HTTPMethodNotAllowed(HTTPException):
-    code = 405
-
-
-class Conflict(HTTPException):
-    """DEPRECATED."""
-    code = 409
-
-
-class HTTPConflict(Conflict):
-    pass
-
-
-class OverLimit(HTTPException):
-    """DEPRECATED."""
-    code = 413
-
-
-class HTTPOverLimit(OverLimit):
-    pass
-
-
-class HTTPInternalServerError(HTTPException):
-    code = 500
-
-
-class HTTPNotImplemented(HTTPException):
-    code = 501
-
-
-class HTTPBadGateway(HTTPException):
-    code = 502
-
-
-class ServiceUnavailable(HTTPException):
-    """DEPRECATED."""
-    code = 503
-
-
-class HTTPServiceUnavailable(ServiceUnavailable):
-    pass
 
 
 #NOTE(bcwaldon): Build a mapping of HTTP codes to corresponding exception
@@ -148,16 +52,6 @@ for obj_name in dir(sys.modules[__name__]):
 
 
 def from_response(response):
-    """Return an instance of an HTTPException based on httplib response."""
-    cls = _code_map.get(response.status, HTTPException)
+    """Return an instance of an exc.HttpError based on httplib response."""
+    cls = _code_map.get(response.status, exc.HttpError)
     return cls()
-
-
-class NoTokenLookupException(Exception):
-    """DEPRECATED."""
-    pass
-
-
-class EndpointNotFound(Exception):
-    """DEPRECATED."""
-    pass
