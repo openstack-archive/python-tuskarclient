@@ -91,12 +91,15 @@ class FlavorsShellListTest(tutils.TestCase):
     @mock.patch.object(flavors_shell, 'fetch_flavor')
     def delete_works_with_id(self, parameters, mocked_fetch_flavor):
         flavor_id = parameters.get('flavor_id')
+        resource_class_id = parameters.get('resource_class_id')
         tuskar = mock.MagicMock()
         args = self.empty_args()
         args.id = flavor_id
+        args.resource_class_id = resource_class_id
 
         flavors_shell.do_flavor_delete(tuskar, args)
-        mocked_fetch_flavor.assert_called_with(tuskar, args.id)
+        mocked_fetch_flavor.assert_called_with(
+            tuskar, args.resource_class_id, args.id)
         tuskar.flavors.delete.assert_called_with(args.id)
 
     def test_create_works_with_name(self):

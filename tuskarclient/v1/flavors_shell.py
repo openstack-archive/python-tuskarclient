@@ -83,8 +83,12 @@ def do_flavor_update(tuskar, args):
     print_flavor_detail(flavor)
 
 
+@utils.arg('resource_class_id', metavar="<RESOURCE CLASS NAME or ID>",
+           help="Name or ID of resource class associated to.")
+@utils.arg('id', metavar="<FLAVOR NAME or ID>",
+           help="Name or ID of the flavor to update.")
 def do_flavor_delete(tuskar, args):
-    fetch_flavor(tuskar, args.id)
+    fetch_flavor(tuskar, args.resource_class_id, args.id)
 
     tuskar.flavors.delete(args.id)
 
