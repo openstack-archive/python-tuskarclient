@@ -272,7 +272,7 @@ class FlavorsShellListTest(tutils.TestCase):
         tuskar = mock.MagicMock()
         flavor_id = 1
         resource_class_id = 1
-        e = flavors_shell.exc.HTTPNotFound(
+        e = flavors_shell.exc.NotFound(
             "Flavor not found: 1")
 
         mocked_find_resource.side_effect = e
