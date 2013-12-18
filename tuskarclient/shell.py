@@ -23,7 +23,7 @@ import sys
 
 from tuskarclient import client
 import tuskarclient.common.utils as utils
-from tuskarclient import exc
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 logger = logging.getLogger(__name__)
 

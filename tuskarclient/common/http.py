@@ -38,8 +38,8 @@ if not hasattr(urlparse, 'parse_qsl'):
     import cgi
     urlparse.parse_qsl = cgi.parse_qsl
 
-
-from tuskarclient import exc
+from tuskarclient import exc as tuskar_exc
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 
 LOG = logging.getLogger(__name__)
@@ -169,13 +169,18 @@ class HTTPClient(object):
 
         if 400 <= resp.status < 600:
             LOG.warn("Request returned failure status.")
-            raise exc.from_response(resp)
+            # NOTE(viktors): from_response() method checks for `status_code`
+            # attribute, instead of `status`, so we should add it to response
+            resp.status_code = resp.status
+            raise exc.from_response(resp, method, conn_url)
         elif resp.status in (301, 302, 305):
             # Redirected. Reissue the request to the new location.
             new_location = resp.getheader('location')
             return self._http_request(new_location, method, **kwargs)
         elif resp.status == 300:
-            raise exc.from_response(resp)
+            # NOTE(viktors): we have no exception for status 300 in common
+            # code, so use tuskarclient implementation
+            raise tuskar_exc.from_response(resp)
 
         return resp, body_iter
 
