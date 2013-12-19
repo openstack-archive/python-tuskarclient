@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import copy
 import logging
 import os
 import socket
@@ -38,8 +37,10 @@ if not hasattr(urlparse, 'parse_qsl'):
     import cgi
     urlparse.parse_qsl = cgi.parse_qsl
 
+from tuskarclient import client as tuskarclient
 from tuskarclient import exc as tuskar_exc
-from tuskarclient.openstack.common.apiclient import exceptions as exc
+from tuskarclient.openstack.common.apiclient import auth
+from tuskarclient.openstack.common.apiclient import client
 
 
 LOG = logging.getLogger(__name__)
@@ -47,141 +48,44 @@ USER_AGENT = 'python-tuskarclient'
 CHUNKSIZE = 1024 * 64  # 64kB
 
 
-class HTTPClient(object):
+class TuskarAuthPlugin(auth.BaseAuthPlugin):
+
+    def _do_authenticate(self, http_client):
+        self.ksclient = tuskarclient._get_ksclient(**http_client.kwargs)
+
+    def token_and_endpoint(self, endpoint_type, service_type):
+        token = self.ksclient.auth_token
+        endpoint = tuskarclient._get_endpoint(self.ksclient,
+                                              endpoint_type=endpoint_type,
+                                              service_type=service_type)
+        return token, endpoint
+
+
+class HTTPClient(client.HTTPClient):
 
     def __init__(self, endpoint, **kwargs):
+        self.kwargs = kwargs
         self.endpoint = endpoint
-        self.auth_token = kwargs.get('token')
-        self.connection_params = self.get_connection_params(endpoint, **kwargs)
-
-    @staticmethod
-    def get_connection_params(endpoint, **kwargs):
-        parts = urlparse.urlparse(endpoint)
-
-        _args = (parts.hostname, parts.port, parts.path)
-        _kwargs = {'timeout': (float(kwargs.get('timeout'))
-                               if kwargs.get('timeout') else 600)}
-
-        if parts.scheme == 'https':
-            _class = VerifiedHTTPSConnection
-            _kwargs['ca_file'] = kwargs.get('ca_file', None)
-            _kwargs['cert_file'] = kwargs.get('cert_file', None)
-            _kwargs['key_file'] = kwargs.get('key_file', None)
-            _kwargs['insecure'] = kwargs.get('insecure', False)
-        elif parts.scheme == 'http':
-            _class = httplib.HTTPConnection
-        else:
-            msg = 'Unsupported scheme: %s' % parts.scheme
-            raise tuskar_exc.InvalidEndpoint(msg)
-
-        return (_class, _args, _kwargs)
-
-    def get_connection(self):
-        _class = self.connection_params[0]
-        try:
-            return _class(*self.connection_params[1][0:2],
-                          **self.connection_params[2])
-        except httplib.InvalidURL:
-            raise tuskar_exc.InvalidEndpoint()
-
-    def log_curl_request(self, method, url, kwargs):
-        curl = ['curl -i -X %s' % method]
-
-        for (key, value) in kwargs['headers'].items():
-            header = '-H \'%s: %s\'' % (key, value)
-            curl.append(header)
-
-        conn_params_fmt = [
-            ('key_file', '--key %s'),
-            ('cert_file', '--cert %s'),
-            ('ca_file', '--cacert %s'),
-        ]
-        for (key, fmt) in conn_params_fmt:
-            value = self.connection_params[2].get(key)
-            if value:
-                curl.append(fmt % value)
-
-        if self.connection_params[2].get('insecure'):
-            curl.append('-k')
-
-        if 'body' in kwargs:
-            curl.append('-d \'%s\'' % kwargs['body'])
-
-        curl.append('%s%s' % (self.endpoint, url))
-        LOG.debug(' '.join(curl))
-
-    @staticmethod
-    def log_http_response(resp, body=None):
-        status = (resp.version / 10.0, resp.status, resp.reason)
-        dump = ['\nHTTP/%.1f %s %s' % status]
-        dump.extend(['%s: %s' % (k, v) for k, v in resp.getheaders()])
-        dump.append('')
-        if body:
-            dump.extend([body, ''])
-        LOG.debug('\n'.join(dump))
-
-    def _make_connection_url(self, url):
-        # if we got absolute http path, we should do nothing with it
-        if url.startswith('http://') or url.startswith('https://'):
-            return url
-
-        (_class, _args, _kwargs) = self.connection_params
-        base_url = _args[2]
-        return '%s/%s' % (base_url.rstrip('/'), url.lstrip('/'))
+        self.auth_plugin = TuskarAuthPlugin()
+        super(HTTPClient, self).__init__(self.auth_plugin, **kwargs)
 
     def _http_request(self, url, method, **kwargs):
-        """Send an http request with the specified characteristics.
-
-        Wrapper around http_client.HTTP(S)Connection.request to handle tasks
-        such as setting headers and error handling.
-        """
-        # Copy the kwargs so we can reuse the original in case of redirects
-        kwargs['headers'] = copy.deepcopy(kwargs.get('headers', {}))
-        kwargs['headers'].setdefault('User-Agent', USER_AGENT)
-        if self.auth_token:
-            kwargs['headers'].setdefault('X-Auth-Token', self.auth_token)
-
-        self.log_curl_request(method, url, kwargs)
-        conn = self.get_connection()
-
-        try:
-            conn_url = self._make_connection_url(url)
-            conn.request(method, conn_url, **kwargs)
-            resp = conn.getresponse()
-        except socket.gaierror as e:
-            raise tuskar_exc.InvalidEndpoint(
-                message="Error finding address for %(url)s: %(e)s" % {
-                        'url': url, 'e': e})
-        except (socket.error, socket.timeout) as e:
-            raise tuskar_exc.CommunicationError(
-                message="Error communicating with %(endpoint)s %(e)s" % {
-                    'endpoint': self.endpoint, 'e': e})
+        """Send an http request with the specified characteristics."""
+        url = client.HTTPClient.concat_url(self.endpoint, url)
+        resp = self.request(method, url, **kwargs)
+        self._http_log_resp(resp)
+        if resp.status_code == 300:
+            # TODO(viktors): we should use exception for status 300 from common
+            #                code, when we will have required exception in Oslo
+            #                See patch https://review.openstack.org/#/c/63111/
+            raise tuskar_exc.from_response(resp)
 
         body_iter = ResponseBodyIterator(resp)
 
         # Read body into string if it isn't obviously image data
         if resp.getheader('content-type', None) != 'application/octet-stream':
             body_str = ''.join([chunk for chunk in body_iter])
-            self.log_http_response(resp, body_str)
             body_iter = StringIO(body_str)
-        else:
-            self.log_http_response(resp)
-
-        if 400 <= resp.status < 600:
-            LOG.warn("Request returned failure status.")
-            # NOTE(viktors): from_response() method checks for `status_code`
-            # attribute, instead of `status`, so we should add it to response
-            resp.status_code = resp.status
-            raise exc.from_response(resp, method, conn_url)
-        elif resp.status in (301, 302, 305):
-            # Redirected. Reissue the request to the new location.
-            new_location = resp.getheader('location')
-            return self._http_request(new_location, method, **kwargs)
-        elif resp.status == 300:
-            # TODO(viktors): we should use exception for status 300 from common
-            #                code, when we will have required exception in Oslo
-            #                See patch https://review.openstack.org/#/c/63111/
-            raise tuskar_exc.from_response(resp)
 
         return resp, body_iter
 
