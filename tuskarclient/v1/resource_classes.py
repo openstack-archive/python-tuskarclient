@@ -18,7 +18,7 @@ class ResourceClass(base.Resource):
         return "<ResourceClass {0}>".format(self._info)
 
 
-class ResourceClassManager(base.Manager):
+class ResourceClassManager(base.TuskarManager):
     resource_class = ResourceClass
 
     @staticmethod

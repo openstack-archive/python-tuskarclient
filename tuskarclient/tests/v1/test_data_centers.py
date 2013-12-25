@@ -20,13 +20,13 @@ class DataCenterManagerTest(tutils.TestCase):
 
     def setUp(self):
         super(DataCenterManagerTest, self).setUp()
-        self.api = mock.Mock()
-        self.dcm = data_centers.DataCenterManager(self.api)
+        self.client = mock.Mock()
+        self.dcm = data_centers.DataCenterManager(self.client)
 
     def test_provision_all(self):
-        self.api.json_request = mock.Mock(return_value={'some': 'data'})
+        self.client.json_request = mock.Mock(return_value={'some': 'data'})
 
         self.assertEqual({'some': 'data'}, self.dcm.provision_all())
         # FIXME: Tuskar currently requires trailing slash on this URL
-        self.api.json_request.assert_called_with(
+        self.client.json_request.assert_called_with(
             'POST', '/v1/data_centers/')

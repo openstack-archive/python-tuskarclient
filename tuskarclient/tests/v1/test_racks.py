@@ -20,8 +20,8 @@ class RackManagerTest(tutils.TestCase):
 
     def setUp(self):
         super(RackManagerTest, self).setUp()
-        self.api = mock.Mock()
-        self.rm = racks.RackManager(self.api)
+        self.client = mock.Mock()
+        self.rm = racks.RackManager(self.client)
 
     def test_get(self):
         self.rm._get = mock.Mock(return_value='fake_rack')

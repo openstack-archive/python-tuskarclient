@@ -19,8 +19,8 @@ from tuskarclient.v1 import nodes
 class NodeManagerTest(tutils.TestCase):
     def setUp(self):
         super(NodeManagerTest, self).setUp()
-        self.api = mock.Mock()
-        self.nm = nodes.NodeManager(self.api)
+        self.client = mock.Mock()
+        self.nm = nodes.NodeManager(self.client)
 
     def test_get(self):
         self.nm._get = mock.Mock(return_value='fake_node')

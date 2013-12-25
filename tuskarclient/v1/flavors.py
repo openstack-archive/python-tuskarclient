@@ -19,7 +19,7 @@ class Flavor(base.Resource):
         return "<Flavor {0}>".format(self._info)
 
 
-class FlavorManager(base.Manager):
+class FlavorManager(base.TuskarManager):
 
     resource_class = Flavor
 

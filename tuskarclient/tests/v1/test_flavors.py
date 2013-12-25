@@ -20,8 +20,8 @@ class FlavorManagerTest(tutils.TestCase):
 
     def setUp(self):
         super(FlavorManagerTest, self).setUp()
-        self.api = mock.Mock()
-        self.fm = flavors.FlavorManager(self.api)
+        self.client = mock.Mock()
+        self.fm = flavors.FlavorManager(self.client)
 
     def test_get(self):
         self.fm._get = mock.Mock(return_value='fake_flavor')

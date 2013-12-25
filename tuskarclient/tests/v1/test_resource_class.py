@@ -19,8 +19,8 @@ from tuskarclient.v1 import resource_classes
 class ResourceClassManagerTest(tutils.TestCase):
     def setUp(self):
         super(ResourceClassManagerTest, self).setUp()
-        self.api = mock.Mock()
-        self.rcm = resource_classes.ResourceClassManager(self.api)
+        self.client = mock.Mock()
+        self.rcm = resource_classes.ResourceClassManager(self.client)
 
     def test_get(self):
         self.rcm._get = mock.Mock(return_value='fake_resource_class')

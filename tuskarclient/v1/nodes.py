@@ -19,7 +19,7 @@ class Node(base.Resource):
         return "<Node {0}>".format(self._info)
 
 
-class NodeManager(base.Manager):
+class NodeManager(base.TuskarManager):
 
     resource_class = Node
 

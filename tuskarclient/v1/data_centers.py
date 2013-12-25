@@ -13,7 +13,7 @@
 from tuskarclient.common import base
 
 
-class DataCenterManager(base.Manager):
+class DataCenterManager(base.TuskarManager):
 
     @staticmethod
     def _path(id=None):
@@ -21,4 +21,4 @@ class DataCenterManager(base.Manager):
 
     def provision_all(self):
         # FIXME: Tuskar currently requires trailing slash on this URL
-        return self.api.json_request('POST', self._path() + '/')
+        return self.client.json_request('POST', self._path() + '/')

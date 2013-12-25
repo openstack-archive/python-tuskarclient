@@ -19,7 +19,7 @@ class Overcloud(base.Resource):
         return "<Overcloud {0}>".format(self._info)
 
 
-class OvercloudManager(base.Manager):
+class OvercloudManager(base.TuskarManager):
 
     resource_class = Overcloud
 

@@ -19,7 +19,7 @@ class Rack(base.Resource):
         return "<Rack {0}>".format(self._info)
 
 
-class RackManager(base.Manager):
+class RackManager(base.TuskarManager):
 
     resource_class = Rack
 

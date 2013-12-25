@@ -20,8 +20,8 @@ class OvercloudManagerTest(tutils.TestCase):
 
     def setUp(self):
         super(OvercloudManagerTest, self).setUp()
-        self.api = mock.Mock()
-        self.om = overclouds.OvercloudManager(self.api)
+        self.client = mock.Mock()
+        self.om = overclouds.OvercloudManager(self.client)
 
     def test_get(self):
         self.om._get = mock.Mock(return_value='fake_overcloud')

@@ -20,8 +20,8 @@ class ManagerTest(tutils.TestCase):
 
     def setUp(self):
         super(ManagerTest, self).setUp()
-        self.api = mock.Mock()
-        self.m = base.Manager(self.api)
+        self.client = mock.Mock()
+        self.m = base.TuskarManager(self.client)
 
     def test_get(self):
         self.m._list = mock.Mock(return_value=['fake_resource'])
