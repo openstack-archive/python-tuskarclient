@@ -141,9 +141,11 @@ class HttpClientHTTPRequestTest(tutils.TestCase):
 
         self.mock_response = mock.MagicMock()
         self.mock_response.read = lambda *args: None
+        self.mock_response.version = 42.0
 
         self.mock_response_2 = mock.MagicMock()
         self.mock_response_2.read = lambda *args: None
+        self.mock_response_2.version = 42.0
 
         self.mock_request = mock.MagicMock()
 
