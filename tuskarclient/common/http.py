@@ -42,6 +42,8 @@ from tuskarclient import exc as tuskar_exc
 from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 
+logging.basicConfig()
+
 LOG = logging.getLogger(__name__)
 USER_AGENT = 'python-tuskarclient'
 CHUNKSIZE = 1024 * 64  # 64kB
