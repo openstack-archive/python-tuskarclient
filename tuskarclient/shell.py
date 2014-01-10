@@ -25,6 +25,7 @@ from tuskarclient import client
 import tuskarclient.common.utils as utils
 from tuskarclient.openstack.common.apiclient import exceptions as exc
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
@@ -182,7 +183,6 @@ class TuskarShell(object):
 
 
 def main():
-    logger.addHandler(logging.StreamHandler(sys.stderr))
     try:
         TuskarShell(sys.argv[1:]).run()
     except exc.CommandError as e:
