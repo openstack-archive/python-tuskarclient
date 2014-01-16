@@ -2,9 +2,9 @@ pbr>=0.5.21,<1.0
 
 argparse
 Babel>=1.3
-iso8601>=0.1.4
+iso8601>=0.1.8
 prettytable>=0.6,<0.8
-python-keystoneclient>=0.2,<0.4
-requests>=0.8
-simplejson
+python-keystoneclient>=0.4.1
+requests>=1.1
+simplejson>=2.0.9
 six>=1.4.1
