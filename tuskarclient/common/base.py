@@ -1,17 +1,17 @@
 # Copyright 2012 OpenStack LLC.
 # All Rights Reserved.
 #
-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
-#    not use this file except in compliance with the License. You may obtain
-#    a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
 #
-#         http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#    License for the specific language governing permissions and limitations
-#    under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
 
 """
 Base utilities to build API operation managers and objects on top of.
@@ -56,16 +56,26 @@ class Manager(object):
         path is returned. Otherwise the collection path is returned.
 
         :param id: id of the resource (optional)
+        :type id: string
+
+        :return: A string representing the API endpoint
+        :rtype: string
         """
         raise NotImplementedError("_path method not implemented.")
 
     def _single_path(self, id):
-        """This is like the _path method, but it asserts that the rack_id
+        """This is like the _path method, but it asserts that the id
         parameter is not None. This is useful e.g. when you want to make sure
         that you can't issue a DELETE request on a collection URL.
+
+        :param id: id of the resource (not optional)
+        :type id: string
+
+        :return: A string representing the API endpoint
+        :rtype: string
         """
         if not id:
-            raise ValueError("{0} id for deletion must not be null."
+            raise ValueError("{0} id is required."
                              .format(self.resource_class))
         return self._path(id)
 

@@ -84,8 +84,8 @@ class HookableMixin(object):
 class BaseManager(HookableMixin):
     """Basic manager type providing common operations.
 
-    Managers interact with a particular type of API (servers, flavors, images,
-    etc.) and provide CRUD operations for them.
+    Managers interact with a particular type of API (servers, images, etc.) and
+    provide CRUD operations for them.
     """
     resource_class = None
 
