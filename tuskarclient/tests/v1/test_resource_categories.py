@@ -13,26 +13,26 @@
 import mock
 
 import tuskarclient.tests.utils as tutils
-from tuskarclient.v1 import resource_classes
+from tuskarclient.v1 import resource_categories
 
 
-class ResourceClassManagerTest(tutils.TestCase):
+class ResourceCategoryManagerTest(tutils.TestCase):
     def setUp(self):
-        super(ResourceClassManagerTest, self).setUp()
+        super(ResourceCategoryManagerTest, self).setUp()
         self.api = mock.Mock()
-        self.rcm = resource_classes.ResourceClassManager(self.api)
+        self.rcm = resource_categories.ResourceCategoryManager(self.api)
 
     def test_get(self):
         self.rcm._get = mock.Mock(return_value='fake_resource_class')
 
         self.assertEqual(self.rcm.get(42), 'fake_resource_class')
-        self.rcm._get.assert_called_with('/v1/resource_classes/42')
+        self.rcm._get.assert_called_with('/v1/resource_category/42')
 
     def test_list(self):
         self.rcm._list = mock.Mock(return_value=['fake_resource_class'])
 
         self.assertEqual(self.rcm.list(), ['fake_resource_class'])
-        self.rcm._list.assert_called_with('/v1/resource_classes')
+        self.rcm._list.assert_called_with('/v1/resource_category')
 
     def test_create(self):
         self.rcm._create = mock.Mock(return_value=['fake_resource_class'])
@@ -42,7 +42,7 @@ class ResourceClassManagerTest(tutils.TestCase):
             ['fake_resource_class'])
 
         self.rcm._create.assert_called_with(
-            '/v1/resource_classes',
+            '/v1/resource_category',
             {'dummy': 'dummy resource class data'})
 
     def test_update(self):
@@ -53,11 +53,11 @@ class ResourceClassManagerTest(tutils.TestCase):
             ['fake_resource_class'])
 
         self.rcm._update.assert_called_with(
-            '/v1/resource_classes/42',
+            '/v1/resource_category/42',
             {'dummy': 'dummy resource class data'})
 
     def test_delete(self):
         self.rcm._delete = mock.Mock(return_value=None)
 
         self.assertEqual(self.rcm.delete(42), None)
-        self.rcm._delete.assert_called_with('/v1/resource_classes/42')
+        self.rcm._delete.assert_called_with('/v1/resource_category/42')
