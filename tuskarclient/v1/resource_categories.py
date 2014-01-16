@@ -13,29 +13,33 @@
 from tuskarclient.common import base
 
 
-class ResourceClass(base.Resource):
-    def __repr__(self):
-        return "<ResourceClass {0}>".format(self._info)
+class ResourceCategory(base.Resource):
+    pass
 
 
-class ResourceClassManager(base.Manager):
-    resource_class = ResourceClass
+class ResourceCategoryManager(base.Manager):
+
+    resource_class = ResourceCategory
 
     @staticmethod
-    def _path(id=None):
-        return '/v1/resource_classes/%s' % id if id else '/v1/resource_classes'
+    def _path(resource_category_id=None):
+
+        if resource_category_id:
+            return '/v1/resource_category/%s' % resource_category_id
+
+        return '/v1/resource_category'
 
     def list(self):
         return self._list(self._path())
 
-    def get(self, id):
-        return self._get(self._single_path(id))
+    def get(self, resource_category_id):
+        return self._get(self._single_path(resource_category_id))
 
     def create(self, **kwargs):
         return self._create(self._path(), kwargs)
 
-    def update(self, id, **kwargs):
-        return self._update(self._single_path(id), kwargs)
+    def update(self, resource_category_id, **kwargs):
+        return self._update(self._single_path(resource_category_id), kwargs)
 
-    def delete(self, id):
-        return self._delete(self._single_path(id))
+    def delete(self, resource_category_id):
+        return self._delete(self._single_path(resource_category_id))
