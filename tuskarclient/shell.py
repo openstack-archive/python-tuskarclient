@@ -11,7 +11,7 @@
 #    under the License.
 
 """
-Command-line interface to the Heat API.
+Command-line interface to the Tuskar API.
 """
 
 from __future__ import print_function
