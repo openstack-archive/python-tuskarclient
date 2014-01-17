@@ -1,0 +1,10 @@
+Verified+2: Jenkins
+Approved+1: Jan Provaznik <jan.provaznik@gmail.com>
+Code-Review+2: Jan Provaznik <jan.provaznik@gmail.com>
+Code-Review+2: Jiri Stransky <jistr@redhat.com>
+Code-Review+1: Dougal Matthews <dougal@dougalmatthews.com>
+Submitted-by: Jenkins
+Submitted-at: Fri, 17 Jan 2014 13:08:26 +0000
+Reviewed-on: https://review.openstack.org/67128
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
