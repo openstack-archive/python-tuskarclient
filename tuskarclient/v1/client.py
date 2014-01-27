@@ -11,12 +11,6 @@
 #    under the License.
 
 from tuskarclient.common import http
-from tuskarclient.v1 import data_centers
-from tuskarclient.v1 import flavors
-from tuskarclient.v1 import nodes
-from tuskarclient.v1 import overclouds
-from tuskarclient.v1 import racks
-from tuskarclient.v1 import resource_classes
 
 
 class Client(object):
@@ -29,10 +23,3 @@ class Client(object):
 
     def __init__(self, *args, **kwargs):
         self.http_client = http.HTTPClient(*args, **kwargs)
-        self.racks = racks.RackManager(self.http_client)
-        self.resource_classes = resource_classes.ResourceClassManager(
-            self.http_client)
-        self.flavors = flavors.FlavorManager(self.http_client)
-        self.nodes = nodes.NodeManager(self.http_client)
-        self.data_centers = data_centers.DataCenterManager(self.http_client)
-        self.overclouds = overclouds.OvercloudManager(self.http_client)

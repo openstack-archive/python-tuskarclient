@@ -59,7 +59,6 @@ class ShellTest(tutils.TestCase):
 
     def test_parser_v1(self):
         v1_commands = [
-            'rack-list', 'rack-show',
         ]
         parser, subparsers = self.s._parser(1)
         tuskar_help = parser.format_help()
