@@ -55,5 +55,7 @@ class ClientTest(tutils.TestCase):
         self.client = client.Client(self.endpoint)
 
     def test_managers_present(self):
+        self.assertThat(self.client, HasManager('OvercloudRoleManager',
+                                                'overcloud_roles'))
         self.assertThat(self.client, HasManager('OvercloudManager',
                                                 'overclouds'))
