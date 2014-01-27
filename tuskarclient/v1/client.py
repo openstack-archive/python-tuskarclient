@@ -12,6 +12,7 @@
 
 from tuskarclient.common import http
 from tuskarclient.v1 import overclouds
+from tuskarclient.v1 import resource_categories
 
 
 class Client(object):
@@ -24,4 +25,6 @@ class Client(object):
 
     def __init__(self, *args, **kwargs):
         self.http_client = http.HTTPClient(*args, **kwargs)
+        self.resource_categories = resource_categories.ResourceCategoryManager(
+            self.http_client)
         self.overclouds = overclouds.OvercloudManager(self.http_client)
