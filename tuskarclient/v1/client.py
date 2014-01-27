@@ -11,6 +11,7 @@
 #    under the License.
 
 from tuskarclient.common import http
+from tuskarclient.v1 import overclouds
 
 
 class Client(object):
@@ -23,3 +24,4 @@ class Client(object):
 
     def __init__(self, *args, **kwargs):
         self.http_client = http.HTTPClient(*args, **kwargs)
+        self.overclouds = overclouds.OvercloudManager(self.http_client)

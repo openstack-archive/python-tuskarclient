@@ -56,16 +56,26 @@ class Manager(object):
         path is returned. Otherwise the collection path is returned.
 
         :param id: id of the resource (optional)
+        :type id: string
+
+        :return: A string representing the API endpoint
+        :rtype: string
         """
         raise NotImplementedError("_path method not implemented.")
 
     def _single_path(self, id):
-        """This is like the _path method, but it asserts that the rack_id
+        """This is like the _path method, but it asserts that the id
         parameter is not None. This is useful e.g. when you want to make sure
         that you can't issue a DELETE request on a collection URL.
+
+        :param id: id of the resource (not optional)
+        :type id: string
+
+        :return: A string representing the API endpoint
+        :rtype: string
         """
         if not id:
-            raise ValueError("{0} id for deletion must not be null."
+            raise ValueError("{0} id is required."
                              .format(self.resource_class))
         return self._path(id)
 
