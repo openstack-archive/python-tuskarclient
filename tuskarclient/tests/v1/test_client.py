@@ -55,5 +55,5 @@ class ClientTest(tutils.TestCase):
         self.client = client.Client(self.endpoint)
 
     def test_managers_present(self):
-        #TODO(dmatthew): re-add tests for the managers with the new versions
-        pass
+        self.assertThat(self.client, HasManager('OvercloudManager',
+                                                'overclouds'))
