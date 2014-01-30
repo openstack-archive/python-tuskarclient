@@ -59,6 +59,224 @@ tests = [
             'error: unrecognized arguments: -r',
         ],
         'return_code': 2,
+    },
+    # Overcloud Role - Create
+    {
+        'commands': ['overcloud-role-create -h',
+                     'overcloud-role-create --help',
+                     'help overcloud-role-create'],
+        'test_identifiers': ['test_overcloud_role_create_dash_h',
+                             'test_overcloud_role_create_dashdash_help',
+                             'test_help_overcloud_role_create'],
+        'out_includes': [
+            '-d <DESCRIPTION>, --description <DESCRIPTION>',
+            '-i <IMAGE NAME>, --image-name <IMAGE NAME>',
+            '-f <FLAVOR ID>, --flavor-id <FLAVOR ID>'
+        ],
+        'out_excludes': [
+            '-i <ID>, --id <ID>',
+            'overcloud-role-list',
+            'overcloud-create',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud Role - Delete
+    {
+        'commands': ['overcloud-role-delete -h',
+                     'overcloud-role-delete --help',
+                     'help overcloud-role-delete'],
+        'test_identifiers': ['test_overcloud_role_delete_dash_h',
+                             'test_overcloud_role_delete_dashdash_help',
+                             'test_help_overcloud_role_delete'],
+        'out_includes': [
+            '<ID>        ID of Overcloud Role to show.',
+        ],
+        'out_excludes': [
+            'overcloud-role-list',
+            'overcloud-delete',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+            '-d <DESCRIPTION>, --description <DESCRIPTION>',
+            '-i <IMAGE NAME>, --image-name <IMAGE NAME>',
+            '-f <FLAVOR ID>, --flavor-id <FLAVOR ID>'
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud Role - List
+    {
+        'commands': ['overcloud-role-list -h',
+                     'overcloud-role-list --help',
+                     'help overcloud-role-list'],
+        'test_identifiers': ['test_overcloud_role_list_dash_h',
+                             'test_overcloud_role_list_dashdash_help',
+                             'test_help_overcloud_role_list'],
+        'out_includes': [
+        ],
+        'out_excludes': [
+            'overcloud-role-delete',
+            'overcloud-list',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+            '-n <NAME>, --name <NAME>',
+            '-d <DESCRIPTION>, --description <DESCRIPTION>',
+            '-i <IMAGE NAME>, --image-name <IMAGE NAME>',
+            '-f <FLAVOR ID>, --flavor-id <FLAVOR ID>'
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud Role - Show
+    {
+        'commands': ['overcloud-role-show -h',
+                     'overcloud-role-show --help',
+                     'help overcloud-role-show'],
+        'test_identifiers': ['test_overcloud_role_show_dash_h',
+                             'test_overcloud_role_show_dashdash_help',
+                             'test_help_overcloud_role_show'],
+        'out_includes': [
+            '<ID>        ID of Overcloud Role to show.',
+        ],
+        'out_excludes': [
+            'overcloud-role-list',
+            'overcloud-show',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud Role - Update
+    {
+        'commands': ['overcloud-role-update -h',
+                     'overcloud-role-update --help',
+                     'help overcloud-role-update'],
+        'test_identifiers': ['test_overcloud_role_update_dash_h',
+                             'test_overcloud_role_update_dashdash_help',
+                             'test_help_overcloud_role_update'],
+        'out_includes': [
+            '-n <NAME>, --name <NAME>',
+            '-d <DESCRIPTION>, --description <DESCRIPTION>',
+            '-i <IMAGE NAME>, --image-name <IMAGE NAME>',
+            '-f <FLAVOR ID>, --flavor-id <FLAVOR ID>'
+        ],
+        'out_excludes': [
+            'overcloud-role-list',
+            'overcloud-update',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud - Create
+    {
+        'commands': ['overcloud-create -h',
+                     'overcloud-create --help',
+                     'help overcloud-create'],
+        'test_identifiers': ['test_overcloud_create_dash_h',
+                             'test_overcloud_create_dashdash_help',
+                             'test_help_overcloud_create'],
+        'out_includes': [
+        ],
+        'out_excludes': [
+            '-i <ID>, --id <ID>',
+            'overcloud-list',
+            'overcloud-role-create',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud - Delete
+    {
+        'commands': ['overcloud-delete -h',
+                     'overcloud-delete --help',
+                     'help overcloud-delete'],
+        'test_identifiers': ['test_overcloud_delete_dash_h',
+                             'test_overcloud_delete_dashdash_help',
+                             'test_help_overcloud_delete'],
+        'out_includes': [
+            '<ID>        ID of Overcloud to show.',
+        ],
+        'out_excludes': [
+            'overcloud-list',
+            'overcloud-role-delete',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+            '-d <DESCRIPTION>, --description <DESCRIPTION>',
+            '-i <IMAGE NAME>, --image-name <IMAGE NAME>',
+            '-f <FLAVOR ID>, --flavor-id <FLAVOR ID>'
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud - List
+    {
+        'commands': ['overcloud-list -h',
+                     'overcloud-list --help',
+                     'help overcloud-list'],
+        'test_identifiers': ['test_overcloud_list_dash_h',
+                             'test_overcloud_list_dashdash_help',
+                             'test_help_overcloud_list'],
+        'out_includes': [
+        ],
+        'out_excludes': [
+            'overcloud-delete',
+            'overcloud-role-list',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+            '-n <NAME>, --name <NAME>',
+            '-d <DESCRIPTION>, --description <DESCRIPTION>',
+            '-i <IMAGE NAME>, --image-name <IMAGE NAME>',
+            '-f <FLAVOR ID>, --flavor-id <FLAVOR ID>'
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud - Show
+    {
+        'commands': ['overcloud-show -h',
+                     'overcloud-show --help',
+                     'help overcloud-show'],
+        'test_identifiers': ['test_overcloud_show_dash_h',
+                             'test_overcloud_show_dashdash_help',
+                             'test_help_overcloud_show'],
+        'out_includes': [
+            '<ID>        ID of Overcloud to show.',
+        ],
+        'out_excludes': [
+            'overcloud-list',
+            'overcloud-role-show',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+        ],
+        'err_string': '',
+        'return_code': 0,
+    },
+    # Overcloud - Update
+    {
+        'commands': ['overcloud-update -h',
+                     'overcloud-update --help',
+                     'help overcloud-update'],
+        'test_identifiers': ['test_overcloud_update_dash_h',
+                             'test_overcloud_update_dashdash_help',
+                             'test_help_overcloud_update'],
+        'out_includes': [
+            '-n <NAME>, --name <NAME>'
+        ],
+        'out_excludes': [
+            'overcloud-list',
+            'overcloud-role-update',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+        ],
+        'err_string': '',
+        'return_code': 0,
     }
 ]
 
@@ -77,16 +295,33 @@ def create_test_method(command, expected_values):
             ))
     return test_command_method
 
-# creates a method for each command found in tests
-# to let developer see what test is failing in test results,
-# ie: ... HelpCommandTest.test_help_flavor_list
-# this way dev can "just search" for "test_help_flavor_list"
-# and he will find actual data used in failing test
+# Create a method for each command found in the above tests. The tests will be
+# constructed on the HelpCommandTest class with the name given in the test
+# identifiers. This way the developer can search the above structure for the
+# identifier and find the actual data used in the test.
+duplicated = []
+
 for test in tests:
     commands = test.get('commands')
     for index, command in enumerate(commands):
         test_command_method = create_test_method(command, test)
         test_command_method.__name__ = test.get('test_identifiers')[index]
+
+        if hasattr(HelpCommandTest, test_command_method.__name__):
+            duplicated.append(test_command_method.__name__)
+
         setattr(HelpCommandTest,
                 test_command_method.__name__,
                 test_command_method)
+
+
+# Finally add a meta test to verify that no test identifiers were used twice
+# which would result in only the last test being added.
+def _meta_verify_test_builder(self):
+    self.assertEqual(
+        duplicated, [], "Expected no test identifiers to be "
+        "duplicated but found {0}".format(len(duplicated))
+    )
+
+setattr(HelpCommandTest, 'test_test_builder_for_duplicates',
+        _meta_verify_test_builder)
