@@ -109,14 +109,22 @@ def attr_proxy(attr, formatter=lambda a: a, allow_undefined=True):
     return formatter_proxy
 
 
-def capacities_formatter(capacities):
-    '''Formats a list of capacities for output. Capacity is a dict
-    containing 'name', 'value' and 'unit' keys.
+def attributes_formatter(attributes):
     '''
-    sorted_capacities = sorted(capacities,
-                               key=lambda c: c['name'])
-    return '\n'.join(['{0}: {1} {2}'.format(c['name'], c['value'], c['unit'])
-                      for c in sorted_capacities])
+    '''
+    return u"\n".join(u"{0}={1}".format(k, v) for k, v in attributes.items())
+
+
+def counts_formatter(counts):
+    '''
+    '''
+
+    pretty_counts = []
+
+    for count in counts:
+        pretty_counts.append(u"{0}={1}".format(count['overcloud_role_id'], count['num_nodes']))
+
+    return u"\n".join(pretty_counts)
 
 
 def links_formatter(links):
