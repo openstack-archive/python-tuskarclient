@@ -17,11 +17,6 @@
 Base utilities to build API operation managers and objects on top of.
 """
 
-import copy
-
-from tuskarclient.openstack.common.apiclient import base
-
-
 # Python 2.4 compat
 try:
     all
@@ -117,16 +112,3 @@ class Manager(object):
 
     def _delete(self, url):
         self.api.raw_request('DELETE', url)
-
-
-class Resource(base.Resource):
-    """A resource represents a particular instance of an object (tenant, user,
-    etc). This is pretty much just a bag for attributes.
-
-    :param manager: Manager object
-    :param info: dictionary representing resource attributes
-    :param loaded: prevent lazy-loading if set to True
-    """
-
-    def to_dict(self):
-        return copy.deepcopy(self._info)
