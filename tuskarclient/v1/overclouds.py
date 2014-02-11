@@ -10,11 +10,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from tuskarclient.common import base
-from tuskarclient.openstack.common.apiclient import base as common_base
+from tuskarclient.openstack.common.apiclient import base
 
 
-class Overcloud(common_base.Resource):
+class Overcloud(base.Resource):
     """Represents an instance of a Overcloud in the Tuskar API.
 
     :param manager: Manager object
@@ -23,7 +22,7 @@ class Overcloud(common_base.Resource):
     """
 
 
-class OvercloudManager(base.Manager):
+class OvercloudManager(base.CrudManager):
     """OvercloudManager interacts with the Tuskar API and provides CRUD
     operations for the Overcloud type.
 
@@ -31,66 +30,10 @@ class OvercloudManager(base.Manager):
 
     #: The class used to represent an Overcloud instance
     resource_class = Overcloud
+    collection_key = 'overclouds'
+    key = 'overcloud'
+    version_prefix = '/v1'
 
-    @staticmethod
-    def _path(overcloud_id=None):
-
-        if overcloud_id:
-            return '/v1/overclouds/%s' % overcloud_id
-
-        return '/v1/overclouds'
-
-    def list(self):
-        """Get a list of the existing Overclouds
-
-        :return: A list of overclounds or an empty list if none are found.
-        :rtype: [tuskarclient.v1.overclouds.Overcloud] or []
-        """
-        return self._list(self._path())
-
-    def get(self, overcloud_id):
-        """Get the Overcloud by its ID.
-
-        :param overcloud_id: id of the Overcloud.
-        :type overcloud_id: string
-
-        :return: A Overcloud instance or None if its not found.
-        :rtype: tuskarclient.v1.overclouds.Overcloud or None
-        """
-        return self._get(self._single_path(overcloud_id))
-
-    def create(self, **fields):
-        """Create a new Overcloud.
-
-        :param fields: A set of key/value pairs representing a Overcloud.
-        :type fields: string
-
-        :return: A Overcloud instance or None if its not found.
-        :rtype: tuskarclient.v1.overclouds.Overcloud
-        """
-        return self._create(self._path(), fields)
-
-    def update(self, overcloud_id, **fields):
-        """Update an existing Overcloud.
-
-        :param overcloud_id: id of the Overcloud.
-        :type overcloud_id: string
-
-        :param fields: A set of key/value pairs representing the Overcloud.
-        :type fields: string
-
-        :return: A Overcloud instance or None if its not found.
-        :rtype: tuskarclient.v1.overclouds.Overcloud or None
-        """
-        return self._update(self._single_path(overcloud_id), fields)
-
-    def delete(self, overcloud_id):
-        """Delete an Overcloud.
-
-        :param overcloud_id: id of the Overcloud.
-        :type overcloud_id: string
-
-        :return: None
-        :rtype: None
-        """
-        return self._delete(self._single_path(overcloud_id))
+    def build_url(self, base_url=None, **kwargs):
+        return self.version_prefix \
+            + super(OvercloudManager, self).build_url(base_url, **kwargs)

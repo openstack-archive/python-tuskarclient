@@ -10,7 +10,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tuskarclient.common import http
+from tuskarclient.openstack.common.apiclient import client
 from tuskarclient.v1 import overcloud_roles
 from tuskarclient.v1 import overclouds
 
@@ -24,7 +24,7 @@ class Client(object):
     """
 
     def __init__(self, *args, **kwargs):
-        self.http_client = http.HTTPClient(*args, **kwargs)
+        self.http_client = client.HTTPClient(*args, **kwargs)
         self.overcloud_roles = overcloud_roles.OvercloudRoleManager(
             self.http_client)
         self.overclouds = overclouds.OvercloudManager(self.http_client)
