@@ -109,40 +109,22 @@ def attr_proxy(attr, formatter=lambda a: a, allow_undefined=True):
     return formatter_proxy
 
 
-def capacities_formatter(capacities):
-    '''Formats a list of capacities for output. Capacity is a dict
-    containing 'name', 'value' and 'unit' keys.
-    '''
-    sorted_capacities = sorted(capacities,
-                               key=lambda c: c['name'])
-    return '\n'.join(['{0}: {1} {2}'.format(c['name'], c['value'], c['unit'])
-                      for c in sorted_capacities])
+def attributes_formatter(attributes):
+    """Given a simple dict format the keyvalue pairs with one on each line.
+    """
+    return u"\n".join(u"{0}={1}".format(k, v) for k, v in
+                      sorted(attributes.items()))
 
 
-def links_formatter(links):
-    '''Formats a list of links. Link is a dict that has 'href' and
-    'rel' keys.
-    '''
-    sorted_links = sorted(links, key=lambda l: l['rel'])
-    return '\n'.join(['{0}: {1}'.format(l['rel'], l['href'])
-                      for l in sorted_links])
+def counts_formatter(counts):
+    """Given a list of dicts that represent Overcloud Roles output the
+    Overcloud Role ID with the num_noces
+    """
 
+    pretty_counts = []
 
-def resource_links_formatter(links):
-    '''Formats an array of resource links. Resource link is a dict
-    with keys 'id' and 'links'. Under 'links' key there is an array of
-    links. Link is a dict with 'href' and 'rel' keys. Currently we
-    expect only one link to be in the array, so we print the first
-    one. (We cannot fetch by 'rel', values in 'rel' are not used
-    consistently.)
-    '''
-    sorted_links = sorted(links, key=lambda l: l['id'])
-    return '\n'.join(['{0}: {1}'.format(l['id'], l['links'][0]['href'])
-                      for l in sorted_links])
+    for count in counts:
+        line = "{0}={1}".format(count['overcloud_role_id'], count['num_nodes'])
+        pretty_counts.append(line)
 
-
-def resource_link_formatter(link):
-    '''Formats one resource link. See docs of
-    `resource_links_formatter` for more details.
-    '''
-    return resource_links_formatter([link])
+    return u"\n".join(pretty_counts)

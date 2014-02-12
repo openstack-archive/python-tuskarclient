@@ -75,57 +75,27 @@ class PrintTest(tutils.TestCase):
 
 class FormattersTest(tutils.TestCase):
 
-    def test_attr_formatter_plain(self):
-        obj = mock.Mock()
-        obj.foo = 'bar'
-        foo_formatter = fmt.attr_proxy('foo')
-        self.assertEqual('bar', foo_formatter(obj))
+    def test_attributes_formatter(self):
+        """Test the attributes formatter displays the attributes correctly."""
 
-    def test_attr_formatter_chained(self):
-        obj = mock.Mock()
-        obj.letters = ['a', 'b', 'c']
-        letters_formatter = fmt.attr_proxy('letters', len)
-        self.assertEqual(3, letters_formatter(obj))
-
-    def test_capacities_formatter(self):
-        capacities = [
-            {'name': 'memory', 'value': '1024', 'unit': 'MB'},
-            {'name': 'cpu', 'value': '2', 'unit': 'CPU'},
-        ]
-        self.assertEqual(
-            ('cpu: 2 CPU\n'
-             'memory: 1024 MB'),
-            fmt.capacities_formatter(capacities),
-        )
-
-    def test_links_formatter(self):
-        links = [
-            {'rel': 'self', 'href': 'http://self-url'},
-            {'rel': 'parent', 'href': 'http://parent-url'},
-        ]
-        self.assertEqual(
-            ('parent: http://parent-url\n'
-             'self: http://self-url'),
-            fmt.links_formatter(links),
-        )
-
-    def test_resource_links_formatter(self):
-        resource_links = [
-            {'id': 3, 'links': [{'rel': 'self', 'href': 'http://three'}]},
-            {'id': 5, 'links': [{'rel': 'self', 'href': 'http://five'}]},
-        ]
-        self.assertEqual(
-            ('3: http://three\n'
-             '5: http://five'),
-            fmt.resource_links_formatter(resource_links),
-        )
-
-    def test_resource_link_formatter(self):
-        resource_link = {
-            'id': 3,
-            'links': [{'rel': 'self', 'href': 'http://three'}]
+        attributes = {
+            'password': 'pass',
+            'mysql_host': 'http://somewhere',
+            'a thing': 'a value'
         }
         self.assertEqual(
-            ('3: http://three'),
-            fmt.resource_link_formatter(resource_link),
+            ("a thing=a value\nmysql_host=http://somewhere\npassword=pass"),
+            fmt.attributes_formatter(attributes),
+        )
+
+    def test_counts_formatter(self):
+
+        resource_link = [
+            {'overcloud_role_id': 1, 'num_nodes': 10},
+            {'overcloud_role_id': 2, 'num_nodes': 20}
+        ]
+
+        self.assertEqual(
+            ("1=10\n2=20"),
+            fmt.counts_formatter(resource_link),
         )
