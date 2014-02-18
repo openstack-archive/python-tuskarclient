@@ -10,8 +10,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import io
 import mock
+import six
 
 import tuskarclient.tests.utils as tutils
 from tuskarclient.v1 import overcloud_roles_shell
@@ -36,7 +36,7 @@ class RacksShellTest(tutils.TestCase):
 
     def setUp(self):
 
-        self.outfile = io.StringIO()
+        self.outfile = six.StringIO()
         self.tuskar = mock.MagicMock()
         self.shell = overcloud_roles_shell
         super(RacksShellTest, self).setUp()

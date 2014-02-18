@@ -10,8 +10,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import io
 import mock
+import six
 
 import tuskarclient.common.formatting as fmt
 import tuskarclient.tests.utils as tutils
@@ -21,7 +21,7 @@ class PrintTest(tutils.TestCase):
 
     def setUp(self):
         super(PrintTest, self).setUp()
-        self.outfile = io.StringIO()
+        self.outfile = six.StringIO()
 
     def test_print_dict(self):
         dict_ = {'k': 'v', 'key': 'value'}
