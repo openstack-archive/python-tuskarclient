@@ -277,6 +277,29 @@ tests = [
         ],
         'err_string': '',
         'return_code': 0,
+    },
+    # Overcloud - show template parameters
+    {
+        'commands': ['overcloud-show-template-parameters -h',
+                     'overcloud-show-template-parameters --help',
+                     'help overcloud-show-template-parameters'],
+        'test_identifiers': [
+            'test_overcloud_show_template_parameters_dash_h',
+            'test_overcloud_show_template_parameters_dashdash_help',
+            'test_help_overcloud_show_template_parameters'
+        ],
+        'out_includes': [
+            'Show the template parameters stored in the Tuskar API.'
+        ],
+        'out_excludes': [
+            '-n <NAME>, --name <NAME>'
+            'overcloud-list',
+            'overcloud-role-template-parameters',
+            '--os-username OS_USERNAME',
+            'Display help for <subcommand>',
+        ],
+        'err_string': '',
+        'return_code': 0,
     }
 ]
 
