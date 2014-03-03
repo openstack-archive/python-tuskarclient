@@ -13,6 +13,7 @@
 import mock
 import six
 
+from tuskarclient.openstack.common.apiclient import exceptions
 import tuskarclient.tests.utils as tutils
 from tuskarclient.v1 import overclouds_shell
 
@@ -32,14 +33,16 @@ def mock_overcloud():
     return overcloud
 
 
-class RacksShellTest(tutils.TestCase):
+class BaseOvercloudShellTest(tutils.TestCase):
 
     def setUp(self):
-
+        super(BaseOvercloudShellTest, self).setUp()
         self.outfile = six.StringIO()
         self.tuskar = mock.MagicMock()
         self.shell = overclouds_shell
-        super(RacksShellTest, self).setUp()
+
+
+class OvercloudShellTest(BaseOvercloudShellTest):
 
     @mock.patch('tuskarclient.common.utils.find_resource')
     @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
@@ -64,10 +67,8 @@ class RacksShellTest(tutils.TestCase):
             outfile=self.outfile
         )
 
-    @mock.patch('tuskarclient.common.utils.find_resource')
     @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
-    def test_overcloud_create(self, mock_print_detail, mock_find_resource):
-        mock_find_resource.return_value = mock_overcloud()
+    def test_overcloud_create(self, mock_print_detail):
         args = empty_args()
         args.name = 'my_overcloud'
         args.attributes = None
@@ -112,3 +113,130 @@ class RacksShellTest(tutils.TestCase):
         self.tuskar.overclouds.delete.assert_called_with('5')
         self.assertEqual('Deleted Overcloud "My Overcloud".\n',
                          self.outfile.getvalue())
+
+
+class OvercloudAttributeShellTest(BaseOvercloudShellTest):
+
+    def setUp(self):
+        super(OvercloudAttributeShellTest, self).setUp()
+
+        self.args = empty_args()
+        self.args.name = 'my_overcloud'
+        self.args.roles = None
+        self.create = self.shell.do_overcloud_create
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_attributes(self, mock_print_detail):
+        self.args.attributes = ['val1=10', 'val2=20', 'val3=30']
+
+        self.create(self.tuskar, self.args, outfile=self.outfile)
+        self.tuskar.overclouds.create.assert_called_with(
+            name='my_overcloud',
+            counts=[],
+            attributes={
+                'val1': '10',
+                'val2': '20',
+                'val3': '30',
+            }
+        )
+        mock_print_detail.assert_called_with(
+            self.tuskar.overclouds.create.return_value, outfile=self.outfile)
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_attributes_duplicate(self, mock_print_detail):
+        self.args.attributes = ['val1=10', 'val1=20']
+
+        self.assertRaises(
+            exceptions.ValidationError,
+            self.create,
+            self.tuskar, self.args, outfile=self.outfile)
+
+        self.tuskar.overclouds.create.assert_not_called()
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_attributes_invalid(self, mock_print_detail):
+        self.args.attributes = ['val1=10', 'val120']
+
+        self.assertRaises(
+            exceptions.CommandError,
+            self.create,
+            self.tuskar, self.args, outfile=self.outfile)
+
+        self.tuskar.overclouds.create.assert_not_called()
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_attributes_multiple_equals(self, mock_print_detail):
+        self.args.attributes = ['val1=10', 'val2=2=0']
+
+        self.create(self.tuskar, self.args, outfile=self.outfile)
+        self.tuskar.overclouds.create.assert_called_with(
+            name='my_overcloud',
+            counts=[],
+            attributes={
+                'val1': '10',
+                'val2': '2=0',
+            }
+        )
+        mock_print_detail.assert_called_with(
+            self.tuskar.overclouds.create.return_value, outfile=self.outfile)
+
+
+class OvercloudRoleShellTest(BaseOvercloudShellTest):
+
+    def setUp(self):
+        super(OvercloudRoleShellTest, self).setUp()
+
+        self.args = empty_args()
+        self.args.name = 'my_overcloud'
+        self.args.attributes = None
+        self.create = self.shell.do_overcloud_create
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_roles(self, mock_print_detail):
+        self.args.roles = ['1=10', '2=20', '3=30']
+
+        self.create(self.tuskar, self.args, outfile=self.outfile)
+        self.tuskar.overclouds.create.assert_called_with(
+            name='my_overcloud',
+            attributes={},
+            counts=[
+                {'overcloud_role_id': 1, 'num_nodes': 10},
+                {'overcloud_role_id': 2, 'num_nodes': 20},
+                {'overcloud_role_id': 3, 'num_nodes': 30},
+            ]
+        )
+        mock_print_detail.assert_called_with(
+            self.tuskar.overclouds.create.return_value, outfile=self.outfile)
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_roles_duplicate(self, mock_print_detail):
+        self.args.roles = ['1=10', '1=20']
+
+        self.assertRaises(
+            exceptions.ValidationError,
+            self.create,
+            self.tuskar, self.args, outfile=self.outfile)
+
+        self.tuskar.overclouds.create.assert_not_called()
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_roles_invalid(self, mock_print_detail):
+        self.args.roles = ['1=10', '120']
+
+        self.assertRaises(
+            exceptions.CommandError,
+            self.create,
+            self.tuskar, self.args, outfile=self.outfile)
+
+        self.tuskar.overclouds.create.assert_not_called()
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_roles_multiple_equals(self, mock_print_detail):
+        self.args.roles = ['1=10', '2=2=0']
+
+        self.assertRaises(
+            ValueError,
+            self.create,
+            self.tuskar, self.args, outfile=self.outfile)
+
+        self.tuskar.overclouds.create.assert_not_called()
