@@ -20,14 +20,15 @@ from tuskarclient.common import utils
 
 @utils.arg('id', metavar="<ID>", help="ID of Overcloud to show.")
 def do_overcloud_show(tuskar, args, outfile=sys.stdout):
-    """Given a Tuskar client instance and the command line arguments display
-    the detail to the user.
+    """Show an individual Overcould by its ID.
     """
     overcloud = utils.find_resource(tuskar.overclouds, args.id)
     print_overcloud_detail(overcloud, outfile=outfile)
 
 
 def do_overcloud_list(tuskar, args, outfile=sys.stdout):
+    """Show a list of the Overclouds.
+    """
     overclouds = tuskar.overclouds.list()
     fields = ['id', 'name', 'description', 'stack_id', 'attributes', 'counts']
 
@@ -53,6 +54,8 @@ def do_overcloud_list(tuskar, args, outfile=sys.stdout):
            ' separated by semicolon.',
            action='append')
 def do_overcloud_create(tuskar, args, outfile=sys.stdout):
+    """Create a new Overcloud.
+    """
     overcloud_dict = create_overcloud_dict(args)
     overcloud = tuskar.overclouds.create(**overcloud_dict)
     print_overcloud_detail(overcloud, outfile=outfile)
@@ -74,6 +77,8 @@ def do_overcloud_create(tuskar, args, outfile=sys.stdout):
            ' separated by semicolon.',
            action='append')
 def do_overcloud_update(tuskar, args, outfile=sys.stdout):
+    """Update an existing Overcloud by its ID.
+    """
     overcloud = utils.find_resource(tuskar.overclouds, args.id)
     overcloud_dict = create_overcloud_dict(args)
     updated_overcloud = tuskar.overclouds.update(overcloud.id,
@@ -83,6 +88,8 @@ def do_overcloud_update(tuskar, args, outfile=sys.stdout):
 
 @utils.arg('id', metavar="<ID>", help="ID of Overcloud to show.")
 def do_overcloud_delete(tuskar, args, outfile=sys.stdout):
+    """Delete an Overcloud by its ID.
+    """
     overcloud = utils.find_resource(tuskar.overclouds, args.id)
     tuskar.overclouds.delete(args.id)
     print(u'Deleted Overcloud "%s".' % overcloud.name, file=outfile)
