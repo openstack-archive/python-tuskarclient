@@ -62,13 +62,14 @@ def print_list(objs, fields, formatters={}, custom_labels={}, sortby=0,
 
 
 def print_dict(d, formatters={}, custom_labels={}, outfile=sys.stdout):
-    '''Prints a dict.
+    '''Prints a dict to the provided file or file-like object.
 
     :param d: dict to print
     :param formatters: dict of functions that perform pre-print
         formatting of dict values (keys are keys from `d` parameter,
         values are functions that take one parameter - the dict value
-        to format)
+        to format). A wild card formatter can be provided as '*' which
+        will be applied to all fields without a dedicated formatter.
     :param custom_labels: dict of label overrides for keys (keys are
         keys from `d` parameter, values are custom labels)
     '''
@@ -76,10 +77,14 @@ def print_dict(d, formatters={}, custom_labels={}, outfile=sys.stdout):
                                  caching=False, print_empty=False)
     pt.align = 'l'
 
+    global_formatter = formatters.get('*')
+
     for field in d.keys():
         label = custom_labels.get(field, field)
         if field in formatters:
             pt.add_row([label, formatters[field](d[field])])
+        elif global_formatter:
+            pt.add_row([label, global_formatter(d[field])])
         else:
             pt.add_row([label, d[field]])
     print(pt.get_string(sortby='Property'), file=outfile)
@@ -112,8 +117,8 @@ def attr_proxy(attr, formatter=lambda a: a, allow_undefined=True):
 def attributes_formatter(attributes):
     """Given a simple dict format the keyvalue pairs with one on each line.
     """
-    return u"\n".join(u"{0}={1}".format(k, v) for k, v in
-                      sorted(attributes.items()))
+    return u"".join(u"{0}={1}\n".format(k, v) for k, v in
+                    sorted(attributes.items()))
 
 
 def counts_formatter(counts):
