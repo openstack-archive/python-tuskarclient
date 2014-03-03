@@ -94,3 +94,11 @@ class OvercloudManager(base.Manager):
         :rtype: None
         """
         return self._delete(self._single_path(overcloud_id))
+
+    def template_parameters(self):
+        """Get the template parameters from the Tuskar API.
+
+        :return: Dictionary containing template parameters
+        :rtype: dict
+        """
+        return self._get("{0}/template_parameters".format(self._path()))
