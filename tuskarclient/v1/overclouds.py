@@ -26,7 +26,6 @@ class Overcloud(common_base.Resource):
 class OvercloudManager(base.Manager):
     """OvercloudManager interacts with the Tuskar API and provides CRUD
     operations for the Overcloud type.
-
     """
 
     #: The class used to represent an Overcloud instance

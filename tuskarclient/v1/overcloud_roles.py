@@ -26,7 +26,6 @@ class OvercloudRole(common_base.Resource):
 class OvercloudRoleManager(base.Manager):
     """OvercloudRoleManager interacts with the Tuskar API and provides CRUD
     operations for the overcloud role type.
-
     """
 
     #: The class used to represent an overcloud role instance
