@@ -32,14 +32,13 @@ def mock_overcloud():
     return overcloud
 
 
-class RacksShellTest(tutils.TestCase):
+class OvercloudRoleShellTest(tutils.TestCase):
 
     def setUp(self):
-
+        super(OvercloudRoleShellTest, self).setUp()
         self.outfile = six.StringIO()
         self.tuskar = mock.MagicMock()
         self.shell = overcloud_roles_shell
-        super(RacksShellTest, self).setUp()
 
     @mock.patch('tuskarclient.common.utils.find_resource')
     @mock.patch('tuskarclient.v1.overcloud_roles_shell.print_role_detail')

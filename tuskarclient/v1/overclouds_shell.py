@@ -44,13 +44,11 @@ def do_overcloud_list(tuskar, args, outfile=sys.stdout):
            help='User-readable text describing the overcloud.')
 @utils.arg('-s', '--stack-id', metavar="<STACK ID>",
            help='UID of the stack in Heat.')
-@utils.arg('--attributes', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help='This can be specified multiple times, or once with parameters'
-           ' separated by semicolon.',
+@utils.arg('-A', '--attribute', dest='attributes', metavar='<KEY1=VALUE1>',
+           help='This can be specified multiple times.',
            action='append')
-@utils.arg('--roles', metavar='<ROLE NAME=COUNT;ROLE NAME=COUNT...>',
-           help='This can be specified multiple times, or once with parameters'
-           ' separated by semicolon.',
+@utils.arg('-R', '--role-count', dest='roles', metavar='<ROLE ID=COUNT>',
+           help='This can be specified multiple times.',
            action='append')
 def do_overcloud_create(tuskar, args, outfile=sys.stdout):
     overcloud_dict = create_overcloud_dict(args)
@@ -65,13 +63,11 @@ def do_overcloud_create(tuskar, args, outfile=sys.stdout):
            help='User-readable text describing the overcloud.')
 @utils.arg('-s', '--stack-id', metavar="<STACK ID>",
            help='UID of the stack in Heat.')
-@utils.arg('--attributes', metavar='<KEY1=VALUE1;KEY2=VALUE2...>',
-           help='This can be specified multiple times, or once with parameters'
-           ' separated by semicolon.',
+@utils.arg('-A', '--attribute', dest='attributes', metavar='<KEY1=VALUE1>',
+           help='This can be specified multiple times.',
            action='append')
-@utils.arg('--roles', metavar='<ROLE NAME=COUNT;ROLE NAME=COUNT...>',
-           help='This can be specified multiple times, or once with parameters'
-           ' separated by semicolon.',
+@utils.arg('-R', '--role-count', dest='roles', metavar='<ROLE ID=COUNT>',
+           help='This can be specified multiple times.',
            action='append')
 def do_overcloud_update(tuskar, args, outfile=sys.stdout):
     overcloud = utils.find_resource(tuskar.overclouds, args.id)
