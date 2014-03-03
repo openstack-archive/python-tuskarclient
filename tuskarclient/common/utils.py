@@ -140,61 +140,67 @@ def exit(msg=''):
     sys.exit(1)
 
 
-def format_attributes(params):
-    '''Reformat attributes into dict of format expected by the API.'''
+def format_key_value(params):
+    """Given a list of parameters, iterate through them and split the value
+    on '=' to create a key value mapping. Each result is yielded as we go.
+    """
 
     if not params:
-        return {}
+        raise StopIteration
 
-    # expect multiple invocations of --parameters but fall back
-    # to ; delimited if only one --parameters is specified
-    if len(params) == 1:
-        params = params[0].split(';')
-
-    parameters = {}
-    for p in params:
+    for param in params:
         try:
-            (n, v) = p.split(('='), 1)
+            (name, value) = param.split(('='), 1)
         except ValueError:
-            msg = '%s(%s). %s.' % ('Malformed parameter', p,
-                                   'Use the key=value format')
+            msg = 'Malformed parameter(%s). Use the key=value format.' % param
             raise exc.CommandError(msg)
+        yield name, value
 
-        if n not in parameters:
-            parameters[n] = v
-        else:
-            if not isinstance(parameters[n], list):
-                parameters[n] = [parameters[n]]
-            parameters[n].append(v)
 
-    return parameters
+def format_attributes(params):
+    """Reformat the attributes into the format expected by the API which is a
+    dictionary mapping containing strings as they keys and the values.
+    """
+
+    attributes = {}
+
+    for key, value in format_key_value(params):
+
+        if key in attributes:
+            raise exc.ValidationError(
+                "The attribute name {0} can't be given twice.".format(key))
+
+        attributes[key] = value
+
+    return attributes
 
 
 def format_roles(params):
-    '''Reformat attributes into dict of format expected by the API.'''
+    """Reformat the roles into the format expected by the API which is a
+    list containing dicts with a key for the ID and role count.
+    """
 
-    if not params:
-        return []
+    # A list of the role ID's being used so we can look out for duplicates.
+    added_role_ids = []
 
-    # expect multiple invocations of --parameters but fall back
-    # to ; delimited if only one --parameters is specified
-    if len(params) == 1:
-        params = params[0].split(';')
+    # The list of roles structured for the API.
+    roles = []
 
-    parameters = []
-    for p in params:
-        try:
-            (n, v) = p.split(('='), 1)
-        except ValueError:
-            msg = '%s(%s). %s.' % ('Malformed parameter', p,
-                                   'Use the key=value format')
-            raise exc.CommandError(msg)
+    for key, value in format_key_value(params):
 
-        v = int(v)
+        # TODO(dmatthew): We want to add adding roles by names, this will need
+        #                 to be changed for this.
+        key = int(key)
+        value = int(value)
 
-        parameters.append({
-            'overcloud_role_id': n,
-            'num_nodes': v
+        if key in added_role_ids:
+            raise exc.ValidationError(
+                "The attribute name {0} can't be given twice.".format(key))
+
+        added_role_ids.append(key)
+        roles.append({
+            'overcloud_role_id': key,
+            'num_nodes': value
         })
 
-    return parameters
+    return roles
