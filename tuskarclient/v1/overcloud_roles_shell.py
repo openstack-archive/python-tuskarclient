@@ -20,14 +20,13 @@ from tuskarclient.common import utils
 
 @utils.arg('id', metavar="<ID>", help="ID of Overcloud Role to show.")
 def do_overcloud_role_show(tuskar, args, outfile=sys.stdout):
-    """Given a Tuskar client instance and the command line arguments display
-    the detail to the user.
-    """
+    """Show an individual Overcloud Role by its ID."""
     overcloud_role = utils.find_resource(tuskar.overcloud_roles, args.id)
     print_role_detail(overcloud_role, outfile=outfile)
 
 
 def do_overcloud_role_list(tuskar, args, outfile=sys.stdout):
+    """Show a list of the Overcloud Roles."""
     overcloud_roles = tuskar.overcloud_roles.list()
     fields = ['id', 'name', 'image_name', 'flavor_id']
     fmt.print_list(overcloud_roles, fields, outfile=outfile)
@@ -41,6 +40,7 @@ def do_overcloud_role_list(tuskar, args, outfile=sys.stdout):
 @utils.arg('-f', '--flavor-id', metavar="<FLAVOR ID>",
            help='UUID of the flavor of node this role should be deployed on.')
 def do_overcloud_role_create(tuskar, args, outfile=sys.stdout):
+    """Create a new Overcloud Role."""
     overcloud_role_dict = create_overcloud_role_dict(args)
     overcloud_role = tuskar.overcloud_roles.create(**overcloud_role_dict)
     print_role_detail(overcloud_role, outfile=outfile)
@@ -56,6 +56,7 @@ def do_overcloud_role_create(tuskar, args, outfile=sys.stdout):
 @utils.arg('-f', '--flavor-id', metavar="<FLAVOR ID>",
            help='UUID of the flavor of node this role should be deployed on.')
 def do_overcloud_role_update(tuskar, args, outfile=sys.stdout):
+    """Update an existing Overcloud Role by its ID."""
     overcloud_role = utils.find_resource(tuskar.overcloud_roles, args.id)
     overcloud_role_dict = create_overcloud_role_dict(args)
     updated_overcloud_role = tuskar.overcloud_roles.update(
@@ -67,6 +68,7 @@ def do_overcloud_role_update(tuskar, args, outfile=sys.stdout):
 
 @utils.arg('id', metavar="<ID>", help="ID of Overcloud Role to show.")
 def do_overcloud_role_delete(tuskar, args, outfile=sys.stdout):
+    """Delete an Overcloud Role by its ID."""
     overcloud_role = utils.find_resource(tuskar.overcloud_roles, args.id)
     tuskar.overcloud_roles.delete(args.id)
     print(u'Deleted Overcloud Role "%s".' % overcloud_role.name, file=outfile)
