@@ -46,12 +46,14 @@ def do_overcloud_list(tuskar, args, outfile=sys.stdout):
 @utils.arg('-A', '--attribute', dest='attributes', metavar='<KEY1=VALUE1>',
            help='This can be specified multiple times.',
            action='append')
-@utils.arg('-R', '--role-count', dest='roles', metavar='<ROLE ID=COUNT>',
+@utils.arg('-R', '--role-count', dest='roles',
+           metavar='<ROLE NAME_OR_ID=COUNT>',
            help='This can be specified multiple times.',
            action='append')
 def do_overcloud_create(tuskar, args, outfile=sys.stdout):
     """Create a new Overcloud."""
-    overcloud_dict = create_overcloud_dict(args)
+    overcloud_roles = tuskar.overcloud_roles.list()
+    overcloud_dict = create_overcloud_dict(args, overcloud_roles)
     overcloud = tuskar.overclouds.create(**overcloud_dict)
     print_overcloud_detail(overcloud, outfile=outfile)
 
@@ -66,13 +68,15 @@ def do_overcloud_create(tuskar, args, outfile=sys.stdout):
 @utils.arg('-A', '--attribute', dest='attributes', metavar='<KEY1=VALUE1>',
            help='This can be specified multiple times.',
            action='append')
-@utils.arg('-R', '--role-count', dest='roles', metavar='<ROLE ID=COUNT>',
+@utils.arg('-R', '--role-count', dest='roles',
+           metavar='<ROLE NAME_OR_ID=COUNT>',
            help='This can be specified multiple times.',
            action='append')
 def do_overcloud_update(tuskar, args, outfile=sys.stdout):
     """Update an existing Overcloud by its ID."""
     overcloud = utils.find_resource(tuskar.overclouds, args.id)
-    overcloud_dict = create_overcloud_dict(args)
+    overcloud_roles = tuskar.overcloud_roles.list()
+    overcloud_dict = create_overcloud_dict(args, overcloud_roles)
     updated_overcloud = tuskar.overclouds.update(overcloud.id,
                                                  **overcloud_dict)
     print_overcloud_detail(updated_overcloud, outfile=outfile)
@@ -86,8 +90,13 @@ def do_overcloud_delete(tuskar, args, outfile=sys.stdout):
     print(u'Deleted Overcloud "%s".' % overcloud.name, file=outfile)
 
 
-def create_overcloud_dict(args):
-    """Marshal command line arguments to an API request dict."""
+def create_overcloud_dict(args, roles):
+    """Marshal command line arguments to an API request dict.
+
+    :param roles: list of OvercloudRole instances retrieved from the tuskar
+                  client
+    :type  roles: list of OvercloudRole
+    """
     overcloud_dict = {}
     simple_fields = ['name', 'description']
     for field_name in simple_fields:
@@ -96,7 +105,10 @@ def create_overcloud_dict(args):
             overcloud_dict[field_name] = field_value
 
     overcloud_dict['attributes'] = utils.format_attributes(args.attributes)
-    overcloud_dict['counts'] = utils.format_roles(args.roles)
+
+    role_name_ids = dict((r.to_dict()['name'], r.to_dict()['id'])
+                         for r in roles)
+    overcloud_dict['counts'] = utils.format_roles(args.roles, role_name_ids)
 
     utils.marshal_association(args, overcloud_dict, 'resource_class')
     return overcloud_dict
