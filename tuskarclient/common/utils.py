@@ -171,12 +171,21 @@ def format_attributes(params):
     return attributes
 
 
-def format_roles(params):
+def format_roles(params, role_name_ids):
     """Reformat CLI roles into the structure expected by the API.
 
     The format expected by the API for roles is a list of dictionaries
     containing a key for the Overcloud Role (overcloud_role_id) and a key for
     the role count (num_nodes). Both values should be integers.
+
+    If there is no entry in role_name_ids for a given role, it is assumed
+    the user specified the role ID instead.
+
+    :param params: list of key-value pairs specified in the format key=value
+    :type  params: list of str
+
+    :param role_name_ids: mapping of role name (str) to its ID (int)
+    :type  role_name_ids: dict
 
     :raises: ValidationError
     """
@@ -186,10 +195,11 @@ def format_roles(params):
     # The list of roles structured for the API.
     roles = []
 
-    for key, value in format_key_value(params):
-        # TODO(dmatthew): We want to add adding roles by names, this will need
-        #                 to be changed for this.
-        key = int(key)
+    for name_or_id, value in format_key_value(params):
+
+        # If a role with the given name is found, use it's ID. If one
+        # cannot be found, assume the given parameter is an ID and use that.
+        key = role_name_ids.get(name_or_id, name_or_id)
         value = int(value)
 
         if key in added_role_ids:
