@@ -15,6 +15,7 @@ import six
 
 from tuskarclient.openstack.common.apiclient import exceptions
 import tuskarclient.tests.utils as tutils
+from tuskarclient.v1.overcloud_roles import OvercloudRole
 from tuskarclient.v1 import overclouds_shell
 
 
@@ -193,7 +194,9 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
 
     @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
     def test_create_roles(self, mock_print_detail):
-        self.args.roles = ['1=10', '2=20', '3=30']
+        self.args.roles = ['foo=10']
+        self.tuskar.overcloud_roles.list.return_value =\
+            [OvercloudRole(None, {'name': 'foo', 'id': 1})]
 
         self.create(self.tuskar, self.args, outfile=self.outfile)
         self.tuskar.overclouds.create.assert_called_with(
@@ -201,8 +204,6 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
             attributes={},
             counts=[
                 {'overcloud_role_id': 1, 'num_nodes': 10},
-                {'overcloud_role_id': 2, 'num_nodes': 20},
-                {'overcloud_role_id': 3, 'num_nodes': 30},
             ]
         )
         mock_print_detail.assert_called_with(
@@ -210,7 +211,9 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
 
     @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
     def test_create_roles_duplicate(self, mock_print_detail):
-        self.args.roles = ['1=10', '1=20']
+        self.args.roles = ['foo=10', 'foo=20']
+        self.tuskar.overcloud_roles.list.return_value =\
+            [OvercloudRole(None, {'name': 'foo', 'id': 1})]
 
         self.assertRaises(
             exceptions.ValidationError,
@@ -220,8 +223,10 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
         self.tuskar.overclouds.create.assert_not_called()
 
     @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
-    def test_create_roles_invalid(self, mock_print_detail):
-        self.args.roles = ['1=10', '120']
+    def test_create_roles_invalid_structure(self, mock_print_detail):
+        self.args.roles = ['foo=10', '120']
+        self.tuskar.overcloud_roles.list.return_value =\
+            [OvercloudRole(None, {'name': 'foo', 'id': 1})]
 
         self.assertRaises(
             exceptions.CommandError,
@@ -232,10 +237,25 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
 
     @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
     def test_create_roles_multiple_equals(self, mock_print_detail):
-        self.args.roles = ['1=10', '2=2=0']
+        self.args.roles = ['foo=foo=0']
+        self.tuskar.overcloud_roles.list.return_value =\
+            [OvercloudRole(None, {'name': 'foo', 'id': 1})]
 
         self.assertRaises(
             ValueError,
+            self.create,
+            self.tuskar, self.args, outfile=self.outfile)
+
+        self.tuskar.overclouds.create.assert_not_called()
+
+    @mock.patch('tuskarclient.v1.overclouds_shell.print_overcloud_detail')
+    def test_create_roles_invalid_role_name(self, mock_print_detail):
+        self.args.roles = ['bar=10']
+        self.tuskar.overcloud_roles.list.return_value =\
+            [OvercloudRole(None, {'name': 'foo', 'id': 1})]
+
+        self.assertRaises(
+            exceptions.ValidationError,
             self.create,
             self.tuskar, self.args, outfile=self.outfile)
 
