@@ -82,14 +82,6 @@ def find_resource(manager, name_or_id):
               (manager.resource_class.__name__.lower(), name_or_id)
         raise exc.CommandError(msg)
 
-    # finally try to find entity by name
-    try:
-        return manager.find(name=name_or_id)
-    except exc.NotFound:
-        msg = "No %s with a name or ID of '%s' exists." % \
-              (manager.resource_class.__name__.lower(), name_or_id)
-        raise exc.CommandError(msg)
-
 
 def marshal_association(args, resource_dict, assoc_name):
     """Marshal resource association into an API request dict.
