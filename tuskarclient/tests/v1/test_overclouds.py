@@ -76,3 +76,10 @@ class OvercloudManagerTest(tutils.TestCase):
 
         self.assertEqual(self.om.delete(42), None)
         self.om._delete.assert_called_with('/v1/overclouds/42')
+
+    def test_template_parameters(self):
+        """Test getting the template parameters via GET."""
+        self.om._get = mock.Mock(return_value={})
+
+        self.assertEqual(self.om.template_parameters(), {})
+        self.om._get.assert_called_with('/v1/overclouds/template_parameters')
