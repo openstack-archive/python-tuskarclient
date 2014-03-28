@@ -84,7 +84,7 @@ class FormattersTest(tutils.TestCase):
             'a thing': 'a value'
         }
         self.assertEqual(
-            ("a thing=a value\nmysql_host=http://somewhere\npassword=pass"),
+            ("a thing=a value\nmysql_host=http://somewhere\npassword=pass\n"),
             fmt.attributes_formatter(attributes),
         )
 

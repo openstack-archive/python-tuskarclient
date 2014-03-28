@@ -86,6 +86,16 @@ def do_overcloud_delete(tuskar, args, outfile=sys.stdout):
     print(u'Deleted Overcloud "%s".' % overcloud.name, file=outfile)
 
 
+def do_overcloud_show_template_parameters(tuskar, args, outfile=sys.stdout):
+    """Show the template parameters stored in the Tuskar API."""
+    template_parameters = tuskar.overclouds.template_parameters()
+    formatters = {
+        '*': fmt.attributes_formatter
+    }
+    template_parameters_dict = template_parameters.to_dict()
+    fmt.print_dict(template_parameters_dict, formatters, outfile=outfile)
+
+
 def create_overcloud_dict(args):
     """Marshal command line arguments to an API request dict."""
     overcloud_dict = {}
