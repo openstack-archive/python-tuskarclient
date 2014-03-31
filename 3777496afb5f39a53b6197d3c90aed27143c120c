@@ -1,0 +1,10 @@
+Verified+2: Jenkins
+Approved+1: Tomas Sedovic <tomas@sedovic.cz>
+Code-Review+2: Tomas Sedovic <tomas@sedovic.cz>
+Code-Review+2: Jiri Stransky <jistr@redhat.com>
+Code-Review+1: Dougal Matthews <dougal@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Mon, 31 Mar 2014 15:38:44 +0000
+Reviewed-on: https://review.openstack.org/80052
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
