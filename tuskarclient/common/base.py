@@ -17,6 +17,11 @@
 Base utilities to build API operation managers and objects on top of.
 """
 
+import copy
+
+from tuskarclient.openstack.common.apiclient import base
+
+
 # Python 2.4 compat
 try:
     all
@@ -75,7 +80,7 @@ class Manager(object):
         return self._path(id)
 
     def _create(self, url, body):
-        resp, body = self.api.json_request('POST', url, data=body)
+        resp, body = self.api.json_request('POST', url, body=body)
         if body:
             return self.resource_class(self, body)
 
@@ -105,10 +110,23 @@ class Manager(object):
         return [obj_class(self, res, loaded=True) for res in data if res]
 
     def _update(self, url, body, response_key=None):
-        resp, body = self.api.json_request('PUT', url, data=body)
+        resp, body = self.api.json_request('PUT', url, body=body)
         # PUT requests may not return a body
         if body:
             return self.resource_class(self, body)
 
     def _delete(self, url):
         self.api.raw_request('DELETE', url)
+
+
+class Resource(base.Resource):
+    """A resource represents a particular instance of an object (tenant, user,
+    etc). This is pretty much just a bag for attributes.
+
+    :param manager: Manager object
+    :param info: dictionary representing resource attributes
+    :param loaded: prevent lazy-loading if set to True
+    """
+
+    def to_dict(self):
+        return copy.deepcopy(self._info)

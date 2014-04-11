@@ -27,7 +27,6 @@ places where actual behavior differs from the spec.
 import json
 
 import requests
-import six
 
 from tuskarclient.openstack.common.apiclient import client
 from tuskarclient.openstack.common.py3kcompat import urlutils
@@ -62,8 +61,6 @@ class TestResponse(requests.Response):
             else:
                 self._content = text
                 default_headers = {}
-            if six.PY3 and isinstance(self._content, six.string_types):
-                self._content = self._content.encode('utf-8', 'strict')
             self.headers = data.get('headers') or default_headers
         else:
             self.status_code = data

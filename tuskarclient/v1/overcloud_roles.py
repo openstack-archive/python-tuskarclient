@@ -11,10 +11,9 @@
 # under the License.
 
 from tuskarclient.common import base
-from tuskarclient.openstack.common.apiclient import base as common_base
 
 
-class OvercloudRole(common_base.Resource):
+class OvercloudRole(base.Resource):
     """Represents an instance of an Overcloud Role in the Tuskar API.
 
     :param manager: Manager object

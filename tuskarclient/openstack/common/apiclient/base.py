@@ -24,7 +24,6 @@ Base utilities to build API operation managers and objects on top of.
 # pylint: disable=E1102
 
 import abc
-import copy
 
 import six
 
@@ -85,8 +84,8 @@ class HookableMixin(object):
 class BaseManager(HookableMixin):
     """Basic manager type providing common operations.
 
-    Managers interact with a particular type of API (servers, flavors, images,
-    etc.) and provide CRUD operations for them.
+    Managers interact with a particular type of API (servers, images, etc.) and
+    provide CRUD operations for them.
     """
     resource_class = None
 
@@ -457,17 +456,17 @@ class Resource(object):
     def __getattr__(self, k):
         if k not in self.__dict__:
             #NOTE(bcwaldon): disallow lazy-loading if already loaded once
-            if not self.is_loaded:
-                self._get()
+            if not self.is_loaded():
+                self.get()
                 return self.__getattr__(k)
 
             raise AttributeError(k)
         else:
             return self.__dict__[k]
 
-    def _get(self):
-        # set _loaded first ... so if we have to bail, we know we tried.
-        self._loaded = True
+    def get(self):
+        # set_loaded() first ... so if we have to bail, we know we tried.
+        self.set_loaded(True)
         if not hasattr(self.manager, 'get'):
             return
 
@@ -485,9 +484,8 @@ class Resource(object):
             return self.id == other.id
         return self._info == other._info
 
-    @property
     def is_loaded(self):
         return self._loaded
 
-    def to_dict(self):
-        return copy.deepcopy(self._info)
+    def set_loaded(self, val):
+        self._loaded = val
