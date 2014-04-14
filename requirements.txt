@@ -8,4 +8,3 @@ python-keystoneclient>=0.4.1
 requests>=1.1
 simplejson>=2.0.9
 six>=1.4.1
-stevedore>=0.12

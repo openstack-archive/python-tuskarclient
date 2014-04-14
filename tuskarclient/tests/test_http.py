@@ -13,16 +13,42 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import mock
-import requests
+from tuskarclient.tests import utils as tutils
 
 from tuskarclient.common import http
 from tuskarclient import exc as tuskar_exc
 from tuskarclient.openstack.common.apiclient import exceptions as exc
-from tuskarclient.tests import utils as tutils
 
+import mock
 
 fixtures = {}
+
+
+class HttpClientUrlGenerationTest(tutils.TestCase):
+
+    def test_url_generation_trailing_slash_in_base(self):
+        client = http.HTTPClient('http://localhost/')
+        url = client._make_connection_url('/v1/resources')
+        print(client.connection_params)
+        self.assertEqual(url, '/v1/resources')
+
+    def test_url_generation_without_trailing_slash_in_base(self):
+        client = http.HTTPClient('http://localhost')
+        url = client._make_connection_url('/v1/resources')
+        print(client.connection_params)
+        self.assertEqual(url, '/v1/resources')
+
+    def test_url_generation_prefix_slash_in_path(self):
+        client = http.HTTPClient('http://localhost/')
+        url = client._make_connection_url('/v1/resources')
+        print(client.connection_params)
+        self.assertEqual(url, '/v1/resources')
+
+    def test_url_generation_without_prefix_slash_in_path(self):
+        client = http.HTTPClient('http://localhost')
+        url = client._make_connection_url('v1/resources')
+        print(client.connection_params)
+        self.assertEqual(url, '/v1/resources')
 
 
 class HttpClientRawRequestTest(tutils.TestCase):
@@ -96,6 +122,7 @@ class HttpClientHTTPRequestTest(tutils.TestCase):
     def setUp(self):
         super(HttpClientHTTPRequestTest, self).setUp()
 
+        self.client = http.HTTPClient('http://localhost')
         self.call_args = {
             'provided_method': 'GET',
             'expected_method': 'GET',
@@ -113,28 +140,33 @@ class HttpClientHTTPRequestTest(tutils.TestCase):
         }
 
         self.mock_response = mock.MagicMock()
-        self.mock_request = mock.MagicMock(return_value=self.mock_response)
+        self.mock_response.read = lambda *args: None
+        self.mock_response.version = 42
 
-        self.http = mock.MagicMock()
-        self.http.request = self.mock_request
-        requests.Session = mock.MagicMock(return_value=self.http)
+        self.mock_response_2 = mock.MagicMock()
+        self.mock_response_2.read = lambda *args: None
+        self.mock_response_2.version = 42
 
-        self.client = http.HTTPClient('http://localhost', http=self.http)
+        self.mock_request = mock.MagicMock()
+
+        self.client.get_connection = mock.MagicMock(
+            return_value=self.mock_request,
+        )
 
     def test_raw_request_status_200(self):
-        self.mock_request = lambda: self.mock_response
-        self.mock_response.status_code = 200
+        self.mock_request.getresponse = lambda: self.mock_response
+        self.mock_response.status = 200
 
         args = self.call_args.copy()
         resp, body_iter = self.client._http_request(
             args['provided_url'],
             args['provided_method'],
             **args['provided_args'])
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status, 200)
 
     def test_raw_request_status_300(self):
-        self.mock_request = lambda: self.mock_response
-        self.mock_response.status_code = 300
+        self.mock_request.getresponse = lambda: self.mock_response
+        self.mock_response.status = 300
 
         args = self.call_args.copy()
         self.assertRaises(tuskar_exc.HTTPMultipleChoices,
@@ -142,9 +174,34 @@ class HttpClientHTTPRequestTest(tutils.TestCase):
                           args['provided_url'], args['provided_method'],
                           **args['provided_args'])
 
+    def test_raw_request_status_301(self):
+        new_location = 'http://new_location.com'
+        self.mock_response.getheader.return_value = new_location
+        self.mock_response.status = 301
+        self.mock_response_2.status = 200
+
+        self.mock_request.getresponse.side_effect = [
+            self.mock_response, self.mock_response_2]
+
+        args = self.call_args.copy()
+
+        resp, body_iter = self.client._http_request(
+            args['provided_url'],
+            args['provided_method'],
+            **args['provided_args'])
+
+        self.assertEqual(self.mock_request.getresponse.call_count, 2)
+        self.mock_response.getheader.assert_called_called_with('location')
+        self.mock_request.request.assert_called_with(
+            args['provided_method'],
+            new_location,
+            **args['provided_args']
+        )
+        self.assertEqual(resp.status, 200)
+
     def test_raw_request_status_500(self):
-        self.mock_request = lambda: self.mock_response
-        self.mock_response.status_code = 500
+        self.mock_request.getresponse = lambda: self.mock_response
+        self.mock_response.status = 500
 
         args = self.call_args.copy()
         self.assertRaises(exc.InternalServerError,
