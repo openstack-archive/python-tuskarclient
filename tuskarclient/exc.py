@@ -53,5 +53,5 @@ for obj_name in dir(sys.modules[__name__]):
 
 def from_response(response):
     """Return an instance of an exc.HttpError based on httplib response."""
-    cls = _code_map.get(response.status_code, exc.HttpError)
+    cls = _code_map.get(response.status, exc.HttpError)
     return cls()
