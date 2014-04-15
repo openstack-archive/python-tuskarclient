@@ -27,9 +27,9 @@ import abc
 import copy
 
 import six
+from six.moves.urllib import parse
 
 from tuskarclient.openstack.common.apiclient import exceptions
-from tuskarclient.openstack.common.py3kcompat import urlutils
 from tuskarclient.openstack.common import strutils
 
 
@@ -328,7 +328,7 @@ class CrudManager(BaseManager):
         return self._list(
             '%(base_url)s%(query)s' % {
                 'base_url': self.build_url(base_url=base_url, **kwargs),
-                'query': '?%s' % urlutils.urlencode(kwargs) if kwargs else '',
+                'query': '?%s' % parse.urlencode(kwargs) if kwargs else '',
             },
             self.collection_key)
 
@@ -367,7 +367,7 @@ class CrudManager(BaseManager):
         rl = self._list(
             '%(base_url)s%(query)s' % {
                 'base_url': self.build_url(base_url=base_url, **kwargs),
-                'query': '?%s' % urlutils.urlencode(kwargs) if kwargs else '',
+                'query': '?%s' % parse.urlencode(kwargs) if kwargs else '',
             },
             self.collection_key)
         num = len(rl)
@@ -456,18 +456,23 @@ class Resource(object):
 
     def __getattr__(self, k):
         if k not in self.__dict__:
-            #NOTE(bcwaldon): disallow lazy-loading if already loaded once
-            if not self.is_loaded:
-                self._get()
+            # NOTE(bcwaldon): disallow lazy-loading if already loaded once
+            if not self.is_loaded():
+                self.get()
                 return self.__getattr__(k)
 
             raise AttributeError(k)
         else:
             return self.__dict__[k]
 
-    def _get(self):
-        # set _loaded first ... so if we have to bail, we know we tried.
-        self._loaded = True
+    def get(self):
+        """Support for lazy loading details.
+
+        Some clients, such as novaclient have the option to lazy load the
+        details, details which can be loaded with this function.
+        """
+        # set_loaded() first ... so if we have to bail, we know we tried.
+        self.set_loaded(True)
         if not hasattr(self.manager, 'get'):
             return
 
@@ -485,9 +490,11 @@ class Resource(object):
             return self.id == other.id
         return self._info == other._info
 
-    @property
     def is_loaded(self):
         return self._loaded
+
+    def set_loaded(self, val):
+        self._loaded = val
 
     def to_dict(self):
         return copy.deepcopy(self._info)

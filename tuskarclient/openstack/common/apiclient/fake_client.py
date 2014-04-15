@@ -28,9 +28,9 @@ import json
 
 import requests
 import six
+from six.moves.urllib import parse
 
 from tuskarclient.openstack.common.apiclient import client
-from tuskarclient.openstack.common.py3kcompat import urlutils
 
 
 def assert_has_keys(dct, required=[], optional=[]):
@@ -79,7 +79,7 @@ class FakeHTTPClient(client.HTTPClient):
     def __init__(self, *args, **kwargs):
         self.callstack = []
         self.fixtures = kwargs.pop("fixtures", None) or {}
-        if not args and not "auth_plugin" in kwargs:
+        if not args and "auth_plugin" not in kwargs:
             args = (None, )
         super(FakeHTTPClient, self).__init__(*args, **kwargs)
 
@@ -147,7 +147,7 @@ class FakeHTTPClient(client.HTTPClient):
                                  "text": fixture[1]})
 
         # Call the method
-        args = urlutils.parse_qsl(urlutils.urlparse(url)[4])
+        args = parse.parse_qsl(parse.urlparse(url)[4])
         kwargs.update(args)
         munged_url = url.rsplit('?', 1)[0]
         munged_url = munged_url.strip('/').replace('/', '_').replace('.', '_')
