@@ -69,3 +69,27 @@ class MarshalAssociationTest(test_utils.TestCase):
         self.args.rack = None
         utils.marshal_association(self.args, self.dict, 'rack')
         self.assertFalse('rack' in self.dict)
+
+
+class FindResourceTest(test_utils.TestCase):
+
+    def setUp(self):
+        super(FindResourceTest, self).setUp()
+
+        self.overcloud = mock.Mock()
+        self.overcloud.id = '5'
+        self.overcloud.name = 'My Overcloud'
+
+        self.manager = mock.Mock()
+        self.manager.resource_class = None
+        self.manager.get.return_value = self.overcloud
+        self.manager.list.return_value = [self.overcloud]
+
+    def test_with_id(self):
+        overcloud = utils.find_resource(self.manager, '5')
+        self.manager.get.assert_called_with(5)
+        self.assertEqual(self.overcloud, overcloud)
+
+    def test_with_name(self):
+        overcloud = utils.find_resource(self.manager, 'My Overcloud')
+        self.assertEqual(self.overcloud, overcloud)

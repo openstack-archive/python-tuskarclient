@@ -76,11 +76,26 @@ def find_resource(manager, name_or_id):
         uuid.UUID(str(name_or_id))
         return manager.get(name_or_id)
     except (ValueError, exc.NotFound):
-        # This is temporary measure to prevent ugly errors on CLI.
-        # Make this just 'pass' after we implement finding by name.
-        msg = "No %s with ID of '%s' exists." % \
+        pass
+
+    # finally try to find the entity by name
+    resource = getattr(manager, 'resource_class', None)
+    attr = resource.NAME_ATTR if resource else 'name'
+
+    listing = manager.list()
+    matches = [obj for obj in listing if getattr(obj, attr) == name_or_id]
+
+    num_matches = len(matches)
+    if num_matches == 0:
+        msg = "No %s with name '%s' exists." % \
               (manager.resource_class.__name__.lower(), name_or_id)
         raise exc.CommandError(msg)
+    elif num_matches > 1:
+        msg = "Multiple instances of %s with name '%s' exist." % \
+              (manager.resource_class.__name__.lower(), name_or_id)
+        raise exc.CommandError(msg)
+    else:
+        return matches[0]
 
 
 def marshal_association(args, resource_dict, assoc_name):

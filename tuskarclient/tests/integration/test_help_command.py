@@ -201,7 +201,7 @@ tests = [
                              'test_overcloud_delete_dashdash_help',
                              'test_help_overcloud_delete'],
         'out_includes': [
-            '<ID>        ID of Overcloud to show.',
+            '<OVERCLOUD>  ID or name of the Overcloud to delete.',
         ],
         'out_excludes': [
             'overcloud-list',
@@ -247,7 +247,7 @@ tests = [
                              'test_overcloud_show_dashdash_help',
                              'test_help_overcloud_show'],
         'out_includes': [
-            '<ID>        ID of Overcloud to show.',
+            '<OVERCLOUD>  ID or name of the Overcloud to show.',
         ],
         'out_excludes': [
             'overcloud-list',
