@@ -17,6 +17,7 @@
 import mock
 
 from tuskarclient.common import utils
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 from tuskarclient.tests import utils as test_utils
 
 
@@ -69,3 +70,52 @@ class MarshalAssociationTest(test_utils.TestCase):
         self.args.rack = None
         utils.marshal_association(self.args, self.dict, 'rack')
         self.assertFalse('rack' in self.dict)
+
+
+class FindResourceTest(test_utils.TestCase):
+
+    def setUp(self):
+        super(FindResourceTest, self).setUp()
+
+        self.overcloud1 = mock.Mock()
+        self.overcloud1.id = '1'
+        self.overcloud1.name = 'My Overcloud 1'
+
+        self.overcloud2 = mock.Mock()
+        self.overcloud2.id = '2'
+        self.overcloud2.name = 'My Overcloud 2'
+
+        self.overcloud3 = mock.Mock()
+        self.overcloud3.id = '3'
+        self.overcloud3.name = 'My Overcloud 2'
+
+        self.manager = mock.Mock()
+        self.manager.resource_class = None
+        self.manager.get.return_value = self.overcloud1
+        self.manager.resource_class = mock.Mock(__name__='Overcloud',
+                                                NAME_ATTR='name')
+        self.manager.list.return_value = [
+            self.overcloud1,
+            self.overcloud2,
+            self.overcloud3]
+
+    def test_with_id(self):
+        overcloud = utils.find_resource(self.manager, '1')
+        self.manager.get.assert_called_with(1)
+        self.assertEqual(self.overcloud1, overcloud)
+
+    def test_with_name(self):
+        overcloud = utils.find_resource(self.manager, 'My Overcloud 1')
+        self.assertEqual(self.overcloud1, overcloud)
+
+    def test_no_match(self):
+        self.assertRaises(exc.CommandError,
+                          utils.find_resource,
+                          self.manager,
+                          'My Overcloud 3')
+
+    def test_multiple_matches(self):
+        self.assertRaises(exc.CommandError,
+                          utils.find_resource,
+                          self.manager,
+                          'My Overcloud 2')

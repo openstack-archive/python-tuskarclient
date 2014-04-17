@@ -18,10 +18,11 @@ import tuskarclient.common.formatting as fmt
 from tuskarclient.common import utils
 
 
-@utils.arg('id', metavar="<ID>", help="ID of Overcloud to show.")
+@utils.arg('overcloud', metavar="<OVERCLOUD>",
+           help="ID or name of the Overcloud to show.")
 def do_overcloud_show(tuskar, args, outfile=sys.stdout):
-    """Show an individual Overcloud by its ID."""
-    overcloud = utils.find_resource(tuskar.overclouds, args.id)
+    """Show an individual Overcloud by its ID or name."""
+    overcloud = utils.find_resource(tuskar.overclouds, args.overcloud)
     print_overcloud_detail(overcloud, outfile=outfile)
 
 
@@ -58,7 +59,8 @@ def do_overcloud_create(tuskar, args, outfile=sys.stdout):
     print_overcloud_detail(overcloud, outfile=outfile)
 
 
-@utils.arg('id', metavar="<ID>", help="ID of Overcloud to show.")
+@utils.arg('overcloud', metavar="<OVERCLOUD>",
+           help="ID or name of the Overcloud to update.")
 @utils.arg('-n', '--name', metavar="<NAME>",
            help='Name of the Overcloud Role to update.')
 @utils.arg('-d', '--description', metavar="<DESCRIPTION>",
@@ -73,8 +75,8 @@ def do_overcloud_create(tuskar, args, outfile=sys.stdout):
            help='This can be specified multiple times.',
            action='append')
 def do_overcloud_update(tuskar, args, outfile=sys.stdout):
-    """Update an existing Overcloud by its ID."""
-    overcloud = utils.find_resource(tuskar.overclouds, args.id)
+    """Update an existing Overcloud by its ID or name."""
+    overcloud = utils.find_resource(tuskar.overclouds, args.overcloud)
     overcloud_roles = tuskar.overcloud_roles.list()
     overcloud_dict = create_overcloud_dict(args, overcloud_roles)
     updated_overcloud = tuskar.overclouds.update(overcloud.id,
@@ -82,11 +84,12 @@ def do_overcloud_update(tuskar, args, outfile=sys.stdout):
     print_overcloud_detail(updated_overcloud, outfile=outfile)
 
 
-@utils.arg('id', metavar="<ID>", help="ID of Overcloud to show.")
+@utils.arg('overcloud', metavar="<OVERCLOUD>",
+           help="ID or name of the Overcloud to delete.")
 def do_overcloud_delete(tuskar, args, outfile=sys.stdout):
-    """Delete an Overcloud by its ID."""
-    overcloud = utils.find_resource(tuskar.overclouds, args.id)
-    tuskar.overclouds.delete(args.id)
+    """Delete an Overcloud by its ID or name."""
+    overcloud = utils.find_resource(tuskar.overclouds, args.overcloud)
+    tuskar.overclouds.delete(overcloud.id)
     print(u'Deleted Overcloud "%s".' % overcloud.name, file=outfile)
 
 
