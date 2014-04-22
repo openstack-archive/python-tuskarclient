@@ -1,0 +1,11 @@
+Verified+2: Jenkins
+Code-Review+2: Clint "SpamapS" Byrum <clint@ubuntu.com>
+Code-Review+1: Victor Sergeyev <vsergeyev@mirantis.com>
+Approved+1: Jiri Stransky <jistr@redhat.com>
+Code-Review+2: Jiri Stransky <jistr@redhat.com>
+Code-Review+1: Dougal Matthews <dougal@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Tue, 22 Apr 2014 08:37:23 +0000
+Reviewed-on: https://review.openstack.org/87642
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
