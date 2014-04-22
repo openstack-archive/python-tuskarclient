@@ -92,7 +92,7 @@ tests = [
                              'test_overcloud_role_delete_dashdash_help',
                              'test_help_overcloud_role_delete'],
         'out_includes': [
-            '<ID>        ID of Overcloud Role to show.',
+            '<ROLE>      ID or name of the Overcloud Role to delete.',
         ],
         'out_excludes': [
             'overcloud-role-list',
@@ -138,7 +138,7 @@ tests = [
                              'test_overcloud_role_show_dashdash_help',
                              'test_help_overcloud_role_show'],
         'out_includes': [
-            '<ID>        ID of Overcloud Role to show.',
+            '<ROLE>      ID or name of the Overcloud Role to show.',
         ],
         'out_excludes': [
             'overcloud-role-list',
@@ -201,7 +201,7 @@ tests = [
                              'test_overcloud_delete_dashdash_help',
                              'test_help_overcloud_delete'],
         'out_includes': [
-            '<ID>        ID of Overcloud to show.',
+            '<OVERCLOUD>  ID or name of the Overcloud to delete.',
         ],
         'out_excludes': [
             'overcloud-list',
@@ -247,7 +247,7 @@ tests = [
                              'test_overcloud_show_dashdash_help',
                              'test_help_overcloud_show'],
         'out_includes': [
-            '<ID>        ID of Overcloud to show.',
+            '<OVERCLOUD>  ID or name of the Overcloud to show.',
         ],
         'out_excludes': [
             'overcloud-list',

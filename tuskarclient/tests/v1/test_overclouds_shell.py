@@ -50,7 +50,7 @@ class OvercloudShellTest(BaseOvercloudShellTest):
     def test_overcloud_show(self, mock_print_detail, mock_find_resource):
         mock_find_resource.return_value = mock_overcloud()
         args = empty_args()
-        args.id = '5'
+        args.overcloud = '5'
 
         self.shell.do_overcloud_show(self.tuskar, args, outfile=self.outfile)
         mock_find_resource.assert_called_with(self.tuskar.overclouds, '5')
@@ -89,7 +89,7 @@ class OvercloudShellTest(BaseOvercloudShellTest):
     def test_overcloud_update(self, mock_print_detail, mock_find_resource):
         mock_find_resource.return_value = mock_overcloud()
         args = empty_args()
-        args.id = '5'
+        args.overcloud = '5'
         args.name = 'my_overcloud'
         args.attributes = None
         args.roles = None
@@ -108,7 +108,7 @@ class OvercloudShellTest(BaseOvercloudShellTest):
     def test_overcloud_delete(self, mock_find_resource):
         mock_find_resource.return_value = mock_overcloud()
         args = empty_args()
-        args.id = '5'
+        args.overcloud = '5'
 
         self.shell.do_overcloud_delete(self.tuskar, args, outfile=self.outfile)
         self.tuskar.overclouds.delete.assert_called_with('5')

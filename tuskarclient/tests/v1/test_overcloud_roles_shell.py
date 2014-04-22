@@ -45,7 +45,7 @@ class OvercloudRoleShellTest(tutils.TestCase):
     def test_overcloud_role_show(self, mock_print_detail, mock_find_resource):
         mock_find_resource.return_value = mock_overcloud()
         args = empty_args()
-        args.id = '5'
+        args.role = '5'
 
         self.shell.do_overcloud_role_show(self.tuskar, args,
                                           outfile=self.outfile)
@@ -93,7 +93,7 @@ class OvercloudRoleShellTest(tutils.TestCase):
     def test_overcloud_role_update(self, mock_print, mock_find_resource):
         mock_find_resource.return_value = mock_overcloud()
         args = empty_args()
-        args.id = '5'
+        args.role = '5'
         args.name = 'My Overcloud Role'
         args.description = 'This is an Overcloud Role.'
         args.image_name = 'image'
@@ -117,7 +117,7 @@ class OvercloudRoleShellTest(tutils.TestCase):
     def test_overcloud_role_delete(self, mock_find_resource):
         mock_find_resource.return_value = mock_overcloud()
         args = empty_args()
-        args.id = '5'
+        args.role = '5'
 
         self.shell.do_overcloud_role_delete(self.tuskar, args,
                                             outfile=self.outfile)
