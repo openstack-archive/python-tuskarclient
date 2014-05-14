@@ -21,6 +21,8 @@ import logging
 import logging.handlers
 import sys
 
+import six
+
 from tuskarclient import client
 import tuskarclient.common.utils as utils
 from tuskarclient.openstack.common.apiclient import exceptions as exc
@@ -223,7 +225,7 @@ def main():
     try:
         TuskarShell(sys.argv[1:]).run()
     except exc.CommandError as e:
-        print(e.message, file=sys.stderr)
+        print(six.text_type(e), file=sys.stderr)
     except Exception as e:
         logger.exception("Exiting due to an error:")
         sys.exit(1)
