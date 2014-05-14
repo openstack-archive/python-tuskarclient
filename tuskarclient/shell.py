@@ -223,7 +223,7 @@ def main():
     try:
         TuskarShell(sys.argv[1:]).run()
     except exc.CommandError as e:
-        print(e.message, file=sys.stderr)
+        print(unicode(e), file=sys.stderr)
     except Exception as e:
         logger.exception("Exiting due to an error:")
         sys.exit(1)
