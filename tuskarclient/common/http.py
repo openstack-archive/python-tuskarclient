@@ -18,6 +18,8 @@ import logging
 import os
 import socket
 
+import requests
+
 from six.moves import http_client as httplib
 from six.moves.urllib import parse as urlparse
 from six import StringIO
@@ -169,10 +171,15 @@ class HTTPClient(object):
 
         if 400 <= resp.status < 600:
             LOG.warn("Request returned failure status.")
-            # NOTE(viktors): from_response() method checks for `status_code`
-            # attribute, instead of `status`, so we should add it to response
-            resp.status_code = resp.status
-            raise exc.from_response(resp, method, conn_url)
+            # NOTE(akrivoka): from_response() method expects a
+            # requests.Response object so we have to convert from
+            # httplib.HTTPResponse
+            response = requests.Response()
+            response.status_code = resp.status
+            response.headers = requests.structures.CaseInsensitiveDict()
+            response.headers.update(dict(resp.getheaders()))
+            response._content = resp.read()
+            raise exc.from_response(response, method, conn_url)
         elif resp.status in (301, 302, 305):
             # Redirected. Reissue the request to the new location.
             new_location = resp.getheader('location')
