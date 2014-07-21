@@ -42,7 +42,7 @@ class HTTPMultipleChoices(exc.HttpError):
                                     self.details)
 
 
-#NOTE(bcwaldon): Build a mapping of HTTP codes to corresponding exception
+# NOTE(bcwaldon): Build a mapping of HTTP codes to corresponding exception
 # classes
 _code_map = {}
 for obj_name in dir(sys.modules[__name__]):

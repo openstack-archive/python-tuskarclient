@@ -19,7 +19,6 @@ import os
 import socket
 
 import requests
-
 from six.moves import http_client as httplib
 from six.moves.urllib import parse as urlparse
 from six import StringIO
@@ -27,7 +26,7 @@ from six import StringIO
 try:
     import ssl
 except ImportError:
-    #TODO(bcwaldon): Handle this failure more gracefully
+    # TODO(bcwaldon): Handle this failure more gracefully
     pass
 
 try:

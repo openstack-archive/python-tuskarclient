@@ -12,11 +12,11 @@
 
 import argparse
 import copy
-import fixtures
 from gettext import gettext as _
 import os
 import sys
 
+import fixtures
 from six import StringIO
 import testtools
 

@@ -10,11 +10,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tuskarclient.tests import utils as tutils
+import mock
 
 from tuskarclient import client
-
-import mock
+from tuskarclient.tests import utils as tutils
 
 
 class ClientGetEndpointTest(tutils.TestCase):

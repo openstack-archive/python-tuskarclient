@@ -13,13 +13,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tuskarclient.tests import utils as tutils
+import mock
 
 from tuskarclient.common import http
 from tuskarclient import exc as tuskar_exc
 from tuskarclient.openstack.common.apiclient import exceptions as exc
-
-import mock
+from tuskarclient.tests import utils as tutils
 
 fixtures = {}
 
