@@ -22,4 +22,5 @@ class ClientTest(tutils.TestCase):
         self.client = client.Client(self.endpoint)
 
     def test_managers_present(self):
-        pass
+        self.assertThat(self.client, tutils.HasManager('PlanManager',
+                                                       'plans'))

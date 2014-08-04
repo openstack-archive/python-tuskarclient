@@ -11,6 +11,7 @@
 #    under the License.
 
 from tuskarclient.common import http
+from tuskarclient.v2 import plans
 
 
 class Client(object):
@@ -23,3 +24,4 @@ class Client(object):
 
     def __init__(self, *args, **kwargs):
         self.http_client = http.HTTPClient(*args, **kwargs)
+        self.plans = plans.PlanManager(self.http_client)
