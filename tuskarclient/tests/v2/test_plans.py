@@ -24,3 +24,17 @@ class PlanManagerTest(tutils.TestCase):
         super(PlanManagerTest, self).setUp()
         self.api = mock.Mock()
         self.pm = plans.PlanManager(self.api)
+
+    def test_get(self):
+        """Test a standard GET operation to read/retrieve the plan."""
+        self.pm._get = mock.Mock(return_value='fake_plan')
+
+        self.assertEqual(self.pm.get('fake_plan'), 'fake_plan')
+        self.pm._get.assert_called_with('/v2/plans/fake_plan')
+
+    def test_get_404(self):
+        """Test a 404 response to a standard GET."""
+        self.pm._get = mock.Mock(return_value=None)
+
+        self.assertEqual(self.pm.get('fake_plan'), None)
+        self.pm._get.assert_called_with('/v2/plans/fake_plan')

@@ -38,3 +38,14 @@ class PlanManager(base.Manager):
             return '/v2/plans/%s' % plan_id
 
         return '/v2/plans'
+
+    def get(self, plan_uuid):
+        """Get the Plan by its UUID.
+
+        :param plan_uuid: UUID of the Plan.
+        :type plan_uuid: string
+
+        :return: A Plan instance or None if its not found.
+        :rtype: tuskarclient.v2.plans.Plan or None
+        """
+        return self._get(self._single_path(plan_uuid))
