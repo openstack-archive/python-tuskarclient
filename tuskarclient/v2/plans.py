@@ -49,3 +49,11 @@ class PlanManager(base.Manager):
         :rtype: tuskarclient.v2.plans.Plan or None
         """
         return self._get(self._single_path(plan_uuid))
+
+    def list(self):
+        """Get a list of the existing Plans
+
+        :return: A list of plans or an empty list if none are found.
+        :rtype: [tuskarclient.v2.plans.Plan] or []
+        """
+        return self._list(self._path())

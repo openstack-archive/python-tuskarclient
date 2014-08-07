@@ -38,3 +38,10 @@ class PlanManagerTest(tutils.TestCase):
 
         self.assertEqual(self.pm.get('fake_plan'), None)
         self.pm._get.assert_called_with('/v2/plans/fake_plan')
+
+    def test_list(self):
+        """Test retrieving a list of plans via GET."""
+        self.pm._list = mock.Mock(return_value=['fake_plan'])
+
+        self.assertEqual(self.pm.list(), ['fake_plan'])
+        self.pm._list.assert_called_with('/v2/plans')
