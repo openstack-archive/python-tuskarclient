@@ -45,3 +45,15 @@ class PlanManagerTest(tutils.TestCase):
 
         self.assertEqual(self.pm.list(), ['fake_plan'])
         self.pm._list.assert_called_with('/v2/plans')
+
+    def test_create(self):
+        """Test creating a new plan via POST."""
+        self.pm._create = mock.Mock(return_value=['fake_plan'])
+
+        self.assertEqual(
+            self.pm.create(dummy='dummy plan data'),
+            ['fake_plan'])
+
+        self.pm._create.assert_called_with(
+            '/v2/plans',
+            {'dummy': 'dummy plan data'})

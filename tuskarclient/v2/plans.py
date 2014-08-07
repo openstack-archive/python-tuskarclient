@@ -57,3 +57,14 @@ class PlanManager(base.Manager):
         :rtype: [tuskarclient.v2.plans.Plan] or []
         """
         return self._list(self._path())
+
+    def create(self, **fields):
+        """Create a new Plan.
+
+        :param fields: A set of key/value pairs representing a Plan.
+        :type fields: string
+
+        :return: A Plan instance or None if its not found.
+        :rtype: tuskarclient.v1.plans.Plan
+        """
+        return self._create(self._path(), fields)
