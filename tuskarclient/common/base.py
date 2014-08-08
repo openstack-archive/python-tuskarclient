@@ -112,3 +112,8 @@ class Manager(object):
 
     def _delete(self, url):
         self.api.raw_request('DELETE', url)
+
+    def _patch(self, url, body, response_key=None):
+        resp, body = self.api.json_request('PATCH', url, body=body)
+        if body:
+            return self.resource_class(self, body)
