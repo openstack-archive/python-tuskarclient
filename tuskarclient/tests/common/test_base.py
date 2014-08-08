@@ -43,6 +43,21 @@ class ManagerTest(tutils.TestCase):
                                         obj_class='obj_class',
                                         body='body', expect_single=True)
 
+    def test_patch(self):
+        fake_response = mock.Mock()
+        fake_response.status = 200
+
+        self.m.resource_class = mock.Mock(
+            return_value='fake_resource_class_instance')
+
+        self.m.api.json_request = mock.Mock(
+            return_value=(fake_response, 'fake_body'))
+        got = self.m._patch('url', 'body', response_key='response_key')
+
+        self.assertEqual('fake_resource_class_instance', got)
+        self.m.api.json_request.assert_called_with('PATCH', 'url', body='body')
+        self.m.resource_class.assert_called_with(self.m, 'fake_body')
+
     def test_path(self):
         self.assertRaises(NotImplementedError, self.m._path)
 
