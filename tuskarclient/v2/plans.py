@@ -82,3 +82,14 @@ class PlanManager(base.Manager):
         :rtype: tuskarclient.v2.plans.Plan or None
         """
         return self._patch(self._single_path(plan_uuid), fields)
+
+    def delete(self, plan_uuid):
+        """Delete a Plan.
+
+        :param plan_uuid: uuid of the Plan.
+        :type plan_uuid: string
+
+        :return: None
+        :rtype: None
+        """
+        return self._delete(self._single_path(plan_uuid))
