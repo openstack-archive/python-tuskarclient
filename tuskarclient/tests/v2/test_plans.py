@@ -57,3 +57,15 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._create.assert_called_with(
             '/v2/plans',
             {'dummy': 'dummy plan data'})
+
+    def test_patch(self):
+        """Test patching a plan."""
+        self.pm._patch = mock.Mock(return_value=['fake_plan'])
+
+        self.assertEqual(
+            self.pm.patch('42', dummy='dummy plan data'),
+            ['fake_plan'])
+
+        self.pm._patch.assert_called_with(
+            '/v2/plans/42',
+            {'dummy': 'dummy plan data'})
