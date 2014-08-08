@@ -68,3 +68,17 @@ class PlanManager(base.Manager):
         :rtype: tuskarclient.v1.plans.Plan
         """
         return self._create(self._path(), fields)
+
+    def patch(self, plan_uuid, **fields):
+        """Patch an existing Plan.
+
+        :param plan_uuid: UUID of the Plan.
+        :type plan_uuid: string
+
+        :param fields: A set of key/value pairs representing the Plan.
+        :type fields: string
+
+        :return: A Plan instance or None if its not found.
+        :rtype: tuskarclient.v2.plans.Plan or None
+        """
+        return self._patch(self._single_path(plan_uuid), fields)
