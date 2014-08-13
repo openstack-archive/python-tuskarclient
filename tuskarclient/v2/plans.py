@@ -116,3 +116,17 @@ class PlanManager(base.Manager):
         :rtype: tuskarclient.v2.plans.Plan
         """
         return self._create(self._roles_path(plan_uuid), {'uuid': role_uuid})
+
+    def remove_role(self, plan_uuid, role_uuid):
+        """Removes a Role from a Plan.
+
+        :param plan_uuid: UUID of the Plan.
+        :type plan_uuid: string
+
+        :param role_uuid: UUID of the Role.
+        :type role_uuid: string
+
+        :return: None
+        :rtype: None
+        """
+        return self._delete(self._roles_path(plan_uuid, role_uuid))
