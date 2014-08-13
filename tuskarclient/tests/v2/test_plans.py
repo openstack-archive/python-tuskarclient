@@ -96,3 +96,11 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._create.assert_called_with(
             '/v2/plans/42/roles',
             {'uuid': 'qwert12345'})
+
+    def test_remove_role(self):
+        """Test assigning Role to a Plan."""
+        self.pm._delete = mock.Mock(return_value=None)
+
+        self.assertEqual(self.pm.remove_role('42', role_uuid='qwert12345'),
+                         None)
+        self.pm._delete.assert_called_with('/v2/plans/42/roles/qwert12345')
