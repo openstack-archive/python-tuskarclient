@@ -39,6 +39,15 @@ class PlanManager(base.Manager):
 
         return '/v2/plans'
 
+    def _roles_path(self, plan_id, role_id=None):
+        roles_path = '%s/roles' % self._path(plan_id)
+
+        if role_id:
+            return '%(roles_path)s/%(role_id)s' % {'roles_path': roles_path,
+                                                   'role_id': role_id}
+
+        return roles_path
+
     def get(self, plan_uuid):
         """Get the Plan by its UUID.
 
@@ -93,3 +102,17 @@ class PlanManager(base.Manager):
         :rtype: None
         """
         return self._delete(self._single_path(plan_uuid))
+
+    def add_role(self, plan_uuid, role_uuid):
+        """Adds a Role to a Plan.
+
+        :param plan_uuid: UUID of the Plan.
+        :type plan_uuid: string
+
+        :param role_uuid: UUID of the Role.
+        :type role_uuid: string
+
+        :return: A Plan instance or None if its not found.
+        :rtype: tuskarclient.v2.plans.Plan
+        """
+        return self._create(self._roles_path(plan_uuid), {'uuid': role_uuid})
