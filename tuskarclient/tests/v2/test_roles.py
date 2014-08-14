@@ -24,3 +24,10 @@ class RoleManagerTest(tutils.TestCase):
         super(RoleManagerTest, self).setUp()
         self.api = mock.Mock()
         self.rm = roles.RoleManager(self.api)
+
+    def test_list(self):
+        """Test retrieving a list of Roles via GET."""
+        self.rm._list = mock.Mock(return_value=['fake_role'])
+
+        self.assertEqual(self.rm.list(), ['fake_role'])
+        self.rm._list.assert_called_with('/v2/roles')
