@@ -76,3 +76,23 @@ class PlanManagerTest(tutils.TestCase):
 
         self.assertEqual(self.pm.delete(42), None)
         self.pm._delete.assert_called_with('/v2/plans/42')
+
+    def test_roles_path_with_role_id(self):
+        """Test for building path for Role using UUID."""
+        self.assertEqual(self.pm._roles_path('plan_42', 'role_abc'),
+                         '/v2/plans/plan_42/roles/role_abc')
+
+    def test_roles_path_without_role_id(self):
+        """Test for building path for Role for POST requests."""
+        self.assertEqual(self.pm._roles_path('plan_42'),
+                         '/v2/plans/plan_42/roles')
+
+    def test_add_role(self):
+        """Test assigning Role to a Plan."""
+        self.pm._create = mock.Mock(return_value='dummy plan')
+
+        self.assertEqual(self.pm.add_role('42', role_uuid='qwert12345'),
+                         'dummy plan')
+        self.pm._create.assert_called_with(
+            '/v2/plans/42/roles',
+            {'uuid': 'qwert12345'})
