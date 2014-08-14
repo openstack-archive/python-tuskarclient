@@ -38,3 +38,11 @@ class RoleManager(base.Manager):
             return '/v2/roles/%s' % role_id
 
         return '/v2/roles'
+
+    def list(self):
+        """Get a list of the existing Roles
+
+        :return: A list of Roles or an empty list if none are found.
+        :rtype: [tuskarclient.v2.plans.Role] or []
+        """
+        return self._list(self._path())
