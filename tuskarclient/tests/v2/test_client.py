@@ -24,3 +24,5 @@ class ClientTest(tutils.TestCase):
     def test_managers_present(self):
         self.assertThat(self.client, tutils.HasManager('PlanManager',
                                                        'plans'))
+        self.assertThat(self.client, tutils.HasManager('RoleManager',
+                                                       'roles'))

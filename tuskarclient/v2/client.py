@@ -12,6 +12,7 @@
 
 from tuskarclient.common import http
 from tuskarclient.v2 import plans
+from tuskarclient.v2 import roles
 
 
 class Client(object):
@@ -25,3 +26,4 @@ class Client(object):
     def __init__(self, *args, **kwargs):
         self.http_client = http.HTTPClient(*args, **kwargs)
         self.plans = plans.PlanManager(self.http_client)
+        self.roles = roles.RoleManager(self.http_client)
