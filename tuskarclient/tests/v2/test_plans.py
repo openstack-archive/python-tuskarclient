@@ -63,12 +63,14 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._patch = mock.Mock(return_value=['fake_plan'])
 
         self.assertEqual(
-            self.pm.patch('42', dummy='dummy plan data'),
+            self.pm.patch('42', [{'name': 'dummy',
+                                  'value': 'dummy plan data'}]),
             ['fake_plan'])
 
         self.pm._patch.assert_called_with(
             '/v2/plans/42',
-            {'dummy': 'dummy plan data'})
+            [{'name': 'dummy',
+              'value': 'dummy plan data'}])
 
     def test_delete(self):
         """Test deleting/removing an plan via DELETE."""
