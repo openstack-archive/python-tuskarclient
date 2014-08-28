@@ -106,3 +106,15 @@ class PlanManagerTest(tutils.TestCase):
         self.assertEqual(self.pm.remove_role('42', role_uuid='qwert12345'),
                          None)
         self.pm._delete.assert_called_with('/v2/plans/42/roles/qwert12345')
+
+    def test_templates_path(self):
+        self.assertEqual(self.pm._templates_path('42'),
+                         '/v2/plans/42/templates')
+
+    def test_templates(self):
+        """Test a GET operation to retrieve the plan's templates."""
+        self.pm._get = mock.MagicMock()
+        self.pm._get.return_value.to_dict.return_value = 'fake_templates_dict'
+
+        self.assertEqual(self.pm.templates('fake_plan'), 'fake_templates_dict')
+        self.pm._get.assert_called_with('/v2/plans/fake_plan/templates')

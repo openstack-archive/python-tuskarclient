@@ -48,6 +48,11 @@ class PlanManager(base.Manager):
 
         return roles_path
 
+    def _templates_path(self, plan_id):
+        templates_path = '%s/templates' % self._path(plan_id)
+
+        return templates_path
+
     def get(self, plan_uuid):
         """Get the Plan by its UUID.
 
@@ -132,3 +137,18 @@ class PlanManager(base.Manager):
         :rtype: None
         """
         return self._delete(self._roles_path(plan_uuid, role_uuid))
+
+    def templates(self, plan_uuid):
+        """Gets template files from a Plan.
+
+        :param plan_uuid: UUID of the Plan.
+        :type plan_uuid: string
+
+        :return: Template files contents
+        :rtype: dict
+        """
+
+        # dirty hack as _get() will instantiate Plan with data
+        # coming from API response body
+        # and to_dict just get what we want
+        return self._get(self._templates_path(plan_uuid)).to_dict()
