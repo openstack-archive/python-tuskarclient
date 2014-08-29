@@ -76,3 +76,17 @@ class PlansShellTest(BasePlansShellTest):
         self.tuskar.plans.delete.assert_called_with('5')
         self.assertEqual('Deleted Plan "My Plan".\n',
                          self.outfile.getvalue())
+
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
+    def test_plan_create(self, mock_print_detail):
+        args = empty_args()
+        args.name = 'my_plan'
+        args.description = 'my plan description'
+
+        self.shell.do_plan_create(self.tuskar, args, outfile=self.outfile)
+        self.tuskar.plans.create.assert_called_with(
+            name='my_plan',
+            description='my plan description'
+        )
+        mock_print_detail.assert_called_with(
+            self.tuskar.plans.create.return_value, outfile=self.outfile)
