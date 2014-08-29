@@ -121,6 +121,12 @@ def attributes_formatter(attributes):
                     sorted(attributes.items()))
 
 
+def parameters_v2_formatter(parameters):
+    """Given a list of dicts format parameters output."""
+    return u"\n".join(attributes_formatter(parameter)
+                      for parameter in parameters)
+
+
 def counts_formatter(counts):
     """Given a list of dicts that represent Overcloud Roles output the
     Overcloud Role ID with the num_noces

@@ -13,6 +13,7 @@
 import sys
 
 import tuskarclient.common.formatting as fmt
+from tuskarclient.common import utils
 
 
 def do_plan_list(tuskar, args, outfile=sys.stdout):
@@ -25,3 +26,22 @@ def do_plan_list(tuskar, args, outfile=sys.stdout):
     }
 
     fmt.print_list(plans, fields, formatters, outfile=outfile)
+
+
+@utils.arg('plan', metavar="<PLAN>",
+           help="UUID of the Plan to show.")
+def do_plan_show(tuskar, args, outfile=sys.stdout):
+    """Show an individual Plan by its UUID."""
+    plan = utils.find_resource(tuskar.plans, args.plan)
+    print_plan_detail(plan, outfile=outfile)
+
+
+def print_plan_detail(plan, outfile=sys.stdout):
+    """Print detailed Plan information (for plan-show etc.)."""
+
+    formatters = {
+        'roles': fmt.parameters_v2_formatter,
+        'parameters': fmt.parameters_v2_formatter,
+    }
+    plan_dict = plan.to_dict()
+    fmt.print_dict(plan_dict, formatters, outfile=outfile)
