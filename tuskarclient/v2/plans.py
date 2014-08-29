@@ -12,6 +12,7 @@
 
 from tuskarclient.common import base
 from tuskarclient.openstack.common.apiclient import base as common_base
+from tuskarclient.v2 import roles
 
 
 class Plan(common_base.Resource):
@@ -21,6 +22,10 @@ class Plan(common_base.Resource):
     :param info: dictionary representing resource attributes
     :param loaded: prevent lazy-loading if set to True
     """
+
+    def __init__(self, manager, info, loaded=False):
+        super(Plan, self).__init__(manager, info, loaded=loaded)
+        self.roles = [roles.Role(None, role) for role in self.roles]
 
 
 class PlanManager(base.Manager):

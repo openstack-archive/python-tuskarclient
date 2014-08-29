@@ -14,6 +14,7 @@ import mock
 
 import tuskarclient.tests.utils as tutils
 from tuskarclient.v2 import plans
+from tuskarclient.v2 import roles
 
 
 class PlanManagerTest(tutils.TestCase):
@@ -118,3 +119,14 @@ class PlanManagerTest(tutils.TestCase):
 
         self.assertEqual(self.pm.templates('fake_plan'), 'fake_templates_dict')
         self.pm._get.assert_called_with('/v2/plans/fake_plan/templates')
+
+    def test_roles_subresource(self):
+        self.pm._get = mock.Mock(
+            return_value=plans.Plan(None,
+                                    {'roles': [
+                                        {'name': 'foo_role'},
+                                        {'name': 'bar_role'}
+                                    ]}))
+        test_roles = self.pm.get('42').roles
+        self.assertTrue(isinstance(test_roles, list))
+        self.assertTrue(isinstance(test_roles[0], roles.Role))
