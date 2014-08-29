@@ -65,3 +65,14 @@ class PlansShellTest(BasePlansShellTest):
         mock_find_resource.assert_called_with(self.tuskar.plans, '5')
         mock_print_detail.assert_called_with(mock_find_resource.return_value,
                                              outfile=self.outfile)
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
+    def test_plan_delete(self, mock_find_resource):
+        mock_find_resource.return_value = mock_plan()
+        args = empty_args()
+        args.plan = '5'
+
+        self.shell.do_plan_delete(self.tuskar, args, outfile=self.outfile)
+        self.tuskar.plans.delete.assert_called_with('5')
+        self.assertEqual('Deleted Plan "My Plan".\n',
+                         self.outfile.getvalue())
