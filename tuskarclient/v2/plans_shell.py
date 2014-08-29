@@ -56,3 +56,15 @@ def do_plan_delete(tuskar, args, outfile=sys.stdout):
     plan = utils.find_resource(tuskar.plans, args.plan)
     tuskar.plans.delete(plan.uuid)
     print(u'Deleted Plan "%s".' % plan.name, file=outfile)
+
+
+@utils.arg('name', help="Name of the Plan to create.")
+@utils.arg('-d', '--description', metavar="<DESCRIPTION>",
+           help='User-readable text describing the Plan.')
+def do_plan_create(tuskar, args, outfile=sys.stdout):
+    """Create a new plan."""
+    plan = tuskar.plans.create(
+        name=vars(args).get('name'),
+        description=vars(args).get('description')
+    )
+    print_plan_detail(plan, outfile=outfile)
