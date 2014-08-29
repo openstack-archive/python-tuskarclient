@@ -15,6 +15,7 @@ import six
 
 import tuskarclient.common.formatting as fmt
 import tuskarclient.tests.utils as tutils
+from tuskarclient.v2 import plans
 
 
 class PrintTest(tutils.TestCase):
@@ -98,4 +99,13 @@ class FormattersTest(tutils.TestCase):
         self.assertEqual(
             ("1=10\n2=20"),
             fmt.counts_formatter(resource_link),
+        )
+
+    def test_list_plan_roles_formatter(self):
+        roles = plans.Plan(None,
+                           {'roles': [{'name': 'foo_role'},
+                                      {'name': 'bar_role'}]}).roles
+        self.assertEqual(
+            "foo_role, bar_role",
+            fmt.list_plan_roles_formatter(roles)
         )

@@ -133,3 +133,8 @@ def counts_formatter(counts):
         pretty_counts.append(line)
 
     return u"\n".join(pretty_counts)
+
+
+def list_plan_roles_formatter(roles):
+    """Given a list of Roles format roles' names into row."""
+    return u", ".join(role.name for role in roles)
