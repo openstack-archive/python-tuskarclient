@@ -141,7 +141,12 @@ class PlanManager(base.Manager):
         :return: None
         :rtype: None
         """
-        return self._delete(self._roles_path(plan_uuid, role_uuid))
+        resp, body = self.api.json_request(
+            'DELETE',
+            self._roles_path(plan_uuid, role_uuid)
+        )
+        if body:
+            return self.resource_class(self, body)
 
     def templates(self, plan_uuid):
         """Gets template files from a Plan.
