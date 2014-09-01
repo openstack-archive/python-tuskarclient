@@ -68,3 +68,15 @@ def do_plan_create(tuskar, args, outfile=sys.stdout):
         description=vars(args).get('description')
     )
     print_plan_detail(plan, outfile=outfile)
+
+
+@utils.arg('plan_uuid', help="UUID of the Plan to assign role to.")
+@utils.arg('-r', '--role-uuid', metavar="<ROLE UUID>",
+           required=True, help='UUID of the Role to be assigned.')
+def do_plan_add_role(tuskar, args, outfile=sys.stdout):
+    """Associate role to a plan."""
+    plan = tuskar.plans.add_role(
+        vars(args).get('plan_uuid'),
+        vars(args).get('role_uuid')
+    )
+    print_plan_detail(plan, outfile=outfile)
