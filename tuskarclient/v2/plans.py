@@ -138,10 +138,14 @@ class PlanManager(base.Manager):
         :param role_uuid: UUID of the Role.
         :type role_uuid: string
 
-        :return: None
-        :rtype: None
+        :return: A Plan instance or None if its not found.
+        :rtype: tuskarclient.v2.plans.Plan
         """
-        return self._delete(self._roles_path(plan_uuid, role_uuid))
+        resp, body = self.api.json_request(
+            'DELETE',
+            self._roles_path(plan_uuid, role_uuid)
+        )
+        return self.resource_class(self, body)
 
     def templates(self, plan_uuid):
         """Gets template files from a Plan.

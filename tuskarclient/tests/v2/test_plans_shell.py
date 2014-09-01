@@ -102,3 +102,15 @@ class PlansShellTest(BasePlansShellTest):
 
         mock_print_detail.assert_called_with(
             self.tuskar.plans.add_role.return_value, outfile=self.outfile)
+
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
+    def test_remove_role(self, mock_print_detail):
+        args = empty_args()
+        args.plan_uuid = '42'
+        args.role_uuid = 'role_uuid'
+
+        self.shell.do_plan_remove_role(self.tuskar, args, outfile=self.outfile)
+        self.tuskar.plans.remove_role.assert_called_with('42', 'role_uuid')
+
+        mock_print_detail.assert_called_with(
+            self.tuskar.plans.remove_role.return_value, outfile=self.outfile)

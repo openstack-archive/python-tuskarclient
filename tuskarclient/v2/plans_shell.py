@@ -80,3 +80,15 @@ def do_plan_add_role(tuskar, args, outfile=sys.stdout):
         vars(args).get('role_uuid')
     )
     print_plan_detail(plan, outfile=outfile)
+
+
+@utils.arg('plan_uuid', help="UUID of the Plan to remove role from.")
+@utils.arg('-r', '--role-uuid', metavar="<ROLE UUID>",
+           required=True, help='UUID of the Role to be removed.')
+def do_plan_remove_role(tuskar, args, outfile=sys.stdout):
+    """Remove role from a plan."""
+    plan = tuskar.plans.remove_role(
+        vars(args).get('plan_uuid'),
+        vars(args).get('role_uuid')
+    )
+    print_plan_detail(plan, outfile=outfile)
