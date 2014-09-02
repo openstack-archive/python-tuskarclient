@@ -142,6 +142,5 @@ def counts_formatter(counts):
 
 
 def list_plan_roles_formatter(roles):
-    """Given a list of Roles format roles' names into row.
-    """
-    return u", ".join([role.name for role in roles])
+    """Given a list of Roles format roles' names into row."""
+    return u", ".join(role.name for role in roles)
