@@ -92,3 +92,14 @@ def do_plan_remove_role(tuskar, args, outfile=sys.stdout):
         vars(args).get('role_uuid')
     )
     print_plan_detail(plan, outfile=outfile)
+
+
+@utils.arg('plan_uuid', help="UUID of the Plan to remove role from.")
+@utils.arg('-A', '--attribute', dest='attributes', metavar='<KEY1=VALUE1>',
+           help='This can be specified multiple times.',
+           action='append')
+def do_plan_patch(tuskar, args, outfile=sys.stdout):
+    attributes = [{'name': pair[0], 'value': pair[1]}
+                  for pair
+                  in utils.format_attributes(args.attributes).items()]
+    return tuskar.plans.patch(args.plan_uuid, attributes)

@@ -19,8 +19,7 @@ from tuskarclient.v2 import plans_shell
 
 def empty_args():
     args = mock.Mock(spec=[])
-    for attr in ['uuid', 'name', 'description', 'capacities', 'slots',
-                 'resource_class']:
+    for attr in ['uuid', 'name', 'description', 'attributes']:
         setattr(args, attr, None)
     return args
 
@@ -114,3 +113,15 @@ class PlansShellTest(BasePlansShellTest):
 
         mock_print_detail.assert_called_with(
             self.tuskar.plans.remove_role.return_value, outfile=self.outfile)
+
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
+    def test_plan_patch(self, mock_print_detail):
+        args = empty_args()
+        args.plan_uuid = 'plan_uuid'
+        args.attributes = ['foo_name=foo_value',
+                           'bar_name=bar_value']
+        attributes = [{'name': 'foo_name', 'value': 'foo_value'},
+                      {'name': 'bar_name', 'value': 'bar_value'}]
+        self.shell.do_plan_patch(self.tuskar, args, outfile=self.outfile)
+        self.tuskar.plans.patch.assert_called_with('plan_uuid',
+                                                   attributes)
