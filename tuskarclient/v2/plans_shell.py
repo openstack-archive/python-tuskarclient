@@ -10,6 +10,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import print_function
+
 import sys
 
 import tuskarclient.common.formatting as fmt
@@ -45,3 +47,12 @@ def print_plan_detail(plan, outfile=sys.stdout):
     }
     plan_dict = plan.to_dict()
     fmt.print_dict(plan_dict, formatters, outfile=outfile)
+
+
+@utils.arg('plan', metavar="<PLAN>",
+           help="UUID of the plan to delete.")
+def do_plan_delete(tuskar, args, outfile=sys.stdout):
+    """Delete an plan by its UUID."""
+    plan = utils.find_resource(tuskar.plans, args.plan)
+    tuskar.plans.delete(plan.uuid)
+    print(u'Deleted Plan "%s".' % plan.name, file=outfile)
