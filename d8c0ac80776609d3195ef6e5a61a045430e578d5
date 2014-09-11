@@ -1,0 +1,10 @@
+Verified+2: Jenkins
+Code-Review+2: Tzu-Mainn Chen <tzumainn@redhat.com>
+Workflow+1: Tzu-Mainn Chen <tzumainn@redhat.com>
+Code-Review+2: Jay Dobies <jason.dobies@redhat.com>
+Code-Review+1: Dougal Matthews <dougal@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Thu, 11 Sep 2014 12:45:49 +0000
+Reviewed-on: https://review.openstack.org/118320
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
