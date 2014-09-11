@@ -12,6 +12,7 @@
 
 from __future__ import print_function
 
+import os
 import sys
 
 import tuskarclient.common.formatting as fmt
@@ -103,3 +104,28 @@ def do_plan_patch(tuskar, args, outfile=sys.stdout):
                   for pair
                   in utils.format_attributes(args.attributes).items()]
     return tuskar.plans.patch(args.plan_uuid, attributes)
+
+
+@utils.arg('plan_uuid',
+           help="UUID of the Plan its Templates will be retrieved.")
+@utils.arg('-O', '--output-dir', metavar='<OUTPUT DIR>',
+           required=True,
+           help='Directory to write template files into')
+def do_plan_templates(tuskar, args, outfile=sys.stdout):
+    # check that output directory exists and we can write into it
+    output_dir = args.output_dir
+
+    if not os.path.isdir(output_dir):
+        os.mkdir(output_dir)
+
+    # retrieve templates
+    templates = tuskar.plans.templates(args.plan_uuid)
+
+    # write file for each key-value in templates
+    print("Following templates has been written:")
+    for template_name, template_content in templates.items():
+        filename = os.path.join(output_dir, template_name)
+        template_file = open(filename, 'w+')
+        template_file.write(template_content)
+        template_file.close()
+        print(filename)
