@@ -130,3 +130,40 @@ class PlansShellTest(BasePlansShellTest):
             sorted(attributes, key=lambda k: k['name']),
             sorted(self.tuskar.plans.patch.call_args[0][1],
                    key=lambda k: k['name']))
+
+    @mock.patch('tuskarclient.v2.plans_shell.print', create=True)
+    @mock.patch('tuskarclient.v2.plans_shell.os.mkdir', create=True)
+    @mock.patch('tuskarclient.v2.plans_shell.os.path.isdir', create=True)
+    @mock.patch('tuskarclient.v2.plans_shell.open', create=True)
+    def test_plan_templates(
+            self, mock_open, mock_isdir, mock_mkdir, mock_print):
+        args = empty_args()
+        args.plan_uuid = 'plan_uuid'
+        args.output_dir = 'outdir/subdir'
+
+        mock_isdir.return_value = False
+        self.tuskar.plans.templates.return_value = {
+            'name_foo': 'value_foo',
+            'name_bar': 'value_bar'
+        }
+
+        self.shell.do_plan_templates(self.tuskar, args, outfile=self.outfile)
+
+        mock_isdir.assert_called_with('outdir/subdir')
+        mock_mkdir.assert_called_with('outdir/subdir')
+
+        self.tuskar.plans.templates.assert_called_with('plan_uuid')
+
+        mock_open.assert_any_call('outdir/subdir/name_foo', 'w+')
+        mock_open.assert_any_call('outdir/subdir/name_bar', 'w+')
+        self.assertEqual(mock_open.call_count, 2)
+
+        mock_opened_file = mock_open.return_value.__enter__.return_value
+        mock_opened_file.write.assert_any_call('value_foo')
+        mock_opened_file.write.assert_any_call('value_bar')
+        self.assertEqual(mock_opened_file.write.call_count, 2)
+
+        mock_print.assert_any_call('Following templates has been written:')
+        mock_print.assert_any_call('outdir/subdir/name_foo')
+        mock_print.assert_any_call('outdir/subdir/name_bar')
+        self.assertEqual(mock_print.call_count, 3)
