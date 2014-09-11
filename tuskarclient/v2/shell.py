@@ -12,9 +12,11 @@
 
 from tuskarclient.common import utils
 from tuskarclient.v2 import plans_shell
+from tuskarclient.v2 import roles_shell
 
 COMMAND_MODULES = [
-    plans_shell
+    plans_shell,
+    roles_shell
 ]
 
 
