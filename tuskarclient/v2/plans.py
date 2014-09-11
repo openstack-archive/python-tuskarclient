@@ -28,6 +28,15 @@ class Plan(common_base.Resource):
         self.roles = [roles.Role(None, role) for role in self.roles]
 
 
+class Templates(common_base.Resource):
+    """Represents sets of templates of a Plan in the Tuskar API.
+
+    :param manager: Manager object
+    :param info: dictionary representing resource attributes
+    :param loaded: prevent lazy-loading if set to True
+    """
+
+
 class PlanManager(base.Manager):
     """PlanManager interacts with the Tuskar API and provides CRUD
     operations for the Plan type.
@@ -157,7 +166,5 @@ class PlanManager(base.Manager):
         :rtype: dict
         """
 
-        # dirty hack as _get() will instantiate Plan with data
-        # coming from API response body
-        # and to_dict just get what we want
-        return self._get(self._templates_path(plan_uuid)).to_dict()
+        return self._get(self._templates_path(plan_uuid),
+                         obj_class=Templates).to_dict()
