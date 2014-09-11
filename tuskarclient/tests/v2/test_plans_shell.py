@@ -25,6 +25,13 @@ def empty_args():
     return args
 
 
+def mock_plan():
+    plan = mock.Mock()
+    plan.uuid = '5'
+    plan.name = 'My Plan'
+    return plan
+
+
 class BasePlansShellTest(tutils.TestCase):
 
     def setUp(self):
@@ -46,3 +53,15 @@ class PlansShellTest(BasePlansShellTest):
             self.tuskar.plans.list.return_value, mock.ANY, mock.ANY,
             outfile=self.outfile
         )
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
+    def test_plan_show(self, mock_print_detail, mock_find_resource):
+        mock_find_resource.return_value = mock_plan()
+        args = empty_args()
+        args.plan = '5'
+
+        self.shell.do_plan_show(self.tuskar, args, outfile=self.outfile)
+        mock_find_resource.assert_called_with(self.tuskar.plans, '5')
+        mock_print_detail.assert_called_with(mock_find_resource.return_value,
+                                             outfile=self.outfile)
