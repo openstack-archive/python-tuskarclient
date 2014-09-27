@@ -21,11 +21,15 @@ Reference
 
     ref/index
     ref/v1/index
+    ref/v2/index
 
 Command-line Tool
 =================
 
-The client can also be used with the CLI.
+.. toctree::
+    :maxdepth: 1
+
+    cli/v2/index
 
 Man Pages
 =========
