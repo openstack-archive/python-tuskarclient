@@ -15,7 +15,7 @@ import six
 
 from tuskarclient.openstack.common.apiclient import exceptions
 import tuskarclient.tests.utils as tutils
-from tuskarclient.v1.overcloud_roles import OvercloudRole
+from tuskarclient.v1 import overcloud_roles
 from tuskarclient.v1 import overclouds_shell
 
 
@@ -196,7 +196,7 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
     def test_create_roles(self, mock_print_detail):
         self.args.roles = ['foo=10']
         self.tuskar.overcloud_roles.list.return_value = [
-            OvercloudRole(None, {'name': 'foo', 'id': 1})
+            overcloud_roles.OvercloudRole(None, {'name': 'foo', 'id': 1})
         ]
 
         self.create(self.tuskar, self.args, outfile=self.outfile)
@@ -214,7 +214,7 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
     def test_create_roles_duplicate(self, mock_print_detail):
         self.args.roles = ['foo=10', 'foo=20']
         self.tuskar.overcloud_roles.list.return_value = [
-            OvercloudRole(None, {'name': 'foo', 'id': 1})
+            overcloud_roles.OvercloudRole(None, {'name': 'foo', 'id': 1})
         ]
 
         self.assertRaises(
@@ -228,7 +228,7 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
     def test_create_roles_invalid_structure(self, mock_print_detail):
         self.args.roles = ['foo=10', '120']
         self.tuskar.overcloud_roles.list.return_value = [
-            OvercloudRole(None, {'name': 'foo', 'id': 1})
+            overcloud_roles.OvercloudRole(None, {'name': 'foo', 'id': 1})
         ]
 
         self.assertRaises(
@@ -242,7 +242,7 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
     def test_create_roles_multiple_equals(self, mock_print_detail):
         self.args.roles = ['foo=foo=0']
         self.tuskar.overcloud_roles.list.return_value = [
-            OvercloudRole(None, {'name': 'foo', 'id': 1})
+            overcloud_roles.OvercloudRole(None, {'name': 'foo', 'id': 1})
         ]
 
         self.assertRaises(
@@ -256,7 +256,7 @@ class OvercloudRoleShellTest(BaseOvercloudShellTest):
     def test_create_roles_with_id(self, mock_print_detail):
         self.args.roles = ['12345=10']
         self.tuskar.overcloud_roles.list.return_value = [
-            OvercloudRole(None, {'name': 'foo', 'id': 1})
+            overcloud_roles.OvercloudRole(None, {'name': 'foo', 'id': 1})
         ]
 
         self.create(self.tuskar, self.args, outfile=self.outfile)
