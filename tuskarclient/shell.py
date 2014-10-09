@@ -195,9 +195,9 @@ class TuskarShell(object):
 
         parser.add_argument('--tuskar-api-version',
                             default=utils.env('TUSKAR_API_VERSION',
-                                              default='1'),
+                                              default='2'),
                             help='Defaults to env[TUSKAR_API_VERSION] '
-                            'or 1')
+                            'or 2')
 
         parser.add_argument('--tuskar_api_version',
                             help=argparse.SUPPRESS)
