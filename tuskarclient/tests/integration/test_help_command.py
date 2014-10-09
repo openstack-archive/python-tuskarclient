@@ -307,7 +307,7 @@ tests = [
 def create_test_method(command, expected_values):
     def test_command_method(self):
         self.assertThat(
-            self.run_tuskar(command),
+            self.run_tuskar("--tuskar-api-version 1 %s" % command),
             tutils.CommandOutputMatches(
                 out_str=expected_values.get('out_string'),
                 out_inc=expected_values.get('out_includes'),
