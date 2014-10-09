@@ -81,10 +81,8 @@ class HttpClientRawRequestTest(tutils.TestCase):
         self.client.raw_request(provided_method,
                                 provided_url,
                                 **provided_args)
-        self.client._http_request.\
-            assert_called_once_with(expected_url,
-                                    expected_method,
-                                    **expected_args)
+        self.client._http_request.assert_called_once_with(
+            expected_url, expected_method, **expected_args)
 
     def test_raw_request_set_default_headers_with_empty_kwargs(self):
         args = self.call_args.copy()

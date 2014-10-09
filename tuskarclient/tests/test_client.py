@@ -356,8 +356,8 @@ class ClientClientTest(tutils.TestCase):
             'any_other_key': 'any_other_value',
         }
         mocked_client_class = mock.MagicMock()
-        mocked_import_versioned_module.return_value.Client = \
-            mocked_client_class
+        mocked_import_versioned_module.return_value.Client = (
+            mocked_client_class)
         client.Client(api_version, *args, **kwargs)
         mocked_import_versioned_module.assert_called_with(
             api_version,

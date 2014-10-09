@@ -175,8 +175,8 @@ class CommandOutputMissingMismatch(object):
         self.out_inc = out_inc
 
     def describe(self):
-        return "%s '%s' should contain '%s'"\
-            % (self.type, self.out, self.out_inc)
+        return "%s '%s' should contain '%s'" % (
+            self.type, self.out, self.out_inc)
 
     def get_details(self):
         return {}
@@ -192,8 +192,8 @@ class CommandOutputExtraMismatch(object):
         self.out_exc = out_exc
 
     def describe(self):
-        return "%s '%s' should not contain '%s'"\
-            % (self.type, self.out, self.out_exc)
+        return "%s '%s' should not contain '%s'" % (
+            self.type, self.out, self.out_exc)
 
     def get_details(self):
         return {}
@@ -205,8 +205,8 @@ class CommandOutputReturnCodeMismatch(object):
         self.ret_exp = ret_exp
 
     def describe(self):
-        return "Return code is '%s' but expected '%s'"\
-            % (self.ret, self.ret_exp)
+        return "Return code is '%s' but expected '%s'" % (
+            self.ret, self.ret_exp)
 
     def get_details(self):
         return {}

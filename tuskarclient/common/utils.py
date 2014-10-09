@@ -87,12 +87,12 @@ def find_resource(manager, name_or_id):
 
     num_matches = len(matches)
     if num_matches == 0:
-        msg = "No %s with name '%s' exists." % \
-              (manager.resource_class.__name__.lower(), name_or_id)
+        msg = "No %s with name '%s' exists." % (
+              manager.resource_class.__name__.lower(), name_or_id)
         raise exc.CommandError(msg)
     elif num_matches > 1:
-        msg = "Multiple instances of %s with name '%s' exist." % \
-              (manager.resource_class.__name__.lower(), name_or_id)
+        msg = "Multiple instances of %s with name '%s' exist." % (
+              manager.resource_class.__name__.lower(), name_or_id)
         raise exc.CommandError(msg)
 
     return matches[0]

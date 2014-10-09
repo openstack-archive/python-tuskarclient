@@ -45,17 +45,17 @@ class TuskarShell(object):
 
     def _prepare_parsers(self):
         nonversioned_parser = self._nonversioned_parser()
-        self.partial_args =\
-            nonversioned_parser.parse_known_args(self.raw_args)[0]
-        self.parser, self.subparsers =\
-            self._parser(self.partial_args.tuskar_api_version)
+        self.partial_args = (
+            nonversioned_parser.parse_known_args(self.raw_args)[0])
+        self.parser, self.subparsers = (
+            self._parser(self.partial_args.tuskar_api_version))
 
     def run(self):
         '''Run the CLI. Parse arguments and do the respective action.'''
 
         # run self.do_help() if we have no raw_args at all or just -h/--help
-        if not self.raw_args\
-                or self.raw_args in (['-h'], ['--help']):
+        if (not self.raw_args
+                or self.raw_args in (['-h'], ['--help'])):
             self.do_help(self.partial_args)
             return 0
 
