@@ -23,6 +23,7 @@ import sys
 
 import six
 
+import tuskarclient
 from tuskarclient import client
 import tuskarclient.common.utils as utils
 from tuskarclient.openstack.common.apiclient import exceptions as exc
@@ -68,8 +69,8 @@ class TuskarShell(object):
 
         self._ensure_auth_info(args)
 
-        tuskar_client = client.get_client(self.partial_args.tuskar_api_version,
-                                          **args.__dict__)
+        tuskar_client = client.get_client(
+            self.partial_args.tuskar_api_version, **args.__dict__)
         args.func(tuskar_client, args)
 
     def _ensure_auth_info(self, args):
@@ -133,6 +134,11 @@ class TuskarShell(object):
                             action='store_true',
                             help="Print this help message and exit.",
                             )
+
+        parser.add_argument('--version',
+                            action='version',
+                            version=tuskarclient.__version__,
+                            help="Shows the client version and exits.")
 
         parser.add_argument('--os-username',
                             default=utils.env('OS_USERNAME'),
