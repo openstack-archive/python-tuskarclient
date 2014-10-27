@@ -15,14 +15,18 @@
 
 from __future__ import print_function
 
-import os
 import sys
 import uuid
 
 from oslo.utils import importutils
 
 from tuskarclient.openstack.common.apiclient import exceptions as exc
+from tuskarclient.openstack.common import cliutils
 from tuskarclient.openstack.common.gettextutils import _
+
+# Using common methods from oslo cliutils
+arg = cliutils.arg
+env = cliutils.env
 
 
 def define_commands_from_module(subparsers, command_module):
@@ -51,16 +55,6 @@ def define_command(subparsers, command, callback):
     for (args, kwargs) in arguments:
         subparser.add_argument(*args, **kwargs)
     subparser.set_defaults(func=callback)
-
-
-# Decorator for cli-args
-def arg(*args, **kwargs):
-    def _decorator(func):
-        # Because of the sematics of decorator composition if we just append
-        # to the options list positional options will appear to be backwards.
-        func.__dict__.setdefault('arguments', []).insert(0, (args, kwargs))
-        return func
-    return _decorator
 
 
 def find_resource(manager, name_or_id):
@@ -121,19 +115,6 @@ def marshal_association(args, resource_dict, assoc_name):
 
 def string_to_bool(arg):
     return arg.strip().lower() in ('t', 'true', 'yes', '1')
-
-
-def env(*vars, **kwargs):
-    """Search for the first defined of possibly many env vars
-
-    Returns the first environment variable defined in vars, or
-    returns the default defined in kwargs.
-    """
-    for v in vars:
-        value = os.environ.get(v, None)
-        if value:
-            return value
-    return kwargs.get('default', '')
 
 
 def import_versioned_module(version, submodule=None):
