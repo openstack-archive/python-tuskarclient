@@ -19,9 +19,10 @@ import os
 import sys
 import uuid
 
+from oslo.utils import importutils
+
 from tuskarclient.openstack.common.apiclient import exceptions as exc
 from tuskarclient.openstack.common.gettextutils import _
-from tuskarclient.openstack.common import importutils
 
 
 def define_commands_from_module(subparsers, command_module):
