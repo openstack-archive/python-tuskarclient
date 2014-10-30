@@ -168,7 +168,7 @@ class HTTPClient(object):
         else:
             self.log_http_response(resp)
 
-        if 400 <= resp.status < 600:
+        if 400 <= resp.status < 600 or resp.status == 300:
             LOG.warn("Request returned failure status.")
             # NOTE(akrivoka): from_response() method expects a
             # requests.Response object so we have to convert from
@@ -182,11 +182,6 @@ class HTTPClient(object):
             # Redirected. Reissue the request to the new location.
             new_location = resp.getheader('location')
             return self._http_request(new_location, method, **kwargs)
-        elif resp.status == 300:
-            # TODO(viktors): we should use exception for status 300 from common
-            #                code, when we will have required exception in Oslo
-            #                See patch https://review.openstack.org/#/c/63111/
-            raise tuskar_exc.from_response(resp)
 
         return resp, body_iter
 
