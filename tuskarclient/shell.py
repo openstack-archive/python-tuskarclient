@@ -28,7 +28,6 @@ from tuskarclient import client
 import tuskarclient.common.utils as utils
 from tuskarclient.openstack.common.apiclient import exceptions as exc
 
-logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
@@ -61,6 +60,8 @@ class TuskarShell(object):
             return 0
 
         args = self.parser.parse_args(self.raw_args)
+
+        self._setup_logging(args.debug)
 
         # run self.do_help() if we have help subcommand or -h/--help option
         if args.func == self.do_help or args.help:
@@ -139,6 +140,11 @@ class TuskarShell(object):
                             action='version',
                             version=tuskarclient.__version__,
                             help="Shows the client version and exits.")
+
+        parser.add_argument('-d', '--debug',
+                            default=bool(utils.env('TUSKARCLIENT_DEBUG')),
+                            action='store_true',
+                            help='Defaults to env[TUSKARCLIENT_DEBUG].')
 
         parser.add_argument('--os-username',
                             default=utils.env('OS_USERNAME'),
@@ -225,6 +231,12 @@ class TuskarShell(object):
         else:
             # print general help
             self.parser.print_help()
+
+    def _setup_logging(self, debug):
+        log_lvl = logging.DEBUG if debug else logging.WARNING
+        logging.basicConfig(
+            format="%(levelname)s (%(module)s) %(message)s",
+            level=log_lvl)
 
 
 def main():
