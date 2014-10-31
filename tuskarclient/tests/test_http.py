@@ -16,7 +16,6 @@
 import mock
 
 from tuskarclient.common import http
-from tuskarclient import exc as tuskar_exc
 from tuskarclient.openstack.common.apiclient import exceptions as exc
 from tuskarclient.tests import utils as tutils
 
@@ -166,7 +165,7 @@ class HttpClientHTTPRequestTest(tutils.TestCase):
         self.mock_response.status = 300
 
         args = self.call_args.copy()
-        self.assertRaises(tuskar_exc.HTTPMultipleChoices,
+        self.assertRaises(exc.MultipleChoices,
                           self.client._http_request,
                           args['provided_url'], args['provided_method'],
                           **args['provided_args'])

@@ -10,8 +10,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import sys
-
 from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 
@@ -40,18 +38,3 @@ class HTTPMultipleChoices(exc.HttpError):
                         "available.")
         return "%s (HTTP %s) %s" % (self.__class__.__name__, self.code,
                                     self.details)
-
-
-# NOTE(bcwaldon): Build a mapping of HTTP codes to corresponding exception
-# classes
-_code_map = {}
-for obj_name in dir(sys.modules[__name__]):
-    if obj_name.startswith('HTTP'):
-        obj = getattr(sys.modules[__name__], obj_name)
-        _code_map[obj.code] = obj
-
-
-def from_response(response):
-    """Return an instance of an exc.HttpError based on httplib response."""
-    cls = _code_map.get(response.status, exc.HttpError)
-    return cls()
