@@ -35,7 +35,7 @@ class BaseRolesShellTest(tutils.TestCase):
 
 class RolesShellTest(BaseRolesShellTest):
 
-    @mock.patch('tuskarclient.common.formatting.print_list')
+    @mock.patch('tuskarclient.openstack.common.cliutils.print_list')
     def test_role_list(self, mock_print_list):
         args = empty_args()
 

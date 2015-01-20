@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import sys
 
-import tuskarclient.common.formatting as fmt
+from tuskarclient.openstack.common import cliutils
 
 
 def do_role_list(tuskar, args, outfile=sys.stdout):
@@ -25,4 +25,4 @@ def do_role_list(tuskar, args, outfile=sys.stdout):
     formatters = {
     }
 
-    fmt.print_list(roles, fields, formatters, outfile=outfile)
+    cliutils.print_list(roles, fields, formatters, outfile=outfile)

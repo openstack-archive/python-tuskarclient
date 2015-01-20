@@ -17,6 +17,7 @@ import sys
 
 import tuskarclient.common.formatting as fmt
 from tuskarclient.common import utils
+from tuskarclient.openstack.common import cliutils
 
 
 def do_plan_list(tuskar, args, outfile=sys.stdout):
@@ -28,7 +29,7 @@ def do_plan_list(tuskar, args, outfile=sys.stdout):
         'roles': fmt.list_plan_roles_formatter,
     }
 
-    fmt.print_list(plans, fields, formatters, outfile=outfile)
+    cliutils.print_list(plans, fields, formatters, outfile=outfile)
 
 
 @utils.arg('plan', metavar="<PLAN>",
@@ -47,7 +48,7 @@ def print_plan_detail(plan, outfile=sys.stdout):
         'parameters': fmt.parameters_v2_formatter,
     }
     plan_dict = plan.to_dict()
-    fmt.print_dict(plan_dict, formatters, outfile=outfile)
+    cliutils.print_dict(plan_dict, formatters, outfile=outfile)
 
 
 @utils.arg('plan', metavar="<PLAN>",
