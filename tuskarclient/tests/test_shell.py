@@ -57,14 +57,14 @@ class ShellTest(tutils.TestCase):
         args.tuskar_url = 'tuskar'
         ensure(args)  # doesn't raise
 
-    def test_parser_v1(self):
-        v1_commands = [
+    def test_parser_v2(self):
+        v2_commands = [
         ]
-        parser, subparsers = self.s._parser(1)
+        parser, subparsers = self.s._parser(2)
         tuskar_help = parser.format_help()
 
         for arg in map(lambda a: a.replace('_', '-'), self.args_attributes):
             self.assertIn(arg, tuskar_help)
 
-        for command in v1_commands:
+        for command in v2_commands:
             self.assertIn(command, tuskar_help)
