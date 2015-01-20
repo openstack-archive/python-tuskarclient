@@ -71,8 +71,6 @@ def gen_ref(ver, title, names):
                              "pkg": pkg, "name": name})
 
 gen_ref("", "Client Reference", ["client", "exc"])
-gen_ref("v1", "Version 1 API Reference",
-        ["client", "overcloud_roles", "overclouds"])
 
 
 # -- General configuration ----------------------------------------------------

@@ -81,7 +81,7 @@ class ClientGetClientWithTokenTest(tutils.TestCase):
     @mock.patch.object(client, 'Client')
     def test_it_filters_kwargs(self, mocked_client):
         mocked_client.return_value = 'mocked client'
-        api_version = 1
+        api_version = 2
         endpoint = 'http://tuskar.api:1234'
         token = 'token'
 
@@ -114,7 +114,7 @@ class ClientGetClientWithTokenTest(tutils.TestCase):
                                          **client_args)
 
     def test_it_returns_none_without_token(self):
-        api_version = 1
+        api_version = 2
         endpoint = 'http://tuskar.api:1234'
         self.assertEqual(
             client._get_client_with_token(api_version,
@@ -122,7 +122,7 @@ class ClientGetClientWithTokenTest(tutils.TestCase):
             None)
 
     def test_it_returns_none_without_endpoint(self):
-        api_version = 1
+        api_version = 2
         token = 'token'
         self.assertEqual(
             client._get_client_with_token(api_version,
@@ -147,7 +147,7 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
         }
 
     def test_it_returns_none_without_username(self):
-        api_version = 1
+        api_version = 2
         kwargs = self.kwargs.copy()
         del kwargs['os_username']
         self.assertEqual(
@@ -155,7 +155,7 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
             None)
 
     def test_it_returns_none_without_password(self):
-        api_version = 1
+        api_version = 2
         kwargs = self.kwargs.copy()
         del kwargs['os_password']
         self.assertEqual(
@@ -163,7 +163,7 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
             None)
 
     def test_it_returns_none_without_auth_url(self):
-        api_version = 1
+        api_version = 2
         kwargs = self.kwargs.copy()
         del kwargs['os_auth_url']
         self.assertEqual(
@@ -171,7 +171,7 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
             None)
 
     def test_it_returns_none_without_tenant_id_and_tenant_name(self):
-        api_version = 1
+        api_version = 2
         kwargs = self.kwargs.copy()
         del kwargs['os_tenant_id']
         del kwargs['os_tenant_name']
@@ -184,7 +184,7 @@ class ClientGetClientWithCredentialsTest(tutils.TestCase):
     def test_it_calls_get_token_and_endpoint(self,
                                              mocked_get_token_and_endpoint,
                                              mocked_get_client_with_token):
-        api_version = 1
+        api_version = 2
         kwargs = self.kwargs.copy()
         mocked_get_token_and_endpoint.return_value = ('token', 'endpoint')
         mocked_get_client_with_token.return_value = 'mocked client'
@@ -296,7 +296,7 @@ class ClientGetClientTest(tutils.TestCase):
             'other_key': 'other_value',
             'any_other_key': 'any_other_value',
         }
-        self.api_version = 1
+        self.api_version = 2
 
     @mock.patch.object(client, '_get_client_with_token')
     @mock.patch.object(client, '_get_client_with_credentials')
@@ -349,7 +349,7 @@ class ClientClientTest(tutils.TestCase):
     @mock.patch.object(client.utils, 'import_versioned_module')
     def test_it_works(self,
                       mocked_import_versioned_module):
-        api_version = 1
+        api_version = 2
         args = ['argument', 'parameter']
         kwargs = {
             'other_key': 'other_value',
