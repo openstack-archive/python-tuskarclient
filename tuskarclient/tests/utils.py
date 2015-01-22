@@ -49,8 +49,7 @@ class HasManager(object):
             return ManagerClassMismatch(client, self.cls_name, self.attr_name)
 
         obj = getattr(client, self.attr_name)
-        if (client.http_client != obj.api or
-           self.cls_name != obj.__class__.__name__):
+        if self.cls_name != obj.__class__.__name__:
             return ManagerClassMismatch(client, self.cls_name, self.attr_name)
         else:
             return None

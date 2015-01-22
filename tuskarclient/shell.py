@@ -192,7 +192,8 @@ class TuskarShell(object):
                             )
 
         parser.add_argument('--os-auth-token',
-                            default=utils.env('OS_AUTH_TOKEN'),
+                            default=utils.env('OS_AUTH_TOKEN',
+                                              default=None),
                             help='Defaults to env[OS_AUTH_TOKEN]')
 
         parser.add_argument('--os_auth_token',

@@ -9,6 +9,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import mock
 
 from tuskarclient.tests import utils as tutils
 from tuskarclient.v2 import client
@@ -18,8 +19,8 @@ class ClientTest(tutils.TestCase):
 
     def setUp(self):
         super(ClientTest, self).setUp()
-        self.endpoint = "http://fakeurl:1234"
-        self.client = client.Client(self.endpoint)
+        mock_http_client = mock.MagicMock()
+        self.client = client.Client(mock_http_client)
 
     def test_managers_present(self):
         self.assertThat(self.client, tutils.HasManager('PlanManager',
