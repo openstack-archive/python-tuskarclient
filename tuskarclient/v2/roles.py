@@ -10,11 +10,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from tuskarclient.common import base
-from tuskarclient.openstack.common.apiclient import base as common_base
+from tuskarclient.openstack.common.apiclient import base
 
 
-class Role(common_base.Resource):
+class Role(base.Resource):
     """Represents an instance of a Role in the Tuskar API.
 
     :param manager: Manager object
@@ -23,7 +22,7 @@ class Role(common_base.Resource):
     """
 
 
-class RoleManager(base.Manager):
+class RoleManager(base.BaseManager):
     """RoleManager interacts with the Tuskar API and provides
     operations for adding/removing Roles to/from Plans.
     """
