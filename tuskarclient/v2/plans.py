@@ -10,12 +10,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from tuskarclient.common import base
-from tuskarclient.openstack.common.apiclient import base as common_base
+from tuskarclient.openstack.common.apiclient import base
 from tuskarclient.v2 import roles
 
 
-class Plan(common_base.Resource):
+class Plan(base.Resource):
     """Represents an instance of a Plan in the Tuskar API.
 
     :param manager: Manager object
@@ -28,7 +27,7 @@ class Plan(common_base.Resource):
         self.roles = [roles.Role(None, role) for role in self.roles]
 
 
-class Templates(common_base.Resource):
+class Templates(base.Resource):
     """Represents sets of templates of a Plan in the Tuskar API.
 
     :param manager: Manager object
@@ -37,7 +36,7 @@ class Templates(common_base.Resource):
     """
 
 
-class PlanManager(base.Manager):
+class PlanManager(base.BaseManager):
     """PlanManager interacts with the Tuskar API and provides CRUD
     operations for the Plan type.
     """
@@ -76,7 +75,7 @@ class PlanManager(base.Manager):
         :return: A Plan instance or None if its not found.
         :rtype: tuskarclient.v2.plans.Plan or None
         """
-        return self._get(self._single_path(plan_uuid))
+        return self._get(self._path(plan_uuid))
 
     def list(self):
         """Get a list of the existing Plans
@@ -110,7 +109,7 @@ class PlanManager(base.Manager):
         :return: A Plan instance or None if its not found.
         :rtype: tuskarclient.v2.plans.Plan or None
         """
-        return self._patch(self._single_path(plan_uuid),
+        return self._patch(self._path(plan_uuid),
                            attribute_list)
 
     def delete(self, plan_uuid):
@@ -122,7 +121,7 @@ class PlanManager(base.Manager):
         :return: None
         :rtype: None
         """
-        return self._delete(self._single_path(plan_uuid))
+        return self._delete(self._path(plan_uuid))
 
     def add_role(self, plan_uuid, role_uuid):
         """Adds a Role to a Plan.
@@ -150,10 +149,9 @@ class PlanManager(base.Manager):
         :return: A Plan instance or None if its not found.
         :rtype: tuskarclient.v2.plans.Plan
         """
-        resp, body = self.api.json_request(
-            'DELETE',
-            self._roles_path(plan_uuid, role_uuid)
-        )
+
+        rep, body = self._delete(self._roles_path(plan_uuid, role_uuid))
+
         return self.resource_class(self, body)
 
     def templates(self, plan_uuid):
