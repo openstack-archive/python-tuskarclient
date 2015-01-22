@@ -15,7 +15,6 @@
 
 from __future__ import print_function
 
-import sys
 import uuid
 
 from oslo.utils import importutils
@@ -113,21 +112,11 @@ def marshal_association(args, resource_dict, assoc_name):
         resource_dict[assoc_name] = {'id': assoc_value}
 
 
-def string_to_bool(arg):
-    return arg.strip().lower() in ('t', 'true', 'yes', '1')
-
-
 def import_versioned_module(version, submodule=None):
     module = 'tuskarclient.v%s' % version
     if submodule:
         module = '.'.join((module, submodule))
     return importutils.import_module(module)
-
-
-def exit(msg=''):
-    if msg:
-        print(msg, file=sys.stderr)
-    sys.exit(1)
 
 
 def format_key_value(params):
@@ -166,47 +155,3 @@ def format_attributes(params):
         attributes[key] = value
 
     return attributes
-
-
-def format_roles(params, role_name_ids):
-    """Reformat CLI roles into the structure expected by the API.
-
-    The format expected by the API for roles is a list of dictionaries
-    containing a key for the Overcloud Role (overcloud_role_id) and a key for
-    the role count (num_nodes). Both values should be integers.
-
-    If there is no entry in role_name_ids for a given role, it is assumed
-    the user specified the role ID instead.
-
-    :param params: list of key-value pairs specified in the format key=value
-    :type  params: list of str
-
-    :param role_name_ids: mapping of role name (str) to its ID (int)
-    :type  role_name_ids: dict
-
-    :raises: ValidationError
-    """
-    # A list of the role ID's being used so we can look out for duplicates.
-    added_role_ids = []
-
-    # The list of roles structured for the API.
-    roles = []
-
-    for name_or_id, value in format_key_value(params):
-
-        # If a role with the given name is found, use it's ID. If one
-        # cannot be found, assume the given parameter is an ID and use that.
-        key = role_name_ids.get(name_or_id, name_or_id)
-        value = int(value)
-
-        if key in added_role_ids:
-            raise exc.ValidationError(
-                _("The attribute name {0} can't be given twice.").format(key))
-
-        added_role_ids.append(key)
-        roles.append({
-            'overcloud_role_id': key,
-            'num_nodes': value
-        })
-
-    return roles
