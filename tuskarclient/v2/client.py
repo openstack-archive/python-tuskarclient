@@ -10,12 +10,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tuskarclient.common import http
+from tuskarclient.openstack.common.apiclient import client
 from tuskarclient.v2 import plans
 from tuskarclient.v2 import roles
 
 
-class Client(object):
+class Client(client.BaseClient):
     """Client for the Tuskar v2 HTTP API.
 
     :param string endpoint: Endpoint URL for the tuskar service.
@@ -23,7 +23,7 @@ class Client(object):
     :param integer timeout: Timeout for client http requests. (optional)
     """
 
-    def __init__(self, *args, **kwargs):
-        self.http_client = http.HTTPClient(*args, **kwargs)
-        self.plans = plans.PlanManager(self.http_client)
-        self.roles = roles.RoleManager(self.http_client)
+    def __init__(self, http_client, extensions=None):
+        super(Client, self).__init__(http_client, extensions)
+        self.plans = plans.PlanManager(self)
+        self.roles = roles.RoleManager(self)

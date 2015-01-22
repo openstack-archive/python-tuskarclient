@@ -102,17 +102,14 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_remove_role(self):
         """Test assigning Role to a Plan."""
-        self.pm.api.json_request = mock.Mock(return_value=(
+        self.api.delete = mock.Mock(return_value=(
             'resp',
             'fake_plan_data'))
         self.pm.resource_class = mock.Mock(return_value='fake_plan')
 
         self.assertEqual(self.pm.remove_role('42', role_uuid='qwert12345'),
                          'fake_plan')
-        self.pm.api.json_request.assert_called_with(
-            'DELETE',
-            '/v2/plans/42/roles/qwert12345'
-        )
+        self.api.delete.assert_called_with('/v2/plans/42/roles/qwert12345')
         self.pm.resource_class.assert_called_with(self.pm, 'fake_plan_data')
 
     def test_templates_path(self):
