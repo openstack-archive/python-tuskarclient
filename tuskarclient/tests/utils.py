@@ -11,7 +11,6 @@
 #    under the License.
 
 import argparse
-import copy
 from gettext import gettext as _
 import os
 import sys
@@ -20,7 +19,6 @@ import fixtures
 from six import StringIO
 import testtools
 
-from tuskarclient.common import http
 from tuskarclient import shell
 
 
@@ -258,45 +256,6 @@ class ArgumentParserForTests(argparse.ArgumentParser):
             if file is None:
                 file = self.err
             file.write(message)
-
-
-class FakeAPI(object):
-    def __init__(self, fixtures):
-        self.fixtures = fixtures
-        self.calls = []
-
-    def _request(self, method, url, headers=None, body=None):
-        call = (method, url, headers or {}, body)
-        self.calls.append(call)
-        return self.fixtures[url][method]
-
-    def raw_request(self, *args, **kwargs):
-        fixture = self._request(*args, **kwargs)
-        body_iter = http.ResponseBodyIterator(
-            StringIO.StringIO(fixture[1]))
-        return FakeResponse(fixture[0]), body_iter
-
-    def json_request(self, *args, **kwargs):
-        fixture = self._request(*args, **kwargs)
-        return FakeResponse(fixture[0]), fixture[1]
-
-
-class FakeResponse(object):
-    def __init__(self, headers, body=None, version=None):
-        """:param headers: dict representing HTTP response headers
-        :param body: file-like object
-        """
-        self.headers = headers
-        self.body = body
-
-    def getheaders(self):
-        return copy.deepcopy(self.headers).items()
-
-    def getheader(self, key, default):
-        return self.headers.get(key, default)
-
-    def read(self, amt):
-        return self.body.read(amt)
 
 
 def create_test_dictionary_pair(default_keys, redundant_keys, missing_keys,
