@@ -1,0 +1,10 @@
+Verified+2: Jenkins
+Code-Review+2: Petr Blaho <pblaho@redhat.com>
+Code-Review+2: Jay Dobies <jason.dobies@redhat.com>
+Workflow+1: Jay Dobies <jason.dobies@redhat.com>
+Code-Review+1: Petr Cech <petr.celestian@gmail.com>
+Submitted-by: Jenkins
+Submitted-at: Wed, 28 Jan 2015 21:07:39 +0000
+Reviewed-on: https://review.openstack.org/149271
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
