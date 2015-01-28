@@ -93,7 +93,7 @@ class PlanManager(base.Manager):
         :type fields: string
 
         :return: A Plan instance or None if its not found.
-        :rtype: tuskarclient.v1.plans.Plan
+        :rtype: tuskarclient.v2.plans.Plan
         """
         return self._create(self._path(), fields)
 
