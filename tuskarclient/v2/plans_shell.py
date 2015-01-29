@@ -48,7 +48,7 @@ def print_plan_detail(plan, outfile=sys.stdout):
         'parameters': fmt.parameters_v2_formatter,
     }
     plan_dict = plan.to_dict()
-    cliutils.print_dict(plan_dict, formatters, outfile=outfile)
+    fmt.print_dict(plan_dict, formatters, outfile=outfile)
 
 
 @utils.arg('plan', metavar="<PLAN>",
