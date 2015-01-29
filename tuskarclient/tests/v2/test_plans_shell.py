@@ -28,6 +28,7 @@ def mock_plan():
     plan = mock.Mock()
     plan.uuid = '5'
     plan.name = 'My Plan'
+    plan.to_dict.return_value = {'uuid': 5, 'name': 'My Plan'}
     return plan
 
 
@@ -42,7 +43,7 @@ class BasePlansShellTest(tutils.TestCase):
 
 class PlansShellTest(BasePlansShellTest):
 
-    @mock.patch('tuskarclient.openstack.common.cliutils.print_list')
+    @mock.patch('tuskarclient.common.formatting.print_list')
     def test_plan_list(self, mock_print_list):
         args = empty_args()
 
@@ -130,6 +131,15 @@ class PlansShellTest(BasePlansShellTest):
             sorted(attributes, key=lambda k: k['name']),
             sorted(self.tuskar.plans.patch.call_args[0][1],
                    key=lambda k: k['name']))
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
+    def test_print_plan_detail(self, mock_find_resource):
+        mock_find_resource.return_value = mock_plan()
+        args = empty_args()
+        args.plan = '5'
+
+        self.shell.do_plan_show(self.tuskar, args, outfile=self.outfile)
+        mock_find_resource.assert_called_with(self.tuskar.plans, '5')
 
     @mock.patch('tuskarclient.v2.plans_shell.print', create=True)
     @mock.patch('tuskarclient.v2.plans_shell.os.mkdir', create=True)
