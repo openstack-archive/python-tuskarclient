@@ -42,7 +42,7 @@ class BasePlansShellTest(tutils.TestCase):
 
 class PlansShellTest(BasePlansShellTest):
 
-    @mock.patch('tuskarclient.common.formatting.print_list')
+    @mock.patch('tuskarclient.openstack.common.cliutils.print_list')
     def test_plan_list(self, mock_print_list):
         args = empty_args()
 
