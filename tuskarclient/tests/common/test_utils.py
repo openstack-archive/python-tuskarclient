@@ -49,29 +49,6 @@ class DefineCommandsTest(test_utils.TestCase):
         return dummy
 
 
-class MarshalAssociationTest(test_utils.TestCase):
-
-    def setUp(self):
-        super(MarshalAssociationTest, self).setUp()
-        self.args = mock.Mock(spec=['rack'])
-        self.dict = {}
-
-    def test_with_id(self):
-        self.args.rack = '10'
-        utils.marshal_association(self.args, self.dict, 'rack')
-        self.assertEqual(self.dict['rack']['id'], '10')
-
-    def test_with_empty_association(self):
-        self.args.rack = ''
-        utils.marshal_association(self.args, self.dict, 'rack')
-        self.assertEqual(self.dict['rack'], None)
-
-    def test_when_unset(self):
-        self.args.rack = None
-        utils.marshal_association(self.args, self.dict, 'rack')
-        self.assertFalse('rack' in self.dict)
-
-
 class FindResourceTest(test_utils.TestCase):
 
     def setUp(self):

@@ -92,26 +92,6 @@ def find_resource(manager, name_or_id):
     return matches[0]
 
 
-def marshal_association(args, resource_dict, assoc_name):
-    """Marshal resource association into an API request dict.
-
-    Distinguish between 3 cases:
-
-    - when the value in args is present, set the value in dict too,
-    - when the value in args is an empty string, set the value in dict
-      to none,
-    - when the value in args is None, it means the user did not specify
-      it on the command line and it should not be present in the dict
-      (important for update).
-    """
-    assoc_value = getattr(args, assoc_name, None)
-    if assoc_value == '':
-        resource_dict[assoc_name] = None
-    elif assoc_value:
-        # TODO(jistr): support for selecting resources by name
-        resource_dict[assoc_name] = {'id': assoc_value}
-
-
 def import_versioned_module(version, submodule=None):
     module = 'tuskarclient.v%s' % version
     if submodule:
