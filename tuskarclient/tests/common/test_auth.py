@@ -14,6 +14,7 @@ import mock
 
 from tuskarclient.common import auth
 from tuskarclient.openstack.common.apiclient import client
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 from tuskarclient.tests import utils as test_utils
 
 
@@ -66,3 +67,31 @@ class KeystoneAuthPluginTokenTest(test_utils.TestCase):
             "fake-endpoint-type", "fake-service-type")
         self.assertEqual('fake-token', token)
         self.assertEqual('http://tuskar', endpoint)
+
+
+class KeystoneAuthPluginOptionsTest(test_utils.TestCase):
+    def setUp(self):
+        super(KeystoneAuthPluginOptionsTest, self).setUp()
+        self.kwargs = {
+            'username': "fake-username",
+            'password': "fake-password",
+            'tenant_id': "fake-tenant-id",
+            'tenant_name': "fake-tenant-name",
+            'auth_url': "http://auth",
+            'endpoint': "http://tuskar"
+        }
+
+    def test_it_raises_error_without_tenant_id_and_name(self):
+        kwargs = self.kwargs.copy()
+        del kwargs['tenant_id']
+        del kwargs['tenant_name']
+        auth_plugin = auth.KeystoneAuthPlugin(**kwargs)
+        self.assertRaises(exc.AuthPluginOptionsMissing,
+                          auth_plugin.sufficient_options)
+
+    def test_it_raises_error_withtout_username(self):
+        kwargs = self.kwargs.copy()
+        del kwargs['username']
+        auth_plugin = auth.KeystoneAuthPlugin(**kwargs)
+        self.assertRaises(exc.AuthPluginOptionsMissing,
+                          auth_plugin.sufficient_options)

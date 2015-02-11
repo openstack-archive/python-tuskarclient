@@ -13,6 +13,8 @@
 import mock
 
 from tuskarclient import client
+from tuskarclient.common import auth
+from tuskarclient.openstack.common.apiclient import client as apiclient
 from tuskarclient.tests import utils as tutils
 
 
@@ -58,3 +60,25 @@ class ClientGetClientTest(tutils.TestCase):
                           )
         mocked_Client.assert_called_with(self.api_version,
                                          **self.client_kwargs)
+
+
+class ClientClientTest(tutils.TestCase):
+    def setUp(self):
+        super(ClientClientTest, self).setUp()
+        self.client_kwargs = {
+            'username': 'os_username',
+            'password': 'os_password',
+            'tenant_name': 'os_tenant_name',
+            'token': 'os_auth_token',
+            'auth_url': 'os_auth_url',
+            'endpoint': 'tuskar_url'
+        }
+        self.api_version = 2
+
+    @mock.patch.object(apiclient, 'HTTPClient')
+    @mock.patch.object(auth, 'KeystoneAuthPlugin')
+    def test_client_initialization(self, mocked_KeystoneAuthPlugin,
+                                   mocked_HTTPClient):
+        client.Client(self.api_version, **self.client_kwargs)
+        mocked_KeystoneAuthPlugin.assert_called_with(**self.client_kwargs)
+        mocked_HTTPClient.assert_called_with(mocked_KeystoneAuthPlugin())
