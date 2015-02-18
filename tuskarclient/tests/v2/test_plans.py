@@ -122,8 +122,7 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._get.return_value.to_dict.return_value = 'fake_templates_dict'
 
         self.assertEqual(self.pm.templates('fake_plan'), 'fake_templates_dict')
-        self.pm._get.assert_called_with('/v2/plans/fake_plan/templates',
-                                        obj_class=plans.Templates)
+        self.pm._get.assert_called_with('/v2/plans/fake_plan/templates')
 
     def test_roles_subresource(self):
         self.pm._get = mock.Mock(
