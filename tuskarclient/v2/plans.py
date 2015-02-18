@@ -164,5 +164,7 @@ class PlanManager(base.BaseManager):
         :rtype: dict
         """
 
-        return self._get(self._templates_path(plan_uuid),
-                         obj_class=Templates).to_dict()
+        self.resource_class = Templates
+        res = self._get(self._templates_path(plan_uuid)).to_dict()
+        self.resource_class = Plan
+        return res
