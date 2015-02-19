@@ -138,13 +138,13 @@ Output of this command is the same as for plan-show.
 
 Changing a Plan’s Configuration Values
 --------------------------------------
-*tuskar plan-patch [-h] [-A <KEY1=VALUE1>] plan_uuid*
+*tuskar plan-update [-h] [-A <KEY1=VALUE1>] plan_uuid*
 
 Usage example:
 
 ::
 
-    tuskar plan-patch -A compute-1::CeilometerPassword=secret-password -A compute-1::CeilometerMeteringSecret=secret-secret 53268a27-afc8-4b21-839f-90227dd7a001
+    tuskar plan-update -A compute-1::CeilometerPassword=secret-password -A compute-1::CeilometerMeteringSecret=secret-secret 53268a27-afc8-4b21-839f-90227dd7a001
 
 This command accepts multiple name=value pairs for parameters to be updated.
 Above example will look for parameter named 'compute-1::CeilometerPassword' and update its value to 'secret-password'
