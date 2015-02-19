@@ -132,6 +132,23 @@ class PlansShellTest(BasePlansShellTest):
             sorted(self.tuskar.plans.patch.call_args[0][1],
                    key=lambda k: k['name']))
 
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
+    def test_plan_update(self, mock_print_detail):
+        args = empty_args()
+        args.plan_uuid = 'plan_uuid'
+        args.attributes = ['foo_name=foo_value',
+                           'bar_name=bar_value']
+        attributes = [{'name': 'foo_name', 'value': 'foo_value'},
+                      {'name': 'bar_name', 'value': 'bar_value'}]
+        self.shell.do_plan_update(self.tuskar, args, outfile=self.outfile)
+        self.tuskar.plans.patch.assert_called_once()
+        self.assertEqual('plan_uuid',
+                         self.tuskar.plans.patch.call_args[0][0])
+        self.assertEqual(
+            sorted(attributes, key=lambda k: k['name']),
+            sorted(self.tuskar.plans.patch.call_args[0][1],
+                   key=lambda k: k['name']))
+
     @mock.patch('tuskarclient.common.utils.find_resource')
     def test_print_plan_detail(self, mock_find_resource):
         mock_find_resource.return_value = mock_plan()
