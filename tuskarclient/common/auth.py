@@ -48,7 +48,7 @@ class KeystoneAuthPlugin(auth.BaseAuthPlugin):
             token = self._ksclient.auth_token
             endpoint = (self.opts.get('endpoint') or
                         self._ksclient.service_catalog.url_for(
-                            service_type=service_type,
+                            service_type=service_type or 'management',
                             endpoint_type=endpoint_type))
 
         return (token, endpoint)
