@@ -99,11 +99,24 @@ def do_plan_remove_role(tuskar, args, outfile=sys.stdout):
 @utils.arg('-A', '--attribute', dest='attributes', metavar='<KEY1=VALUE1>',
            help='This can be specified multiple times.',
            action='append')
-def do_plan_patch(tuskar, args, outfile=sys.stdout):
+def do_plan_update(tuskar, args, outfile=sys.stdout):
+    """Change an existing plan."""
     attributes = [{'name': pair[0], 'value': pair[1]}
                   for pair
                   in utils.format_attributes(args.attributes).items()]
     return tuskar.plans.patch(args.plan_uuid, attributes)
+
+
+@utils.arg('plan_uuid', help="UUID of the Plan to modify.")
+@utils.arg('-A', '--attribute', dest='attributes', metavar='<KEY1=VALUE1>',
+           help='This can be specified multiple times.',
+           action='append')
+def do_plan_patch(*args, **kwargs):
+    """Change an existing plan [Deprecated]."""
+    print("WARNING: plan-patch method is deprecated"
+          " and will be removed in a later release."
+          " Use plan-update instead.", file=sys.stderr)
+    do_plan_update(*args, **kwargs)
 
 
 @utils.arg('plan_uuid',
