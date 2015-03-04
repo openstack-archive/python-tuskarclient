@@ -31,7 +31,7 @@ Field 'roles' contains list of names of Roles assigned to the Plan.
 
 Retrieve a Single Plan
 ----------------------
-*tuskar plan-show [-h] <PLAN>*
+*tuskar plan-show [-h] [--verbose] <PLAN>*
 
 Usage example:
 
@@ -39,7 +39,7 @@ Usage example:
 
     tuskar plan-show c367b394-7179-4c44-85ed-bf84baaf9fee
 
-This command will show table with properties of the Plan and their values.
+This command will show an overview of the Plan.
 
 Example:
 
@@ -64,6 +64,8 @@ Example:
         | updated_at  | None                                                                                     |
         | uuid        | c367b394-7179-4c44-85ed-bf84baaf9fee                                                     |
         +-------------+------------------------------------------------------------------------------------------+
+
+Adding the --verbose flag will display all parameters, instead of just role counts.
 
 Note: Parameters are displayed similarly as Roles, ie. set of properties with values. Each Parameter/Role separated by empty line from previous.
 

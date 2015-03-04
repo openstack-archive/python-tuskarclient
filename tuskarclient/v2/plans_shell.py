@@ -33,14 +33,33 @@ def do_plan_list(tuskar, args, outfile=sys.stdout):
 
 @utils.arg('plan', metavar="<PLAN>",
            help="UUID of the Plan to show.")
+@utils.arg('--verbose', default=False, action="store_true",
+           help="Display full plan details")
 def do_plan_show(tuskar, args, outfile=sys.stdout):
     """Show an individual Plan by its UUID."""
     plan = utils.find_resource(tuskar.plans, args.plan)
-    print_plan_detail(plan, outfile=outfile)
+    if args.verbose:
+        print_plan_detail(plan, outfile=outfile)
+    else:
+        print_plan_summary(plan, outfile=outfile)
+
+
+def print_plan_summary(plan, outfile=sys.stdout):
+    """Print a summary of Plan information (for plan-show etc.)."""
+
+    formatters = {
+        'roles': fmt.parameters_v2_formatter,
+        'parameters': fmt.parameters_v2_formatter,
+    }
+    plan_dict = plan.to_dict()
+    plan_dict['parameters'] = [param for param in
+                               plan_dict['parameters']
+                               if param['name'].endswith('::count')]
+    fmt.print_dict(plan_dict, formatters, outfile=outfile)
 
 
 def print_plan_detail(plan, outfile=sys.stdout):
-    """Print detailed Plan information (for plan-show etc.)."""
+    """Print detailed Plan information (for plan-show --verbose etc.)."""
 
     formatters = {
         'roles': fmt.parameters_v2_formatter,
@@ -68,7 +87,7 @@ def do_plan_create(tuskar, args, outfile=sys.stdout):
         name=vars(args).get('name'),
         description=vars(args).get('description')
     )
-    print_plan_detail(plan, outfile=outfile)
+    print_plan_summary(plan, outfile=outfile)
 
 
 @utils.arg('plan_uuid', help="UUID of the Plan to assign role to.")
@@ -80,7 +99,7 @@ def do_plan_add_role(tuskar, args, outfile=sys.stdout):
         vars(args).get('plan_uuid'),
         vars(args).get('role_uuid')
     )
-    print_plan_detail(plan, outfile=outfile)
+    print_plan_summary(plan, outfile=outfile)
 
 
 @utils.arg('plan_uuid', help="UUID of the Plan to remove role from.")
@@ -92,7 +111,7 @@ def do_plan_remove_role(tuskar, args, outfile=sys.stdout):
         vars(args).get('plan_uuid'),
         vars(args).get('role_uuid')
     )
-    print_plan_detail(plan, outfile=outfile)
+    print_plan_summary(plan, outfile=outfile)
 
 
 @utils.arg('plan_uuid', help="UUID of the Plan to modify.")
