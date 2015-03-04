@@ -28,10 +28,14 @@ def mock_plan():
     plan = mock.Mock()
     plan.uuid = '5'
     plan.name = 'My Plan'
-    plan.to_dict.return_value = {'uuid': 5, 'name': 'My Plan'}
     plan.parameters = []
     plan.parameters.append({'name': 'compute-1::count', 'value': '2'})
     plan.parameters.append({'name': 'compute-1::Flavor', 'value': 'baremetal'})
+    plan.to_dict.return_value = {
+        'uuid': 5,
+        'name': 'My Plan',
+        'parameters': plan.parameters,
+    }
     return plan
 
 
@@ -58,16 +62,17 @@ class PlansShellTest(BasePlansShellTest):
         )
 
     @mock.patch('tuskarclient.common.utils.find_resource')
-    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
-    def test_plan_show(self, mock_print_detail, mock_find_resource):
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_summary')
+    def test_plan_show(self, mock_print_summary, mock_find_resource):
         mock_find_resource.return_value = mock_plan()
         args = empty_args()
         args.plan = '5'
+        args.verbose = False
 
         self.shell.do_plan_show(self.tuskar, args, outfile=self.outfile)
         mock_find_resource.assert_called_with(self.tuskar.plans, '5')
-        mock_print_detail.assert_called_with(mock_find_resource.return_value,
-                                             outfile=self.outfile)
+        mock_print_summary.assert_called_with(mock_find_resource.return_value,
+                                              outfile=self.outfile)
 
     @mock.patch('tuskarclient.common.utils.find_resource')
     @mock.patch('tuskarclient.common.formatting.print_dict')
@@ -105,8 +110,8 @@ class PlansShellTest(BasePlansShellTest):
         self.assertEqual('Deleted Plan "My Plan".\n',
                          self.outfile.getvalue())
 
-    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
-    def test_plan_create(self, mock_print_detail):
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_summary')
+    def test_plan_create(self, mock_print_summary):
         args = empty_args()
         args.name = 'my_plan'
         args.description = 'my plan description'
@@ -116,11 +121,11 @@ class PlansShellTest(BasePlansShellTest):
             name='my_plan',
             description='my plan description'
         )
-        mock_print_detail.assert_called_with(
+        mock_print_summary.assert_called_with(
             self.tuskar.plans.create.return_value, outfile=self.outfile)
 
-    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
-    def test_add_role(self, mock_print_detail):
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_summary')
+    def test_add_role(self, mock_print_summary):
         args = empty_args()
         args.plan_uuid = '42'
         args.role_uuid = 'role_uuid'
@@ -128,11 +133,11 @@ class PlansShellTest(BasePlansShellTest):
         self.shell.do_plan_add_role(self.tuskar, args, outfile=self.outfile)
         self.tuskar.plans.add_role.assert_called_with('42', 'role_uuid')
 
-        mock_print_detail.assert_called_with(
+        mock_print_summary.assert_called_with(
             self.tuskar.plans.add_role.return_value, outfile=self.outfile)
 
-    @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
-    def test_remove_role(self, mock_print_detail):
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_summary')
+    def test_remove_role(self, mock_print_summary):
         args = empty_args()
         args.plan_uuid = '42'
         args.role_uuid = 'role_uuid'
@@ -140,9 +145,10 @@ class PlansShellTest(BasePlansShellTest):
         self.shell.do_plan_remove_role(self.tuskar, args, outfile=self.outfile)
         self.tuskar.plans.remove_role.assert_called_with('42', 'role_uuid')
 
-        mock_print_detail.assert_called_with(
+        mock_print_summary.assert_called_with(
             self.tuskar.plans.remove_role.return_value, outfile=self.outfile)
 
+<<<<<<< HEAD
     @mock.patch('tuskarclient.common.utils.find_resource')
     def test_plan_scale(self, mock_find_resource):
         mock_find_resource.return_value = mock_plan()
@@ -191,6 +197,10 @@ class PlansShellTest(BasePlansShellTest):
 
     @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
     def test_plan_patch(self, mock_print_detail):
+=======
+    @mock.patch('tuskarclient.v2.plans_shell.print_plan_summary')
+    def test_plan_patch(self, mock_print_summary):
+>>>>>>> Trim down the output of plan-show to be more useful
         args = empty_args()
         args.plan_uuid = 'plan_uuid'
         args.attributes = ['foo_name=foo_value',
@@ -224,10 +234,21 @@ class PlansShellTest(BasePlansShellTest):
                    key=lambda k: k['name']))
 
     @mock.patch('tuskarclient.common.utils.find_resource')
+    def test_print_plan_summary(self, mock_find_resource):
+        mock_find_resource.return_value = mock_plan()
+        args = empty_args()
+        args.plan = '5'
+        args.verbose = False
+
+        self.shell.do_plan_show(self.tuskar, args, outfile=self.outfile)
+        mock_find_resource.assert_called_with(self.tuskar.plans, '5')
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
     def test_print_plan_detail(self, mock_find_resource):
         mock_find_resource.return_value = mock_plan()
         args = empty_args()
         args.plan = '5'
+        args.verbose = True
 
         self.shell.do_plan_show(self.tuskar, args, outfile=self.outfile)
         mock_find_resource.assert_called_with(self.tuskar.plans, '5')
