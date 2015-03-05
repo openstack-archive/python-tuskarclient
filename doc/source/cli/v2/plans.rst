@@ -137,7 +137,7 @@ This will unassign Role from a Plan. This will not delete the Role from Tuskar.
 Output of this command is the same as for plan-show.
 
 Show Plan’s scale
------------------------
+-----------------
 *tuskar plan-show-scale plan_uuid*
 
 Usage example:
@@ -149,7 +149,7 @@ Usage example:
 Output of this command is a table containing role names with versions and their counts.
 
 Scaling a Plan
------------------------
+--------------
 *tuskar plan-scale <ROLE NAME WITH VERSION> --count=<COUNT> plan_uuid*
 
 Usage example:
@@ -159,6 +159,31 @@ Usage example:
     tuskar plan-scale compute-1 --count=2 c367b394-7179-4c44-85ed-bf84baaf9fee
 
 This will scale given Plan’s role with specified count of nodes.
+Output of this command is a short summary of changed values.
+
+Show Plan’s Flavors assigned to Roles
+-------------------------------------
+*tuskar plan-show-flavors plan_uuid*
+
+Usage example:
+
+::
+
+    tuskar plan-show-flavors c367b394-7179-4c44-85ed-bf84baaf9fee
+
+Output of this command is a table containing roles and assigned flavors.
+
+Assign Flavors to Roles in a Plan
+---------------------------------
+*tuskar plan-flavor <ROLE NAME WITH VERSION> --flavor=<FLAVOR> plan_uuid*
+
+Usage example:
+
+::
+
+    tuskar plan-flavor compute-1 --flavor=baremetal c367b394-7179-4c44-85ed-bf84baaf9fee
+
+This will update role-flavor assignment in a Plan.
 Output of this command is a short summary of changed values.
 
 Changing a Plan’s Configuration Values
