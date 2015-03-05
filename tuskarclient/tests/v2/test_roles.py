@@ -27,6 +27,7 @@ class RoleManagerTest(tutils.TestCase):
 
     def test_list(self):
         """Test retrieving a list of Roles via GET."""
+        self.assertThat('_list', tutils.IsMethodOn(self.rm))
         self.rm._list = mock.Mock(return_value=['fake_role'])
 
         self.assertEqual(self.rm.list(), ['fake_role'])
