@@ -94,7 +94,7 @@ class PlanManager(base.BaseManager):
         :return: A Plan instance or None if its not found.
         :rtype: tuskarclient.v2.plans.Plan
         """
-        return self._create(self._path(), fields)
+        return self._post(self._path(), fields)
 
     def patch(self, plan_uuid, attribute_list):
         """Patch an existing Plan.
@@ -135,7 +135,7 @@ class PlanManager(base.BaseManager):
         :return: A Plan instance or None if its not found.
         :rtype: tuskarclient.v2.plans.Plan
         """
-        return self._create(self._roles_path(plan_uuid), {'uuid': role_uuid})
+        return self._post(self._roles_path(plan_uuid), {'uuid': role_uuid})
 
     def remove_role(self, plan_uuid, role_uuid):
         """Removes a Role from a Plan.

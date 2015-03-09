@@ -68,6 +68,23 @@ class ManagerClassMismatch(object):
         return {}
 
 
+class IsMethodOn(object):
+    """Match if there is method with same name on object."""
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __str__(self):
+        return 'IsMethodOn(%s)' % (self.obj)
+
+    def match(self, method_name):
+        result = hasattr(self.obj, method_name)
+        if result:
+            return None
+        else:
+            return testtools.matchers.Mismatch("%s is not a method on %s" %
+                                               (method_name, self.obj))
+
+
 class CommandTestCase(TestCase):
     def setUp(self):
         super(CommandTestCase, self).setUp()

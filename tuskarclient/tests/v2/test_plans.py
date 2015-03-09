@@ -49,13 +49,14 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_create(self):
         """Test creating a new plan via POST."""
-        self.pm._create = mock.Mock(return_value=['fake_plan'])
+        self.assertThat('_post', tutils.IsMethodOn(self.pm))
+        self.pm._post = mock.Mock(return_value=['fake_plan'])
 
         self.assertEqual(
             self.pm.create(dummy='dummy plan data'),
             ['fake_plan'])
 
-        self.pm._create.assert_called_with(
+        self.pm._post.assert_called_with(
             '/v2/plans',
             {'dummy': 'dummy plan data'})
 
@@ -92,11 +93,12 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_add_role(self):
         """Test assigning Role to a Plan."""
-        self.pm._create = mock.Mock(return_value='dummy plan')
+        self.assertThat('_post', tutils.IsMethodOn(self.pm))
+        self.pm._post = mock.Mock(return_value='dummy plan')
 
         self.assertEqual(self.pm.add_role('42', role_uuid='qwert12345'),
                          'dummy plan')
-        self.pm._create.assert_called_with(
+        self.pm._post.assert_called_with(
             '/v2/plans/42/roles',
             {'uuid': 'qwert12345'})
 
