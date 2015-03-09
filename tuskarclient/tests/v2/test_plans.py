@@ -28,6 +28,7 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_get(self):
         """Test a standard GET operation to read/retrieve the plan."""
+        self.assertThat('_get', tutils.IsMethodOn(self.pm))
         self.pm._get = mock.Mock(return_value='fake_plan')
 
         self.assertEqual(self.pm.get('fake_plan'), 'fake_plan')
@@ -35,6 +36,7 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_get_404(self):
         """Test a 404 response to a standard GET."""
+        self.assertThat('_get', tutils.IsMethodOn(self.pm))
         self.pm._get = mock.Mock(return_value=None)
 
         self.assertEqual(self.pm.get('fake_plan'), None)
@@ -42,6 +44,7 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_list(self):
         """Test retrieving a list of plans via GET."""
+        self.assertThat('_list', tutils.IsMethodOn(self.pm))
         self.pm._list = mock.Mock(return_value=['fake_plan'])
 
         self.assertEqual(self.pm.list(), ['fake_plan'])
@@ -62,6 +65,7 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_patch(self):
         """Test patching a plan."""
+        self.assertThat('_patch', tutils.IsMethodOn(self.pm))
         self.pm._patch = mock.Mock(return_value=['fake_plan'])
 
         self.assertEqual(
@@ -76,6 +80,7 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_delete(self):
         """Test deleting/removing an plan via DELETE."""
+        self.assertThat('_delete', tutils.IsMethodOn(self.pm))
         self.pm._delete = mock.Mock(return_value=None)
 
         self.assertEqual(self.pm.delete(42), None)
@@ -104,9 +109,11 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_remove_role(self):
         """Test assigning Role to a Plan."""
+        self.assertThat('delete', tutils.IsMethodOn(self.api))
         self.api.delete = mock.Mock(return_value=(
             'resp',
             'fake_plan_data'))
+        self.assertThat('resource_class', tutils.IsMethodOn(self.pm))
         self.pm.resource_class = mock.Mock(return_value='fake_plan')
 
         self.assertEqual(self.pm.remove_role('42', role_uuid='qwert12345'),
@@ -120,6 +127,7 @@ class PlanManagerTest(tutils.TestCase):
 
     def test_templates(self):
         """Test a GET operation to retrieve the plan's templates."""
+        self.assertThat('_get', tutils.IsMethodOn(self.pm))
         self.pm._get = mock.MagicMock()
         self.pm._get.return_value.to_dict.return_value = 'fake_templates_dict'
 
@@ -127,6 +135,7 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._get.assert_called_with('/v2/plans/fake_plan/templates')
 
     def test_roles_subresource(self):
+        self.assertThat('_get', tutils.IsMethodOn(self.pm))
         self.pm._get = mock.Mock(
             return_value=plans.Plan(None,
                                     {'roles': [
