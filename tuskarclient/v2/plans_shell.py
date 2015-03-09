@@ -39,6 +39,20 @@ def do_plan_show(tuskar, args, outfile=sys.stdout):
     print_plan_detail(plan, outfile=outfile)
 
 
+@utils.arg('plan', metavar="<PLAN>",
+           help="UUID of the Plan to show a scale.")
+def do_plan_show_scale(tuskar, args, outfile=sys.stdout):
+    """Show scale counts of Plan."""
+    plan = utils.find_resource(tuskar.plans, args.plan)
+    scales = dict()
+
+    for param in plan.parameters:
+        if param['name'].endswith('::count'):
+            scales[param['name'].replace('::count', '')] = param["value"]
+
+    fmt.print_dict(scales, outfile=outfile)
+
+
 def print_plan_detail(plan, outfile=sys.stdout):
     """Print detailed Plan information (for plan-show etc.)."""
 
@@ -93,6 +107,40 @@ def do_plan_remove_role(tuskar, args, outfile=sys.stdout):
         vars(args).get('role_uuid')
     )
     print_plan_detail(plan, outfile=outfile)
+
+
+@utils.arg('role_name', help="Name of role which you want scale.")
+@utils.arg('plan_uuid', help="UUID of the Plan to modify.")
+@utils.arg('-C', '--count', help="Count of nodes to be set.", required=True)
+def do_plan_scale(tuskar, args, outfile=sys.stdout):
+    """Scale plan by changing count of roles."""
+    roles = tuskar.roles.list()
+    plan = utils.find_resource(tuskar.plans, args.plan_uuid)
+    attributes = []
+
+    for role in roles:
+        versioned_name = "{name}-{v}".format(name=role.name, v=role.version)
+        if versioned_name == args.role_name:
+            role_name_key = versioned_name + "::count"
+            attributes.append({'name': role_name_key,
+                               'value': args.count})
+            old_val = [p['value'] for p in plan.parameters
+                       if p['name'] == role_name_key][0]
+
+            if old_val != args.count:
+                print("Scaling {role} count: {old_val} -> {new_val}".format(
+                      role=args.role_name, old_val=old_val, new_val=args.count
+                      ), file=outfile)
+            else:
+                print("Keeping scale {role} count: {count}".format(
+                      role=args.role_name, count=old_val), file=outfile)
+                return
+
+    if attributes:
+        return tuskar.plans.patch(args.plan_uuid, attributes)
+    else:
+        print("ERROR: no roles were found in the Plan with the name {0}".
+              format(args.role_name), file=sys.stderr)
 
 
 @utils.arg('plan_uuid', help="UUID of the Plan to modify.")

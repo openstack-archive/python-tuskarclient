@@ -29,6 +29,7 @@ def mock_plan():
     plan.uuid = '5'
     plan.name = 'My Plan'
     plan.to_dict.return_value = {'uuid': 5, 'name': 'My Plan'}
+    plan.parameters = [{'name': 'compute-1::count', 'value': '2'}]
     return plan
 
 
@@ -65,6 +66,18 @@ class PlansShellTest(BasePlansShellTest):
         mock_find_resource.assert_called_with(self.tuskar.plans, '5')
         mock_print_detail.assert_called_with(mock_find_resource.return_value,
                                              outfile=self.outfile)
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
+    @mock.patch('tuskarclient.common.formatting.print_dict')
+    def test_plan_show_scale(self, mock_print_dict, mock_find_resource):
+        mock_find_resource.return_value = mock_plan()
+        args = empty_args()
+        args.plan = '5'
+
+        self.shell.do_plan_show_scale(self.tuskar, args, outfile=self.outfile)
+        mock_find_resource.assert_called_with(self.tuskar.plans, '5')
+        mock_print_dict.assert_called_with({'compute-1': '2'},
+                                           outfile=self.outfile)
 
     @mock.patch('tuskarclient.common.utils.find_resource')
     def test_plan_delete(self, mock_find_resource):
@@ -114,6 +127,29 @@ class PlansShellTest(BasePlansShellTest):
 
         mock_print_detail.assert_called_with(
             self.tuskar.plans.remove_role.return_value, outfile=self.outfile)
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
+    def test_plan_scale(self, mock_find_resource):
+        mock_find_resource.return_value = mock_plan()
+        role = mock.Mock()
+        role.name = 'compute'
+        role.version = 1
+        self.tuskar.roles.list.return_value = [role]
+
+        args = empty_args()
+        args.plan_uuid = 'plan_uuid'
+        args.role_name = 'compute-1'
+        args.count = '9'
+
+        attributes = [{'name': 'compute-1::count', 'value': '9'}]
+
+        self.shell.do_plan_scale(self.tuskar, args, outfile=self.outfile)
+        self.tuskar.plans.patch.assert_called_once()
+        self.assertEqual('plan_uuid', self.tuskar.plans.patch.call_args[0][0])
+        self.assertEqual(
+            sorted(attributes, key=lambda k: k['name']),
+            sorted(self.tuskar.plans.patch.call_args[0][1],
+                   key=lambda k: k['name']))
 
     @mock.patch('tuskarclient.v2.plans_shell.print_plan_detail')
     def test_plan_patch(self, mock_print_detail):
