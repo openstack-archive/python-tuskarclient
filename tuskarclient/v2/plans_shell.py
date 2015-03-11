@@ -149,13 +149,13 @@ def do_plan_scale(tuskar, args, outfile=sys.stdout):
     """Scale plan by changing count of roles."""
     roles = tuskar.roles.list()
     plan = utils.find_resource(tuskar.plans, args.plan_uuid)
-    attributes = []
+    parameters = []
 
     for role in roles:
         versioned_name = "{name}-{v}".format(name=role.name, v=role.version)
         if versioned_name == args.role_name:
             role_name_key = versioned_name + "::count"
-            attributes.append({'name': role_name_key,
+            parameters.append({'name': role_name_key,
                                'value': args.count})
             old_val = [p['value'] for p in plan.parameters
                        if p['name'] == role_name_key][0]
@@ -169,8 +169,8 @@ def do_plan_scale(tuskar, args, outfile=sys.stdout):
                       role=args.role_name, count=old_val), file=outfile)
                 return
 
-    if attributes:
-        return tuskar.plans.patch(args.plan_uuid, attributes)
+    if parameters:
+        return tuskar.plans.patch(args.plan_uuid, parameters)
     else:
         print("ERROR: no roles were found in the Plan with the name {0}".
               format(args.role_name), file=sys.stderr)
@@ -184,13 +184,13 @@ def do_plan_flavor(tuskar, args, outfile=sys.stdout):
     """Change flavor of role in the plan."""
     roles = tuskar.roles.list()
     plan = utils.find_resource(tuskar.plans, args.plan_uuid)
-    attributes = []
+    parameters = []
 
     for role in roles:
         versioned_name = "{name}-{v}".format(name=role.name, v=role.version)
         if versioned_name == args.role_name:
             role_name_key = versioned_name + "::Flavor"
-            attributes.append({'name': role_name_key,
+            parameters.append({'name': role_name_key,
                                'value': args.flavor})
             old_val = [p['value'] for p in plan.parameters
                        if p['name'] == role_name_key][0]
@@ -204,8 +204,8 @@ def do_plan_flavor(tuskar, args, outfile=sys.stdout):
                       role=args.role_name, flavor=old_val), file=outfile)
                 return
 
-    if attributes:
-        return tuskar.plans.patch(args.plan_uuid, attributes)
+    if parameters:
+        return tuskar.plans.patch(args.plan_uuid, parameters)
     else:
         print("ERROR: no roles were found in the Plan with the name {0}".
               format(args.role_name), file=sys.stderr)
@@ -213,14 +213,27 @@ def do_plan_flavor(tuskar, args, outfile=sys.stdout):
 
 @utils.arg('plan_uuid', help="UUID of the Plan to modify.")
 @utils.arg('-A', '--attribute', dest='attributes', metavar='<KEY1=VALUE1>',
+           help=('This can be specified multiple times. This argument is '
+                 'deprecated, use -P and --parameter instead.'),
+           action='append')
+@utils.arg('-P', '--parameter', dest='parameters', metavar='<KEY1=VALUE1>',
            help='This can be specified multiple times.',
            action='append')
 def do_plan_update(tuskar, args, outfile=sys.stdout):
     """Change an existing plan."""
-    attributes = [{'name': pair[0], 'value': pair[1]}
+
+    parameters = args.parameters
+
+    if args.attributes:
+        print("WARNING: The attribute flags -A and --attribute are"
+              " deprecated and will be removed in a later release."
+              " Use -P and --parameter instead.", file=sys.stderr)
+        parameters = args.attributes
+
+    parameters = [{'name': pair[0], 'value': pair[1]}
                   for pair
-                  in utils.format_attributes(args.attributes).items()]
-    return tuskar.plans.patch(args.plan_uuid, attributes)
+                  in utils.format_attributes(parameters).items()]
+    return tuskar.plans.patch(args.plan_uuid, parameters)
 
 
 @utils.arg('plan_uuid', help="UUID of the Plan to modify.")
