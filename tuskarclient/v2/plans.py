@@ -48,9 +48,9 @@ class PlanManager(base.BaseManager):
     def _path(plan_id=None):
 
         if plan_id:
-            return '/v2/plans/%s' % plan_id
+            return '/plans/%s' % plan_id
 
-        return '/v2/plans'
+        return '/plans'
 
     def _roles_path(self, plan_id, role_id=None):
         roles_path = '%s/roles' % self._path(plan_id)

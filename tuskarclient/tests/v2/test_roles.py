@@ -31,14 +31,14 @@ class RoleManagerTest(tutils.TestCase):
         self.rm._list = mock.Mock(return_value=['fake_role'])
 
         self.assertEqual(self.rm.list(), ['fake_role'])
-        self.rm._list.assert_called_with('/v2/roles')
+        self.rm._list.assert_called_with('/roles')
 
     def test_path_without_id(self):
         """Test _path returns list uri."""
-        self.assertEqual(self.rm._path(), '/v2/roles')
+        self.assertEqual(self.rm._path(), '/roles')
 
     def test_path_with_id(self):
         """Test _path returns single item uri."""
         plan_id = self.getUniqueString()
         self.assertEqual(self.rm._path(plan_id),
-                         '/v2/roles/%s' % plan_id)
+                         '/roles/%s' % plan_id)

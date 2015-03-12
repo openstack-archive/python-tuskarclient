@@ -34,9 +34,9 @@ class RoleManager(base.BaseManager):
     def _path(role_id=None):
 
         if role_id:
-            return '/v2/roles/%s' % role_id
+            return '/roles/%s' % role_id
 
-        return '/v2/roles'
+        return '/roles'
 
     def list(self):
         """Get a list of the existing Roles
