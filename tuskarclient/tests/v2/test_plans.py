@@ -32,7 +32,7 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._get = mock.Mock(return_value='fake_plan')
 
         self.assertEqual(self.pm.get('fake_plan'), 'fake_plan')
-        self.pm._get.assert_called_with('/v2/plans/fake_plan')
+        self.pm._get.assert_called_with('/plans/fake_plan')
 
     def test_get_404(self):
         """Test a 404 response to a standard GET."""
@@ -40,7 +40,7 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._get = mock.Mock(return_value=None)
 
         self.assertEqual(self.pm.get('fake_plan'), None)
-        self.pm._get.assert_called_with('/v2/plans/fake_plan')
+        self.pm._get.assert_called_with('/plans/fake_plan')
 
     def test_list(self):
         """Test retrieving a list of plans via GET."""
@@ -48,7 +48,7 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._list = mock.Mock(return_value=['fake_plan'])
 
         self.assertEqual(self.pm.list(), ['fake_plan'])
-        self.pm._list.assert_called_with('/v2/plans')
+        self.pm._list.assert_called_with('/plans')
 
     def test_create(self):
         """Test creating a new plan via POST."""
@@ -60,7 +60,7 @@ class PlanManagerTest(tutils.TestCase):
             ['fake_plan'])
 
         self.pm._post.assert_called_with(
-            '/v2/plans',
+            '/plans',
             {'dummy': 'dummy plan data'})
 
     def test_patch(self):
@@ -74,7 +74,7 @@ class PlanManagerTest(tutils.TestCase):
             ['fake_plan'])
 
         self.pm._patch.assert_called_with(
-            '/v2/plans/42',
+            '/plans/42',
             [{'name': 'dummy',
               'value': 'dummy plan data'}])
 
@@ -84,17 +84,17 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._delete = mock.Mock(return_value=None)
 
         self.assertEqual(self.pm.delete(42), None)
-        self.pm._delete.assert_called_with('/v2/plans/42')
+        self.pm._delete.assert_called_with('/plans/42')
 
     def test_roles_path_with_role_id(self):
         """Test for building path for Role using UUID."""
         self.assertEqual(self.pm._roles_path('plan_42', 'role_abc'),
-                         '/v2/plans/plan_42/roles/role_abc')
+                         '/plans/plan_42/roles/role_abc')
 
     def test_roles_path_without_role_id(self):
         """Test for building path for Role for POST requests."""
         self.assertEqual(self.pm._roles_path('plan_42'),
-                         '/v2/plans/plan_42/roles')
+                         '/plans/plan_42/roles')
 
     def test_add_role(self):
         """Test assigning Role to a Plan."""
@@ -104,7 +104,7 @@ class PlanManagerTest(tutils.TestCase):
         self.assertEqual(self.pm.add_role('42', role_uuid='qwert12345'),
                          'dummy plan')
         self.pm._post.assert_called_with(
-            '/v2/plans/42/roles',
+            '/plans/42/roles',
             {'uuid': 'qwert12345'})
 
     def test_remove_role(self):
@@ -118,12 +118,12 @@ class PlanManagerTest(tutils.TestCase):
 
         self.assertEqual(self.pm.remove_role('42', role_uuid='qwert12345'),
                          'fake_plan')
-        self.api.delete.assert_called_with('/v2/plans/42/roles/qwert12345')
+        self.api.delete.assert_called_with('/plans/42/roles/qwert12345')
         self.pm.resource_class.assert_called_with(self.pm, 'fake_plan_data')
 
     def test_templates_path(self):
         self.assertEqual(self.pm._templates_path('42'),
-                         '/v2/plans/42/templates')
+                         '/plans/42/templates')
 
     def test_templates(self):
         """Test a GET operation to retrieve the plan's templates."""
@@ -132,7 +132,7 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._get.return_value.to_dict.return_value = 'fake_templates_dict'
 
         self.assertEqual(self.pm.templates('fake_plan'), 'fake_templates_dict')
-        self.pm._get.assert_called_with('/v2/plans/fake_plan/templates')
+        self.pm._get.assert_called_with('/plans/fake_plan/templates')
 
     def test_roles_subresource(self):
         self.assertThat('_get', tutils.IsMethodOn(self.pm))
