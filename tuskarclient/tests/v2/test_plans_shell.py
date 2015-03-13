@@ -280,35 +280,60 @@ class PlansShellTest(BasePlansShellTest):
     @mock.patch('tuskarclient.v2.plans_shell.os.mkdir', create=True)
     @mock.patch('tuskarclient.v2.plans_shell.os.path.isdir', create=True)
     @mock.patch('tuskarclient.v2.plans_shell.open', create=True)
+    @mock.patch('tuskarclient.v2.plans_shell.os.path.exists', create=True)
+    @mock.patch('tuskarclient.v2.plans_shell.os.makedirs', create=True)
     def test_plan_templates(
-            self, mock_open, mock_isdir, mock_mkdir, mock_print):
+            self, mock_makedirs, mock_exists, mock_open, mock_isdir,
+            mock_mkdir, mock_print):
         args = empty_args()
         args.plan_uuid = 'plan_uuid'
         args.output_dir = 'outdir/subdir'
 
+        # Simulate the first exists check being false and the subsequent check
+        # being true so as to exercise that makesdirs is only called once
+        # per nested directory.
+        exists_return_values = [False, True]
+        def toggle_exists_result(*e_args, **e_kwargs):
+            return exists_return_values.pop(0)
+        mock_exists.side_effect = toggle_exists_result
+
         mock_isdir.return_value = False
         self.tuskar.plans.templates.return_value = {
             'name_foo': 'value_foo',
-            'name_bar': 'value_bar'
+            'name_bar': 'value_bar',
+            'nested/name_baz' : 'value_baz',
+            'nested/name_zom' : 'value_zom'
         }
 
         self.shell.do_plan_templates(self.tuskar, args, outfile=self.outfile)
 
-        mock_isdir.assert_called_with('outdir/subdir')
-        mock_mkdir.assert_called_with('outdir/subdir')
+        # Initial check and creation of the output directory
+        mock_isdir.assert_any_call('outdir/subdir')
+        mock_mkdir.assert_any_call('outdir/subdir')
+
+        # Checks and creation of nested directory
+        self.assertEqual(mock_exists.call_count, 2)
+        self.assertEqual(mock_makedirs.call_count, 1)
+        mock_makedirs.assert_called_with('outdir/subdir/nested')
 
         self.tuskar.plans.templates.assert_called_with('plan_uuid')
 
         mock_open.assert_any_call('outdir/subdir/name_foo', 'w+')
         mock_open.assert_any_call('outdir/subdir/name_bar', 'w+')
-        self.assertEqual(mock_open.call_count, 2)
+        mock_open.assert_any_call('outdir/subdir/nested/name_baz', 'w+')
+        mock_open.assert_any_call('outdir/subdir/nested/name_zom', 'w+')
+        self.assertEqual(mock_open.call_count, 4)
 
         mock_opened_file = mock_open.return_value.__enter__.return_value
         mock_opened_file.write.assert_any_call('value_foo')
         mock_opened_file.write.assert_any_call('value_bar')
-        self.assertEqual(mock_opened_file.write.call_count, 2)
+        mock_opened_file.write.assert_any_call('value_baz')
+        mock_opened_file.write.assert_any_call('value_zom')
+        self.assertEqual(mock_opened_file.write.call_count, 4)
 
-        mock_print.assert_any_call('Following templates has been written:')
+        mock_print.assert_any_call('The following templates will be written:')
         mock_print.assert_any_call('outdir/subdir/name_foo')
         mock_print.assert_any_call('outdir/subdir/name_bar')
-        self.assertEqual(mock_print.call_count, 3)
+        mock_print.assert_any_call('outdir/subdir/nested/name_baz')
+        mock_print.assert_any_call('outdir/subdir/nested/name_zom')
+        self.assertEqual(mock_print.call_count, 5)
