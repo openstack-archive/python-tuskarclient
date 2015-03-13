@@ -265,8 +265,19 @@ def do_plan_templates(tuskar, args, outfile=sys.stdout):
     templates = tuskar.plans.templates(args.plan_uuid)
 
     # write file for each key-value in templates
-    print("Following templates has been written:")
+    print("The following templates will be written:")
     for template_name, template_content in templates.items():
+
+        # It's possible to organize the role templates and their dependent
+        # files into directories, in which case the template_name will carry
+        # the directory information. If that's the case, first create the
+        # directory structure (if it hasn't already been created by another
+        # file in the templates list).
+        template_dir = os.path.dirname(template_name)
+        output_template_dir = os.path.join(output_dir, template_dir)
+        if template_dir and not os.path.exists(output_template_dir):
+            os.makedirs(output_template_dir)
+
         filename = os.path.join(output_dir, template_name)
         with open(filename, 'w+') as template_file:
             template_file.write(template_content)
