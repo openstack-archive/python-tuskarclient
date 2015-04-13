@@ -150,9 +150,7 @@ class PlanManager(base.BaseManager):
         :rtype: tuskarclient.v2.plans.Plan
         """
 
-        rep, body = self._delete(self._roles_path(plan_uuid, role_uuid))
-
-        return self.resource_class(self, body)
+        return self._delete(self._roles_path(plan_uuid, role_uuid))
 
     def templates(self, plan_uuid):
         """Gets template files from a Plan.

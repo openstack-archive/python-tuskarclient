@@ -216,12 +216,19 @@ class BaseManager(HookableMixin):
         else:
             return self.resource_class(self, body)
 
-    def _delete(self, url):
+    def _delete(self, url, response_key=None):
         """Delete an object.
 
         :param url: a partial URL, e.g., '/servers/my-server'
         """
-        return self.client.delete(url)
+        resp = self.client.delete(url)
+        # DELETE requests may not return a body
+        if resp.content:
+            body = resp.json()
+            if response_key is not None:
+                return self.resource_class(self, body[response_key])
+            else:
+                return self.resource_class(self, body)
 
 
 @six.add_metaclass(abc.ABCMeta)
