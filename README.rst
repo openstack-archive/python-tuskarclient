@@ -48,7 +48,7 @@ Then, export these two environment variables, customizing them if
 necessary::
 
     $ export OS_AUTH_TOKEN=nopass
-    $ export TUSKAR_URL=http://localhost:8585/
+    $ export TUSKAR_URL=http://localhost:8585/v2
 
 (Note that 'nopass' is the correct value in a default setup with no
 authentication.)
