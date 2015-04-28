@@ -19,7 +19,8 @@ from tuskarclient.v2 import plans_shell
 
 def empty_args():
     args = mock.Mock(spec=[])
-    for attr in ['uuid', 'name', 'description', 'parameters']:
+    for attr in ['uuid', 'name', 'description', 'parameters',
+                 'only_empty_parameters']:
         setattr(args, attr, None)
     return args
 
@@ -73,6 +74,17 @@ class PlansShellTest(BasePlansShellTest):
         mock_find_resource.assert_called_with(self.tuskar.plans, '5')
         mock_print_summary.assert_called_with(mock_find_resource.return_value,
                                               outfile=self.outfile)
+
+    def test_filter_empty_parameters(self):
+        parameters = [{'name': 'setup param', 'value': '1'},
+                      {'name': 'empty-parameter', 'value': ''},
+                      {'name': 'empty-parameter', 'value': None}]
+
+        filtered_parameters = self.shell.filter_empty_parameters(parameters)
+
+        self.assertEqual([{'name': 'empty-parameter', 'value': ''},
+                          {'name': 'empty-parameter', 'value': None}],
+                         filtered_parameters)
 
     @mock.patch('tuskarclient.common.utils.find_resource')
     @mock.patch('tuskarclient.common.formatting.print_dict')
