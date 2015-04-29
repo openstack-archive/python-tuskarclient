@@ -26,3 +26,13 @@ class ListRoles(lister.Lister):
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
+
+        client = self.app.client_manager.management
+
+        roles = client.roles.list()
+
+        return (
+            ('uuid', 'name', 'version', 'description'),
+            ((r.uuid, r.name, r.version, r.description)
+                for r in roles)
+        )
