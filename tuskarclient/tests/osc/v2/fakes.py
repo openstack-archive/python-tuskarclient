@@ -14,6 +14,14 @@ import mock
 from openstackclient.tests import utils
 
 
+mock_roles = [
+    mock.Mock(uuid="UUID1", version=1, description="Mock Role 1"),
+    mock.Mock(uuid="UUID2", version=2, description="Mock Role 2"),
+]
+mock_roles[0].configure_mock(name="Role 1 Name")
+mock_roles[1].configure_mock(name="Role 2 Name")
+
+
 class TestManagement(utils.TestCommand):
 
     def setUp(self):
