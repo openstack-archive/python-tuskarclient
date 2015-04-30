@@ -21,6 +21,14 @@ mock_roles = [
 mock_roles[0].configure_mock(name="Role 1 Name")
 mock_roles[1].configure_mock(name="Role 2 Name")
 
+mock_plans = [
+    mock.Mock(uuid="UUID1", description="Plan 1",
+              roles=mock_roles),
+    mock.Mock(uuid="UUID2", description="Plan 2", roles=[]),
+]
+mock_plans[0].configure_mock(name="Plan 1 Name")
+mock_plans[1].configure_mock(name="Plan 2 Name")
+
 
 class TestManagement(utils.TestCommand):
 
