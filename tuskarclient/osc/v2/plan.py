@@ -203,10 +203,30 @@ class AddManagementPlanRole(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(AddManagementPlanRole, self).get_parser(prog_name)
+
+        parser.add_argument(
+            'plan_uuid',
+            help="The UUID of the plan."
+        )
+
+        parser.add_argument(
+            'role_uuid',
+            help="The UUID of the Role being added to the Plan."
+        )
+
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
+
+        client = self.app.client_manager.management
+
+        plan = client.plans.add_role(
+            parsed_args.plan_uuid,
+            parsed_args.role_uuid
+        )
+
+        return self.dict2columns(plan.to_dict())
 
 
 class RemoveManagementPlanRole(show.ShowOne):
