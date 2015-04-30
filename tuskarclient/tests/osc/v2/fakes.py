@@ -14,20 +14,26 @@ import mock
 from openstackclient.tests import utils
 
 
+def _create_mock(**kwargs):
+    mock_plan = mock.Mock()
+    mock_plan.configure_mock(**kwargs)
+    mock_plan.to_dict.return_value = kwargs
+    return mock_plan
+
+
 mock_roles = [
-    mock.Mock(uuid="UUID1", version=1, description="Mock Role 1"),
-    mock.Mock(uuid="UUID2", version=2, description="Mock Role 2"),
+    _create_mock(uuid="UUID1", name="Role 1 Name", version=1,
+                 description="Mock Role 1"),
+    _create_mock(uuid="UUID2", name="Role 2 Name", version=2,
+                 description="Mock Role 2"),
 ]
-mock_roles[0].configure_mock(name="Role 1 Name")
-mock_roles[1].configure_mock(name="Role 2 Name")
 
 mock_plans = [
-    mock.Mock(uuid="UUID1", description="Plan 1",
-              roles=mock_roles),
-    mock.Mock(uuid="UUID2", description="Plan 2", roles=[]),
+    _create_mock(uuid="UUID1", name="Plan 1 Name", description="Plan 1",
+                 roles=mock_roles),
+    _create_mock(uuid="UUID2", name="Plan 2 Name", description="Plan 2",
+                 roles=[])
 ]
-mock_plans[0].configure_mock(name="Plan 1 Name")
-mock_plans[1].configure_mock(name="Plan 2 Name")
 
 
 class TestManagement(utils.TestCommand):
