@@ -15,6 +15,7 @@
 
 from __future__ import print_function
 
+import sys
 import uuid
 
 from oslo.utils import importutils
@@ -116,7 +117,7 @@ def format_key_value(params):
         yield name, value
 
 
-def format_attributes(params):
+def format_key_value_args(params):
     """Reformat CLI attributes into the structure expected by the API.
 
     The format expected by the API for attributes is a dictionary consisting
@@ -135,3 +136,61 @@ def format_attributes(params):
         attributes[key] = value
 
     return attributes
+
+
+def parameters_args_to_patch(parameters):
+    """Create a list of patch dicts to update the parameters in the API."""
+
+    return [{'name': pair[0], 'value': pair[1]}
+            for pair in sorted(format_key_value_args(parameters).items())]
+
+
+def flavors_args_to_patch(flavors, roles):
+    """Create a list of patch dicts to update the Role flavors in the API."""
+
+    role_flavors_dict = format_key_value_args(flavors)
+
+    print(roles)
+    roles = dict(("{0}-{1}".format(r.name, r.version), r) for r in roles)
+
+    print(roles)
+
+    patch = []
+
+    for role_name, flavor in sorted(role_flavors_dict.items()):
+
+        if role_name in roles:
+            patch.append({
+                'name': "{0}::Flavor".format(role_name),
+                'value': flavor
+            })
+        else:
+            print("ERROR: no roles were found in the Plan with the name {0}".
+                  format(role_name), file=sys.stderr)
+            continue
+
+    return patch
+
+
+def scale_args_to_patch(flavors, roles):
+    """Create a list of patch dicts to update the scale counts in the API."""
+
+    role_scales_dict = format_key_value_args(flavors)
+
+    roles = dict(("{0}-{1}".format(r.name, r.version), r) for r in roles)
+
+    patch = []
+
+    for role_name, scale in sorted(role_scales_dict.items()):
+
+        if role_name in roles:
+            patch.append({
+                'name': "{0}::count".format(role_name),
+                'value': scale
+            })
+        else:
+            print("ERROR: no roles were found in the Plan with the name {0}".
+                  format(role_name), file=sys.stderr)
+            continue
+
+    return patch
