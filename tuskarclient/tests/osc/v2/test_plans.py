@@ -115,13 +115,102 @@ class TestSetManagementPlan(TestPlans):
         super(TestSetManagementPlan, self).setUp()
         self.cmd = plan.SetManagementPlan(self.app, None)
 
-    def test_update_plan(self):
-        arglist = []
-        verifylist = []
+    def test_update_plan_nothing(self):
+        arglist = ['UUID1', ]
+        verifylist = [
+            ('plan_uuid', "UUID1"),
+            ('parameters', None),
+            ('flavors', None),
+            ('scales', None),
+        ]
+
+        self.management_mock.plans.get.return_value = fakes.mock_plans[1]
+        self.management_mock.plans.patch.return_value = fakes.mock_plans[1]
 
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
         self.cmd.take_action(parsed_args)
+
+        self.management_mock.plans.patch.assert_not_called()
+
+    def test_update_plan_parameters(self):
+        arglist = ['UUID1', '-P', 'A=1', '-P', 'B=2']
+        verifylist = [
+            ('plan_uuid', "UUID1"),
+            ('parameters', ['A=1', 'B=2']),
+            ('flavors', None),
+            ('scales', None),
+        ]
+
+        self.management_mock.plans.get.return_value = fakes.mock_plans[1]
+        self.management_mock.plans.patch.return_value = fakes.mock_plans[1]
+
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+        ], list(result))
+
+        self.management_mock.plans.patch.assert_called_with('UUID1', [
+            {'value': '1', 'name': 'A'},
+            {'value': '2', 'name': 'B'}
+        ])
+
+    def test_update_plan_flavors(self):
+        arglist = ['UUID1', '-F', 'Role 1 Name-1=strawberry',
+                   '-F', 'Role 2 Name-2=cherry']
+        verifylist = [
+            ('plan_uuid', "UUID1"),
+            ('parameters', None),
+            ('flavors', ['Role 1 Name-1=strawberry', 'Role 2 Name-2=cherry']),
+            ('scales', None),
+        ]
+
+        self.management_mock.plans.get.return_value = fakes.mock_plans[0]
+        self.management_mock.plans.patch.return_value = fakes.mock_plans[1]
+
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+        ], list(result))
+
+        self.management_mock.plans.patch.assert_called_with('UUID1', [
+            {'value': 'strawberry', 'name': 'Role 1 Name-1::Flavor'},
+            {'value': 'cherry', 'name': 'Role 2 Name-2::Flavor'}
+        ])
+
+    def test_update_plan_scale(self):
+        arglist = ['UUID1', '-S', 'Role 1 Name-1=2', '-S', 'Role 2 Name-2=3']
+        verifylist = [
+            ('plan_uuid', "UUID1"),
+            ('parameters', None),
+            ('flavors', None),
+            ('scales', ['Role 1 Name-1=2', 'Role 2 Name-2=3']),
+        ]
+
+        self.management_mock.plans.get.return_value = fakes.mock_plans[0]
+        self.management_mock.plans.patch.return_value = fakes.mock_plans[1]
+
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+        ], list(result))
+
+        self.management_mock.plans.patch.assert_called_with('UUID1', [
+            {'value': '2', 'name': 'Role 1 Name-1::count'},
+            {'value': '3', 'name': 'Role 2 Name-2::count'}
+        ])
 
 
 class TestShowManagementPlan(TestPlans):
