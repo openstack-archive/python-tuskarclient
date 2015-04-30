@@ -13,6 +13,8 @@
 from __future__ import print_function
 
 import logging
+import os
+import shutil
 import sys
 
 from cliff import command
@@ -263,13 +265,58 @@ class RemoveManagementPlanRole(show.ShowOne):
 
 
 class DownloadManagementPlan(command.Command):
-    """Download the a Management Plan."""
+    """Download a Management Plan."""
 
     log = logging.getLogger(__name__ + '.DownloadManagementPlan')
 
     def get_parser(self, prog_name):
         parser = super(DownloadManagementPlan, self).get_parser(prog_name)
+
+        parser.add_argument(
+            'plan_uuid',
+            help="The UUID of the plan to download."
+        )
+
+        parser.add_argument(
+            '-O', '--output-dir', metavar='<OUTPUT DIR>',
+            required=True,
+            help=('Directory to write template files into. It will be created '
+                  'if it does not exist and any existing files in the '
+                  'directory will be removed.')
+        )
+
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
+
+        client = self.app.client_manager.management
+
+        output_dir = parsed_args.output_dir
+
+        if os.path.isdir(output_dir):
+            shutil.rmtree(output_dir)
+
+        os.mkdir(output_dir)
+
+        # retrieve templates
+        templates = client.plans.templates(parsed_args.plan_uuid)
+
+        # write file for each key-value in templates
+        print("The following templates will be written:")
+        for template_name, template_content in templates.items():
+
+            # It's possible to organize the role templates and their dependent
+            # files into directories, in which case the template_name will
+            # carry the directory information. If that's the case, first
+            # create the directory structure (if it hasn't already been
+            # created by another file in the templates list).
+            template_dir = os.path.dirname(template_name)
+            output_template_dir = os.path.join(output_dir, template_dir)
+            if template_dir and not os.path.exists(output_template_dir):
+                os.makedirs(output_template_dir)
+
+            filename = os.path.join(output_dir, template_name)
+            with open(filename, 'w+') as template_file:
+                template_file.write(template_content)
+            print(filename)

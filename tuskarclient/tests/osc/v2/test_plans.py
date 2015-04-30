@@ -10,6 +10,9 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+import os
+import tempfile
+
 from tuskarclient.osc.v2 import plan
 from tuskarclient.tests.osc.v2 import fakes
 
@@ -312,9 +315,26 @@ class TestDownloadManagementPlan(TestPlans):
         self.cmd = plan.DownloadManagementPlan(self.app, None)
 
     def test_download_plan_templates(self):
-        arglist = []
-        verifylist = []
+
+        temp_dir = tempfile.mkdtemp()
+
+        arglist = ['UUID1', '-O', temp_dir]
+        verifylist = [
+            ('plan_uuid', 'UUID1'),
+            ('output_dir', temp_dir),
+        ]
+
+        mock_result = {
+            'template-1-name': 'template 1 content',
+            'template-2-name': 'template 2 content',
+        }
+
+        self.management_mock.plans.templates.return_value = mock_result
 
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
         self.cmd.take_action(parsed_args)
+
+        for template_name in mock_result:
+            full_path = os.path.join(temp_dir, template_name)
+            self.assertTrue(os.path.exists(full_path))
