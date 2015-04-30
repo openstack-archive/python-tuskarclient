@@ -55,6 +55,17 @@ class ListManagementPlans(lister.Lister):
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
 
+        client = self.app.client_manager.management
+
+        plans = client.plans.list()
+
+        return (
+            ('uuid', 'name', 'description', 'roles'),
+            ((p.uuid, p.name, p.description,
+                ', '.join(r.name for r in p.roles))
+                for p in plans)
+        )
+
 
 class SetManagementPlan(show.ShowOne):
     """Update a Management Plans properties."""
