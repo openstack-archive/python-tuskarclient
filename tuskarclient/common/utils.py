@@ -146,7 +146,7 @@ def parameters_args_to_patch(parameters):
 
 
 def args_to_patch(flavors, roles, parameter):
-    """Create a list of patch dicts to update the given parameter in the API."""
+    """Create a list of dicts to update the given parameter in the API."""
 
     role_flavors_dict = format_key_value_args(flavors)
 
