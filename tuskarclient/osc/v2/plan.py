@@ -56,10 +56,20 @@ class DeleteManagementPlan(command.Command):
 
     def get_parser(self, prog_name):
         parser = super(DeleteManagementPlan, self).get_parser(prog_name)
+
+        parser.add_argument(
+            'plan_uuid',
+            help="The UUID of the plan being deleted."
+        )
+
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
+
+        client = self.app.client_manager.management
+
+        client.plans.delete(parsed_args.plan_uuid)
 
 
 class ListManagementPlans(lister.Lister):
