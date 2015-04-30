@@ -1,0 +1,13 @@
+Verified+2: Jenkins
+Workflow+1: Derek Higgins <derekh@redhat.com>
+Code-Review+2: Jiri Stransky <jistr@redhat.com>
+Code-Review+2: Jay Dobies <jason.dobies@redhat.com>
+Workflow+1: Jay Dobies <jason.dobies@redhat.com>
+Code-Review+1: Ryan Brady <rbrady@redhat.com>
+Code-Review+1: Ana Krivokapic <akrivoka@redhat.com>
+Code-Review+1: Marek Aufart <maufart@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Thu, 30 Apr 2015 13:35:03 +0000
+Reviewed-on: https://review.openstack.org/171096
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
