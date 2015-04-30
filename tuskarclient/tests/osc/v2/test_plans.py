@@ -65,7 +65,15 @@ class TestListManagementPlan(TestPlans):
 
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
-        self.cmd.take_action(parsed_args)
+        self.management_mock.plans.list.return_value = fakes.mock_plans
+
+        titles, rows = self.cmd.take_action(parsed_args)
+
+        self.assertEqual(titles, ('uuid', 'name', 'description', 'roles'))
+        self.assertEqual([
+            ('UUID1', 'Plan 1 Name', 'Plan 1', 'Role 1 Name, Role 2 Name'),
+            ('UUID2', 'Plan 2 Name', 'Plan 2', '')
+        ], list(rows))
 
 
 class TestSetManagementPlan(TestPlans):
