@@ -167,10 +167,33 @@ class ShowManagementPlan(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(ShowManagementPlan, self).get_parser(prog_name)
+
+        parser.add_argument(
+            'plan_uuid',
+            help="The UUID of the plan to show."
+        )
+
+        parser.add_argument(
+            '--long', default=False, action="store_true",
+            help="Display full plan details"
+        )
+
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
+
+        client = self.app.client_manager.management
+        plan = client.plans.get(parsed_args.plan_uuid)
+        plan_dict = plan.to_dict()
+
+        if not parsed_args.long:
+            if 'parameters' in plan_dict:
+                plan_dict['parameters'] = ("Parameter output suppressed. Use "
+                                           "--long to display them.")
+            plan_dict['roles'] = ', '.join([r.name for r in plan.roles])
+
+        return self.dict2columns(plan_dict)
 
 
 class AddManagementPlanRole(show.ShowOne):
