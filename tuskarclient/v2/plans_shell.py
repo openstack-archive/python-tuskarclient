@@ -255,6 +255,7 @@ def do_plan_patch(*args, **kwargs):
            help='Directory to write template files into. ' +
            'It will be created if it does not exist.')
 def do_plan_templates(tuskar, args, outfile=sys.stdout):
+    """Download the Heat templates for a Plan."""
     # check that output directory exists and we can write into it
     output_dir = args.output_dir
 
