@@ -30,12 +30,23 @@ class TestCreateManagementPlan(TestPlans):
         self.cmd = plan.CreateManagementPlan(self.app, None)
 
     def test_create_plan(self):
-        arglist = []
-        verifylist = []
+        arglist = ["Plan 2 Name", '-d', 'Plan 2']
+        verifylist = [
+            ('name', "Plan 2 Name"),
+            ('description', "Plan 2"),
+        ]
+
+        self.management_mock.plans.create.return_value = fakes.mock_plans[1]
 
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
-        self.cmd.take_action(parsed_args)
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+        ], list(result)
+        )
 
 
 class TestDeleteManagementPlan(TestPlans):
