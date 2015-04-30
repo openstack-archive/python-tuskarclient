@@ -261,12 +261,22 @@ class TestAddManagementPlanRole(TestPlans):
         self.cmd = plan.AddManagementPlanRole(self.app, None)
 
     def test_add_plan_role(self):
-        arglist = []
-        verifylist = []
+        arglist = ['UUID1', 'UUID2']
+        verifylist = [
+            ('plan_uuid', 'UUID1'),
+            ('role_uuid', 'UUID2'),
+        ]
+
+        self.management_mock.plans.add_role.return_value = fakes.mock_plans[0]
 
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
-        self.cmd.take_action(parsed_args)
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 1', 'Plan 1 Name', fakes.mock_roles, 'UUID1')
+        ], list(result))
 
 
 class TestRemoveManagementPlanRole(TestPlans):
