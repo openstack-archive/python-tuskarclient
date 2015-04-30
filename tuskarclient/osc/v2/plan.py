@@ -24,10 +24,29 @@ class CreateManagementPlan(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(CreateManagementPlan, self).get_parser(prog_name)
+
+        parser.add_argument(
+            'name',
+            help="Name of the plan being created."
+        )
+
+        parser.add_argument(
+            '-d', '--description',
+            help='A textual description of the plan.')
+
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
+
+        client = self.app.client_manager.management
+
+        plan = client.plans.create(
+            name=parsed_args.name,
+            description=parsed_args.description
+        )
+
+        return self.dict2columns(plan.to_dict())
 
 
 class DeleteManagementPlan(command.Command):
