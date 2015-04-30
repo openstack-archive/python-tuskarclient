@@ -96,3 +96,59 @@ class FindResourceTest(test_utils.TestCase):
                           utils.find_resource,
                           self.manager,
                           'My Overcloud 2')
+
+
+class ParseCLIArgsTest(test_utils.TestCase):
+
+    def setUp(self):
+        super(ParseCLIArgsTest, self).setUp()
+
+        self.mock_role1 = mock.Mock()
+        self.mock_role1.configure_mock(name="role1", version=1)
+
+        self.mock_role2 = mock.Mock()
+        self.mock_role2.configure_mock(name="role2", version=2)
+
+        self.roles = [self.mock_role1, self.mock_role2]
+
+    def test_parameters_args_to_patch(self):
+
+        args = [
+            "parameter1=value1",
+            "parameter2=value2",
+        ]
+
+        result = utils.parameters_args_to_patch(args)
+
+        self.assertEqual([
+            {'name': 'parameter1', 'value': 'value1'},
+            {'name': 'parameter2', 'value': 'value2'},
+        ], result)
+
+    def test_flavors_args_to_patch(self):
+
+        args = [
+            "role1-1=flavor1",
+            "role2-2=flavor2",
+        ]
+
+        result = utils.args_to_patch(args, self.roles, "Flavor")
+
+        self.assertEqual([
+            {'name': 'role1-1::Flavor', 'value': 'flavor1'},
+            {'name': 'role2-2::Flavor', 'value': 'flavor2'}
+        ], result)
+
+    def test_scale_args_to_patch(self):
+
+        args = [
+            "role1-1=1",
+            "role2-2=2",
+        ]
+
+        result = utils.args_to_patch(args, self.roles, "count")
+
+        self.assertEqual([
+            {'name': 'role1-1::count', 'value': '1'},
+            {'name': 'role2-2::count', 'value': '2'}
+        ], result)

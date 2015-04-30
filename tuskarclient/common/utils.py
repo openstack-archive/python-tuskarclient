@@ -15,6 +15,7 @@
 
 from __future__ import print_function
 
+import sys
 import uuid
 
 from oslo_utils import importutils
@@ -116,7 +117,7 @@ def format_key_value(params):
         yield name, value
 
 
-def format_attributes(params):
+def format_key_value_args(params):
     """Reformat CLI attributes into the structure expected by the API.
 
     The format expected by the API for attributes is a dictionary consisting
@@ -135,3 +136,33 @@ def format_attributes(params):
         attributes[key] = value
 
     return attributes
+
+
+def parameters_args_to_patch(parameters):
+    """Create a list of patch dicts to update the parameters in the API."""
+
+    return [{'name': pair[0], 'value': pair[1]}
+            for pair in sorted(format_key_value_args(parameters).items())]
+
+
+def args_to_patch(flavors, roles, parameter):
+    """Create a list of patch dicts to update the given parameter in the API."""
+
+    role_flavors_dict = format_key_value_args(flavors)
+
+    roles = dict(("{0}-{1}".format(r.name, r.version), r) for r in roles)
+    patch = []
+
+    for role_name, flavor in sorted(role_flavors_dict.items()):
+
+        if role_name in roles:
+            patch.append({
+                'name': "{0}::{1}".format(role_name, parameter),
+                'value': flavor
+            })
+        else:
+            print("ERROR: no roles were found in the Plan with the name {0}".
+                  format(role_name), file=sys.stderr)
+            continue
+
+    return patch

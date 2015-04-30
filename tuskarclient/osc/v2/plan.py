@@ -10,11 +10,16 @@
 #   License for the specific language governing permissions and limitations
 #   under the License.
 
+from __future__ import print_function
+
 import logging
+import sys
 
 from cliff import command
 from cliff import lister
 from cliff import show
+
+from tuskarclient.common import utils
 
 
 class CreateManagementPlan(show.ShowOne):
@@ -103,10 +108,56 @@ class SetManagementPlan(show.ShowOne):
 
     def get_parser(self, prog_name):
         parser = super(SetManagementPlan, self).get_parser(prog_name)
+
+        parser.add_argument(
+            'plan_uuid',
+            help="The UUID of the plan being updated."
+        )
+
+        parser.add_argument(
+            '-P', '--parameter', dest='parameters', metavar='<KEY1=VALUE1>',
+            help=('Set a parameter in the Plan. This can be specified '
+                  'multiple times.'),
+            action='append'
+        )
+
+        parser.add_argument(
+            '-F', '--flavor', dest='flavors', metavar='<ROLE=FLAVOR>',
+            help=('Set the flavor for a role in the Plan. This can be '
+                  'specified multiple times.'),
+            action='append'
+        )
+
+        parser.add_argument(
+            '-S', '--scale', dest='scales', metavar='<ROLE=SCALE-COUNT>',
+            help=('Set the Scale count for a role in the Plan. This can be '
+                  'specified multiple times.'),
+            action='append'
+        )
+
         return parser
 
     def take_action(self, parsed_args):
         self.log.debug("take_action(%s)" % parsed_args)
+
+        client = self.app.client_manager.management
+
+        plan = client.plans.get(parsed_args.plan_uuid)
+        roles = plan.roles
+
+        patch = []
+
+        patch.extend(utils.parameters_args_to_patch(parsed_args.parameters))
+        patch.extend(utils.args_to_patch(parsed_args.flavors, roles, "Flavor"))
+        patch.extend(utils.args_to_patch(parsed_args.scales, roles, "count"))
+
+        if len(patch) > 0:
+            plan = client.plans.patch(parsed_args.plan_uuid, patch)
+        else:
+            print(("WARNING: No valid arguments passed. No update operation "
+                   "has been performed."), file=sys.stderr)
+
+        return self.dict2columns(plan.to_dict())
 
 
 class ShowManagementPlan(show.ShowOne):
