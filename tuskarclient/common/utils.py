@@ -17,7 +17,7 @@ from __future__ import print_function
 
 import uuid
 
-from oslo.utils import importutils
+from oslo_utils import importutils
 
 from tuskarclient.openstack.common.apiclient import exceptions as exc
 from tuskarclient.openstack.common import cliutils
