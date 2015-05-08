@@ -74,12 +74,16 @@ class TestDeleteManagementPlan(TestPlans):
         self.cmd = plan.DeleteManagementPlan(self.app, None)
 
     def test_delete_plan(self):
-        arglist = []
-        verifylist = []
+        arglist = ['UUID1', ]
+        verifylist = [
+            ('plan_uuid', "UUID1"),
+        ]
 
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
         self.cmd.take_action(parsed_args)
+
+        self.management_mock.plans.delete.assert_called_with('UUID1')
 
 
 class TestListManagementPlan(TestPlans):
