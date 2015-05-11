@@ -35,9 +35,14 @@ def do_plan_list(tuskar, args, outfile=sys.stdout):
            help="UUID of the Plan to show.")
 @utils.arg('--verbose', default=False, action="store_true",
            help="Display full plan details")
+@utils.arg('--only-empty-parameters', default=False, action="store_true",
+           help="Display only parameters with empty or None value")
 def do_plan_show(tuskar, args, outfile=sys.stdout):
     """Show an individual Plan by its UUID."""
     plan = utils.find_resource(tuskar.plans, args.plan)
+    if args.only_empty_parameters:
+        plan._info['parameters'] = (
+            filter_empty_parameters(plan._info['parameters']))
     if args.verbose:
         print_plan_detail(plan, outfile=outfile)
     else:
@@ -84,6 +89,13 @@ def filter_parameters_to_dict(parameters, param_name):
         if param['name'].endswith(suffix):
             filtered_params[param['name'].replace(suffix, '')] = param["value"]
     return filtered_params
+
+
+def filter_empty_parameters(parameters):
+    """Filters parameters with empty or None value."""
+    filtered_parameters = [param for param in parameters
+                           if param['value'] == '' or param['value'] is None]
+    return filtered_parameters
 
 
 def print_plan_detail(plan, outfile=sys.stdout):

@@ -31,7 +31,7 @@ Field 'roles' contains list of names of Roles assigned to the Plan.
 
 Retrieve a Single Plan
 ----------------------
-*tuskar plan-show [-h] [--verbose] <PLAN>*
+*tuskar plan-show [-h] [--verbose] [--only-empty-parameters] <PLAN>*
 
 Usage example:
 
@@ -66,6 +66,8 @@ Example:
         +-------------+------------------------------------------------------------------------------------------+
 
 Adding the --verbose flag will display all parameters, instead of just role counts.
+
+Adding the --only-empty-parameters flag will display only parameters, which have empty or None value. When all parameters have some value, no parameters will be displayed.
 
 Note: Parameters are displayed similarly as Roles, ie. set of properties with values. Each Parameter/Role separated by empty line from previous.
 
