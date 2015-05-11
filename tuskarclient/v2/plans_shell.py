@@ -244,7 +244,7 @@ def do_plan_update(tuskar, args, outfile=sys.stdout):
 
     parameters = [{'name': pair[0], 'value': pair[1]}
                   for pair
-                  in utils.format_attributes(parameters).items()]
+                  in utils.format_key_value_args(parameters).items()]
     return tuskar.plans.patch(args.plan_uuid, parameters)
 
 
