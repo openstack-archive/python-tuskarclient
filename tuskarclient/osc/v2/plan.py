@@ -21,6 +21,7 @@ from cliff import command
 from cliff import lister
 from cliff import show
 
+from tuskarclient.common import formatting
 from tuskarclient.common import utils
 
 
@@ -228,7 +229,7 @@ class AddManagementPlanRole(show.ShowOne):
             parsed_args.role_uuid
         )
 
-        return self.dict2columns(plan.to_dict())
+        return self.dict2columns(filtered_plan_dict(plan.to_dict()))
 
 
 class RemoveManagementPlanRole(show.ShowOne):
@@ -261,7 +262,7 @@ class RemoveManagementPlanRole(show.ShowOne):
             parsed_args.role_uuid
         )
 
-        return self.dict2columns(plan.to_dict())
+        return self.dict2columns(filtered_plan_dict(plan.to_dict()))
 
 
 class DownloadManagementPlan(command.Command):
@@ -320,3 +321,18 @@ class DownloadManagementPlan(command.Command):
             with open(filename, 'w+') as template_file:
                 template_file.write(template_content)
             print(filename)
+
+
+def filtered_plan_dict(plan_dict):
+    if 'parameters' in plan_dict and 'roles' in plan_dict:
+            plan_dict['parameters'] = [param for param in
+                                       plan_dict['parameters']
+                                       if param['name'].endswith('::count')]
+
+            plan_dict['parameters'] = formatting.parameters_v2_formatter(
+                plan_dict['parameters'])
+
+            plan_dict['roles'] = formatting.parameters_v2_formatter(
+                plan_dict['roles'])
+
+    return plan_dict
