@@ -17,6 +17,7 @@ import sys
 
 import tuskarclient.common.formatting as fmt
 from tuskarclient.common import utils
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 
 def do_plan_list(tuskar, args, outfile=sys.stdout):
@@ -123,10 +124,14 @@ def do_plan_delete(tuskar, args, outfile=sys.stdout):
            help='User-readable text describing the Plan.')
 def do_plan_create(tuskar, args, outfile=sys.stdout):
     """Create a new plan."""
-    plan = tuskar.plans.create(
-        name=vars(args).get('name'),
-        description=vars(args).get('description')
-    )
+    name = vars(args).get('name')
+    try:
+        plan = tuskar.plans.create(
+            name=name,
+            description=vars(args).get('description')
+        )
+    except exc.Conflict:
+        raise exc.CommandError('Plan with name "%s" already exists.' % name)
     print_plan_summary(plan, outfile=outfile)
 
 

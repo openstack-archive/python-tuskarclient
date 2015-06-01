@@ -22,6 +22,7 @@ from cliff import lister
 from cliff import show
 
 from tuskarclient.common import utils
+from tuskarclient.openstack.common.apiclient import exceptions as exc
 
 
 class CreateManagementPlan(show.ShowOne):
@@ -47,11 +48,16 @@ class CreateManagementPlan(show.ShowOne):
         self.log.debug("take_action(%s)" % parsed_args)
 
         client = self.app.client_manager.management
+        name = parsed_args.name
 
-        plan = client.plans.create(
-            name=parsed_args.name,
-            description=parsed_args.description
-        )
+        try:
+            plan = client.plans.create(
+                name=name,
+                description=parsed_args.description
+            )
+        except exc.Conflict:
+            raise exc.CommandError(
+                'Plan with name "%s" already exists.' % name)
 
         return self.dict2columns(plan.to_dict())
 
