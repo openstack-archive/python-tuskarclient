@@ -12,6 +12,7 @@
 
 from __future__ import print_function
 
+import six
 import sys
 
 import tuskarclient.common.formatting as fmt
@@ -23,6 +24,7 @@ def do_role_list(tuskar, args, outfile=sys.stdout):
     fields = ['uuid', 'name', 'version', 'description']
 
     formatters = {
+        'description': six.text_type.strip,
     }
 
     fmt.print_list(roles, fields, formatters, outfile=outfile)
