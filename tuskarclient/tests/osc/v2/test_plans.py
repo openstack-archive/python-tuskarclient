@@ -215,6 +215,40 @@ class TestSetManagementPlan(TestPlans):
             {'value': '3', 'name': 'Role 2 Name-2::count'}
         ])
 
+    def test_update_plan_json(self):
+        with tempfile.NamedTemporaryFile('wt') as jsonfile:
+
+            arglist = ['UUID1', '--file', jsonfile.name]
+            verifylist = [
+                ('plan_uuid', "UUID1"),
+                ('file', jsonfile.name),
+                ('parameters', None),
+                ('flavors', None),
+                ('scales', None),
+            ]
+
+            self.management_mock.plans.get.return_value = fakes.mock_plans[1]
+            self.management_mock.plans.patch.return_value = fakes.mock_plans[1]
+
+            jsondata = ('[{"name": "A", "value": "1"}, '
+                        '{"name": "B", "value": "2"}]')
+            jsonfile.write(jsondata)
+            jsonfile.flush()
+
+            parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+            result = self.cmd.take_action(parsed_args)
+
+            self.assertEqual([
+                ('description', 'name', 'roles', 'uuid'),
+                ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+            ], list(result))
+
+            self.management_mock.plans.patch.assert_called_with('UUID1', [
+                {'value': '1', 'name': 'A'},
+                {'value': '2', 'name': 'B'}
+            ])
+
 
 class TestShowManagementPlan(TestPlans):
 
