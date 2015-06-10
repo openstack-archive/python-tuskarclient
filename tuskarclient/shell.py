@@ -21,6 +21,7 @@ import logging
 import logging.handlers
 import sys
 
+from keystoneclient import session as kssession
 import six
 
 import tuskarclient
@@ -214,6 +215,8 @@ class TuskarShell(object):
 
         parser.add_argument('--tuskar_api_version',
                             help=argparse.SUPPRESS)
+
+        kssession.Session.register_cli_options(parser)
 
         return parser
 

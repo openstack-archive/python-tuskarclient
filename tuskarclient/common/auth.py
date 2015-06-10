@@ -24,6 +24,9 @@ class KeystoneAuthPlugin(auth.BaseAuthPlugin):
         "token",
         "auth_url",
         "endpoint",
+        "cacert",
+        "cert",
+        "key",
     ]
 
     def _do_authenticate(self, httpclient):
@@ -34,6 +37,9 @@ class KeystoneAuthPlugin(auth.BaseAuthPlugin):
                 'tenant_id': self.opts.get('tenant_id'),
                 'tenant_name': self.opts.get('tenant_name'),
                 'auth_url': self.opts.get('auth_url'),
+                'cacert': self.opts.get('cacert'),
+                'cert': self.opts.get('cert'),
+                'key': self.opts.get('key'),
             }
 
             self._ksclient = ksclient.Client(**ks_kwargs)

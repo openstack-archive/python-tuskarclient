@@ -38,7 +38,33 @@ class KeystoneAuthPluginTest(test_utils.TestCase):
             password="fake-password",
             tenant_id="fake-tenant-id",
             tenant_name="fake-tenant-name",
-            auth_url="http://auth")
+            auth_url="http://auth",
+            cacert=None,
+            cert=None,
+            key=None)
+
+    def test_authenticate_with_ssl(self, mock_ksclient):
+        plugin = auth.KeystoneAuthPlugin(
+            username="fake-username",
+            password="fake-password",
+            tenant_id="fake-tenant-id",
+            tenant_name="fake-tenant-name",
+            auth_url="http://auth",
+            endpoint="http://tuskar",
+            cacert="/fake/cacert.pem",
+            cert="/fake/cert.pem",
+            key="/fake/key.pem")
+        self.cs = client.HTTPClient(auth_plugin=plugin)
+        self.cs.authenticate()
+        mock_ksclient.assert_called_with(
+            username="fake-username",
+            password="fake-password",
+            tenant_id="fake-tenant-id",
+            tenant_name="fake-tenant-name",
+            auth_url="http://auth",
+            cacert="/fake/cacert.pem",
+            cert="/fake/cert.pem",
+            key="/fake/key.pem")
 
     def test_token_and_endpoint(self, mock_ksclient):
         self.cs.authenticate()
