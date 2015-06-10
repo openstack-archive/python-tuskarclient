@@ -15,6 +15,7 @@
 
 from __future__ import print_function
 
+import json
 import sys
 import uuid
 
@@ -166,3 +167,12 @@ def args_to_patch(flavors, roles, parameter):
             continue
 
     return patch
+
+
+def json_to_patch(jsondata):
+    result = []
+
+    # Filter out all the data that is not the actual parameters:
+    for item in json.loads(jsondata):
+        result.append({'name': item['name'], 'value': item['value']})
+    return result
