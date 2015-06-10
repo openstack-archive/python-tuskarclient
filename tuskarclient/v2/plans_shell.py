@@ -236,20 +236,29 @@ def do_plan_flavor(tuskar, args, outfile=sys.stdout):
 @utils.arg('-P', '--parameter', dest='parameters', metavar='<KEY1=VALUE1>',
            help='This can be specified multiple times.',
            action='append')
+@utils.arg('--file', dest='file', metavar='<FILE>',
+           help='Load parameters from a JSON file')
 def do_plan_update(tuskar, args, outfile=sys.stdout):
     """Change an existing plan."""
 
-    parameters = args.parameters
+    parameters = {}
+    if args.file:
+        with open(args.file, 'rt') as file:
+            jsondata = file.read()
+            parameters = {}
+            for param in utils.json_to_patch(jsondata):
+                parameters[str(param['name'])] = str(param['value'])
 
     if args.attributes:
         print("WARNING: The attribute flags -A and --attribute are"
               " deprecated and will be removed in a later release."
               " Use -P and --parameter instead.", file=sys.stderr)
-        parameters = args.attributes
+        parameters.update(utils.format_key_value_args(args.attributes))
+    else:
+        parameters.update(utils.format_key_value_args(args.parameters))
 
     parameters = [{'name': pair[0], 'value': pair[1]}
-                  for pair
-                  in utils.format_key_value_args(parameters).items()]
+                  for pair in parameters.items()]
     return tuskar.plans.patch(args.plan_uuid, parameters)
 
 

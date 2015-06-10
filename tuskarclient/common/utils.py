@@ -15,6 +15,7 @@
 
 from __future__ import print_function
 
+import json
 import sys
 import uuid
 
@@ -166,3 +167,19 @@ def args_to_patch(flavors, roles, parameter):
             continue
 
     return patch
+
+
+def json_to_patch(jsondata):
+    """Create a list of dicts to update parameters from a JSON file.
+
+    This just does json.loads on the data, and then goes through it
+    and keeps just "name" and "value" from the data. This is so we
+    don't leak data from the JSON file that should not be there.
+    """
+
+    result = []
+
+    # Filter out all the data that is not the actual parameters:
+    for item in json.loads(jsondata):
+        result.append({'name': item['name'], 'value': item['value']})
+    return result
