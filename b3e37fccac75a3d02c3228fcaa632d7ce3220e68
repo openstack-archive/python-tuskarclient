@@ -1,0 +1,10 @@
+Verified+2: Jenkins
+Code-Review+2: Ben Nemec <openstack@nemebean.com>
+Workflow+1: Ben Nemec <openstack@nemebean.com>
+Code-Review+2: Petr Blaho <pblaho@redhat.com>
+Code-Review+1: Ana Krivokapic <akrivoka@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Wed, 10 Jun 2015 20:08:45 +0000
+Reviewed-on: https://review.openstack.org/185128
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
