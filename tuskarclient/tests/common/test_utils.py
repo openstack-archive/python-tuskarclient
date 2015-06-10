@@ -152,3 +152,25 @@ class ParseCLIArgsTest(test_utils.TestCase):
             {'name': 'role1-1::count', 'value': '1'},
             {'name': 'role2-2::count', 'value': '2'}
         ], result)
+
+    def test_json_to_patch(self):
+        args = ('[{"name": "parameter1", "value": "value1"}, '
+                '{"name": "parameter2", "value": "value2"}]')
+
+        result = utils.json_to_patch(args)
+
+        self.assertEqual([
+            {'name': 'parameter1', 'value': 'value1'},
+            {'name': 'parameter2', 'value': 'value2'},
+        ], result)
+
+    def test_yaml_to_patch(self):
+        args = ('Parameters:\n    parameter1: "value1"\n'
+                '    parameter2: "value2"')
+
+        result = utils.yaml_to_patch(args)
+
+        self.assertEqual([
+            {'name': 'parameter1', 'value': 'value1'},
+            {'name': 'parameter2', 'value': 'value2'},
+        ], result)

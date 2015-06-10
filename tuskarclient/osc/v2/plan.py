@@ -144,6 +144,10 @@ class SetManagementPlan(show.ShowOne):
             action='append'
         )
 
+        parser.add_argument(
+            '--file', dest='file', metavar='<FILE>',
+            help='Load plan parameters from a json file.')
+
         return parser
 
     def take_action(self, parsed_args):
@@ -154,9 +158,20 @@ class SetManagementPlan(show.ShowOne):
         plan = client.plans.get(parsed_args.plan_uuid)
         roles = plan.roles
 
-        patch = []
+        if parsed_args.file:
+            with open(parsed_args.file, 'rt') as file:
+                data = file.read()
+            try:
+                 patch = utils.json_to_patch(data)
+            except ValueError:
+                 patch = utils.yaml_to_patch(data)
+        else:
+            patch = []
 
-        patch.extend(utils.parameters_args_to_patch(parsed_args.parameters))
+        for param in utils.parameters_args_to_patch(parsed_args.parameters):
+            patch = [item for item in patch if item['name'] != param['name']]
+            patch.append(param)
+
         patch.extend(utils.args_to_patch(parsed_args.flavors, roles, "Flavor"))
         patch.extend(utils.args_to_patch(parsed_args.scales, roles, "count"))
 
