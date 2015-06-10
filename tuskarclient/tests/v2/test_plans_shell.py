@@ -20,7 +20,7 @@ from tuskarclient.v2 import plans_shell
 def empty_args():
     args = mock.Mock(spec=[])
     for attr in ['uuid', 'name', 'description', 'parameters',
-                 'only_empty_parameters']:
+                 'only_empty_parameters', 'file']:
         setattr(args, attr, None)
     return args
 
