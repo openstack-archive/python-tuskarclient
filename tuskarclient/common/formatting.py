@@ -12,15 +12,43 @@
 
 from __future__ import print_function
 
+import pprint
 import sys
+import textwrap
 
 import prettytable
+import six
+
+
+def value_formatter(value, width=70):
+    # Most values can be pretty printed for a reasonable output
+    if not isinstance(value, six.string_types):
+        return pprint.pformat(value, width=width)
+
+    # pprint doesn't touch strings, so we do them manually
+
+    # First join lines that are not indented:
+    joined = []
+    parts = []
+    for l in value.splitlines():
+        if l[0] in u' \t\r\n':
+            # break here
+            joined.append(' '.join(parts))
+            parts = []
+        parts.append(l.rstrip())
+    if parts:
+        joined.append(' '.join(parts))
+
+    result = []
+    for line in joined:
+        result.append(textwrap.fill(line, width=width))
+    return u"\n".join(result)
 
 
 def attributes_formatter(attributes):
     """Given a simple dict format the keyvalue pairs with one on each line.
     """
-    return u"".join(u"{0}={1}\n".format(k, v) for k, v in
+    return u"".join(u"{0}={1}\n".format(k, value_formatter(v)) for k, v in
                     sorted(attributes.items()))
 
 

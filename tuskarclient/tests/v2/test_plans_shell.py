@@ -272,6 +272,33 @@ class PlansShellTest(BasePlansShellTest):
         mock_find_resource.assert_called_with(self.tuskar.plans, '5')
 
     @mock.patch('tuskarclient.common.utils.find_resource')
+    def test_print_plan_wrap(self, mock_find_resource):
+        mock_find_resource.return_value = mock_plan()
+        mock_find_resource.return_value.parameters.append(
+            {'name': 'foo',
+             'value': 'This is a really long parameter value with '
+                      'multiple lines to test the output wrapping.\n'
+                      'Indents is assumed to be code:\n'
+                      '     {\n'
+                      '         "like": "this"\n'
+                      '     }\n'}
+        )
+
+        args = empty_args()
+        args.plan = '5'
+        args.verbose = True
+
+        self.shell.do_plan_show(self.tuskar, args, outfile=self.outfile)
+        output = self.outfile.getvalue()
+
+        # Lines should not be way to long:
+        self.assertTrue(all(len(line) < 100 for line in output.splitlines()))
+        # The lines are rewraped:
+        self.assertIn("wrapping. Indents", output)
+        # But not if the start with an indent:
+        self.assertIn("    {", output)
+
+    @mock.patch('tuskarclient.common.utils.find_resource')
     def test_print_plan_detail(self, mock_find_resource):
         mock_find_resource.return_value = mock_plan()
         args = empty_args()
