@@ -33,6 +33,6 @@ class ListRoles(lister.Lister):
 
         return (
             ('uuid', 'name', 'version', 'description'),
-            ((r.uuid, r.name, r.version, r.description)
+            ((r.uuid, r.name, r.version, r.description.strip())
                 for r in roles)
         )
