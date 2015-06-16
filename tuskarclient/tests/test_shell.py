@@ -20,6 +20,7 @@ class ShellTest(tutils.TestCase):
     args_attributes = [
         'os_username', 'os_password', 'os_tenant_name', 'os_tenant_id',
         'os_auth_url', 'os_auth_token', 'tuskar_url', 'tuskar_api_version',
+        'os_cacert', 'os_cert', 'os_key',
     ]
 
     def setUp(self):

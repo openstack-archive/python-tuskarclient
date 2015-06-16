@@ -28,6 +28,9 @@ class ClientGetClientTest(tutils.TestCase):
             'os_auth_token': 'os_auth_token',
             'os_auth_url': 'os_auth_url',
             'tuskar_url': 'tuskar_url',
+            'os_cacert': 'os_cacert',
+            'os_cert': 'os_cert',
+            'os_key': 'os_key',
         }
         self.client_kwargs = {
             'username': 'os_username',
@@ -35,7 +38,10 @@ class ClientGetClientTest(tutils.TestCase):
             'tenant_name': 'os_tenant_name',
             'token': 'os_auth_token',
             'auth_url': 'os_auth_url',
-            'endpoint': 'tuskar_url'
+            'endpoint': 'tuskar_url',
+            'cacert': 'os_cacert',
+            'cert': 'os_cert',
+            'key': 'os_key',
         }
         self.api_version = 2
 

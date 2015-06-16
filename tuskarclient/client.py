@@ -41,6 +41,9 @@ def get_client(api_version, **kwargs):
         'token': kwargs.get('os_auth_token'),
         'auth_url': kwargs.get('os_auth_url'),
         'endpoint': kwargs.get('tuskar_url'),
+        'cacert': kwargs.get('os_cacert'),
+        'cert': kwargs.get('os_cert'),
+        'key': kwargs.get('os_key'),
     }
     client = Client(api_version, **cli_kwargs)
     # If we have a client, return it
@@ -55,12 +58,6 @@ def Client(version, **kwargs):
     client_class = apiclient.BaseClient.get_class('tuskarclient',
                                                   version,
                                                   VERSION_MAP)
-    keystone_auth = auth.KeystoneAuthPlugin(
-        username=kwargs.get('username'),
-        password=kwargs.get('password'),
-        tenant_name=kwargs.get('tenant_name'),
-        token=kwargs.get('token'),
-        auth_url=kwargs.get('auth_url'),
-        endpoint=kwargs.get('endpoint'))
+    keystone_auth = auth.KeystoneAuthPlugin(**kwargs)
     http_client = apiclient.HTTPClient(keystone_auth)
     return client_class(http_client)
