@@ -1,0 +1,9 @@
+Verified+2: Jenkins
+Code-Review+2: Giulio Fidente <gfidente@redhat.com>
+Workflow+1: Giulio Fidente <gfidente@redhat.com>
+Code-Review+2: Petr Blaho <pblaho@redhat.com>
+Submitted-by: Jenkins
+Submitted-at: Tue, 16 Jun 2015 10:44:50 +0000
+Reviewed-on: https://review.openstack.org/187149
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
