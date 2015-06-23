@@ -137,14 +137,25 @@ def do_plan_create(tuskar, args, outfile=sys.stdout):
 
 @utils.arg('plan_uuid', help="UUID of the Plan to assign role to.")
 @utils.arg('-r', '--role-uuid', metavar="<ROLE UUID>",
-           required=True, help='UUID of the Role to be assigned.')
+           required=False, help='UUID of the Role to be assigned.')
+@utils.arg('--all-roles', default=False, action="store_true",
+           help='Add all Roles to the given plan')
 def do_plan_add_role(tuskar, args, outfile=sys.stdout):
-    """Associate role to a plan."""
-    plan = tuskar.plans.add_role(
-        vars(args).get('plan_uuid'),
-        vars(args).get('role_uuid')
-    )
-    print_plan_summary(plan, outfile=outfile)
+    plan = ''
+    if vars(args).get('all_roles'):
+        roles = tuskar.roles.list()
+        if not roles:
+            print(u'WARNING --all specified but no roles found', file=outfile)
+        for role in roles:
+            plan = tuskar.plans.add_role(vars(args).get('plan_uuid'),
+                                         role.uuid)
+    else:
+        plan = tuskar.plans.add_role(
+            vars(args).get('plan_uuid'),
+            vars(args).get('role_uuid')
+        )
+    if plan:
+        print_plan_summary(plan, outfile=outfile)
 
 
 @utils.arg('plan_uuid', help="UUID of the Plan to remove role from.")
