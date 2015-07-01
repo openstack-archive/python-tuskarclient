@@ -11,8 +11,11 @@
 #   under the License.
 
 import os
+import shutil
 import tempfile
 
+from tuskarclient.v2 import plans as plans_resource
+from tuskarclient.v2 import roles as roles_resource
 from tuskarclient.osc.v2 import plan
 from tuskarclient.tests.osc.v2 import fakes
 
@@ -25,6 +28,12 @@ class TestPlans(fakes.TestManagement):
         self.management_mock = self.app.client_manager.management
         self.management_mock.reset_mock()
 
+        self.management_mock.plans.resource_class = plans_resource.Plan
+        self.management_mock.roles.resource_class = roles_resource.Role
+
+        self.management_mock.plans.list.return_value = fakes.mock_plans
+        self.management_mock.roles.list.return_value = fakes.mock_roles
+
 
 class TestCreateManagementPlan(TestPlans):
 
@@ -33,9 +42,9 @@ class TestCreateManagementPlan(TestPlans):
         self.cmd = plan.CreateManagementPlan(self.app, None)
 
     def test_create_plan(self):
-        arglist = ["Plan 2 Name", '-d', 'Plan 2']
+        arglist = ["Plan2", '-d', 'Plan 2']
         verifylist = [
-            ('name', "Plan 2 Name"),
+            ('name', "Plan2"),
             ('description', "Plan 2"),
         ]
 
@@ -47,14 +56,14 @@ class TestCreateManagementPlan(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+            ('Plan 2', 'Plan2', [], fakes.UUID_D)
         ], list(result)
         )
 
     def test_create_plan_no_description(self):
-        arglist = ["Plan1Name", ]
+        arglist = ["Plan1", ]
         verifylist = [
-            ('name', "Plan1Name"),
+            ('name', "Plan1"),
             ('description', None),
         ]
 
@@ -66,7 +75,7 @@ class TestCreateManagementPlan(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 1', 'Plan 1 Name', fakes.mock_roles, 'UUID1')
+            ('Plan 1', 'Plan1', fakes.mock_roles, fakes.UUID_C)
         ], list(result))
 
 
@@ -77,16 +86,30 @@ class TestDeleteManagementPlan(TestPlans):
         self.cmd = plan.DeleteManagementPlan(self.app, None)
 
     def test_delete_plan(self):
-        arglist = ['UUID1', ]
+        arglist = [fakes.UUID_C, ]
         verifylist = [
-            ('plan_uuid', "UUID1"),
+            ('plan', fakes.UUID_C),
+        ]
+
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+        self.management_mock.plans.get.return_value = fakes.mock_plans[0]
+
+        self.cmd.take_action(parsed_args)
+
+        self.management_mock.plans.delete.assert_called_with(fakes.UUID_C)
+
+    def test_delete_plan_by_name(self):
+        arglist = ['Plan1', ]
+        verifylist = [
+            ('plan', 'Plan1'),
         ]
 
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
         self.cmd.take_action(parsed_args)
 
-        self.management_mock.plans.delete.assert_called_with('UUID1')
+        self.management_mock.plans.delete.assert_called_with(fakes.UUID_C)
 
 
 class TestListManagementPlan(TestPlans):
@@ -101,14 +124,12 @@ class TestListManagementPlan(TestPlans):
 
         parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
-        self.management_mock.plans.list.return_value = fakes.mock_plans
-
         titles, rows = self.cmd.take_action(parsed_args)
 
         self.assertEqual(titles, ('uuid', 'name', 'description', 'roles'))
         self.assertEqual([
-            ('UUID1', 'Plan 1 Name', 'Plan 1', 'Role 1 Name, Role 2 Name'),
-            ('UUID2', 'Plan 2 Name', 'Plan 2', '')
+            (fakes.UUID_C, 'Plan1', 'Plan 1', 'Role1, Role2'),
+            (fakes.UUID_D, 'Plan2', 'Plan 2', '')
         ], list(rows))
 
 
@@ -119,9 +140,9 @@ class TestSetManagementPlan(TestPlans):
         self.cmd = plan.SetManagementPlan(self.app, None)
 
     def test_update_plan_nothing(self):
-        arglist = ['UUID1', ]
+        arglist = [fakes.UUID_C, ]
         verifylist = [
-            ('plan_uuid', "UUID1"),
+            ('plan', fakes.UUID_C),
             ('parameters', None),
             ('flavors', None),
             ('scales', None),
@@ -137,9 +158,9 @@ class TestSetManagementPlan(TestPlans):
         self.management_mock.plans.patch.assert_not_called()
 
     def test_update_plan_parameters(self):
-        arglist = ['UUID1', '-P', 'A=1', '-P', 'B=2']
+        arglist = [fakes.UUID_C, '-P', 'A=1', '-P', 'B=2']
         verifylist = [
-            ('plan_uuid', "UUID1"),
+            ('plan', fakes.UUID_C),
             ('parameters', ['A=1', 'B=2']),
             ('flavors', None),
             ('scales', None),
@@ -154,21 +175,46 @@ class TestSetManagementPlan(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+            ('Plan 2', 'Plan2', [], fakes.UUID_D)
         ], list(result))
 
-        self.management_mock.plans.patch.assert_called_with('UUID1', [
+        self.management_mock.plans.patch.assert_called_with(fakes.UUID_D, [
+            {'value': '1', 'name': 'A'},
+            {'value': '2', 'name': 'B'}
+        ])
+
+    def test_update_plan_parameters_by_name(self):
+        arglist = ['Plan2', '-P', 'A=1', '-P', 'B=2']
+        verifylist = [
+            ('plan', 'Plan2'),
+            ('parameters', ['A=1', 'B=2']),
+            ('flavors', None),
+            ('scales', None),
+        ]
+
+        self.management_mock.plans.patch.return_value = fakes.mock_plans[1]
+
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 2', 'Plan2', [], fakes.UUID_D)
+        ], list(result))
+
+        self.management_mock.plans.patch.assert_called_with(fakes.UUID_D, [
             {'value': '1', 'name': 'A'},
             {'value': '2', 'name': 'B'}
         ])
 
     def test_update_plan_flavors(self):
-        arglist = ['UUID1', '-F', 'Role 1 Name-1=strawberry',
-                   '-F', 'Role 2 Name-2=cherry']
+        arglist = [fakes.UUID_C, '-F', 'Role1-1=strawberry',
+                   '-F', 'Role2-2=cherry']
         verifylist = [
-            ('plan_uuid', "UUID1"),
+            ('plan', fakes.UUID_C),
             ('parameters', None),
-            ('flavors', ['Role 1 Name-1=strawberry', 'Role 2 Name-2=cherry']),
+            ('flavors', ['Role1-1=strawberry', 'Role2-2=cherry']),
             ('scales', None),
         ]
 
@@ -181,21 +227,21 @@ class TestSetManagementPlan(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+            ('Plan 2', 'Plan2', [], fakes.UUID_D)
         ], list(result))
 
-        self.management_mock.plans.patch.assert_called_with('UUID1', [
-            {'value': 'strawberry', 'name': 'Role 1 Name-1::Flavor'},
-            {'value': 'cherry', 'name': 'Role 2 Name-2::Flavor'}
+        self.management_mock.plans.patch.assert_called_with(fakes.UUID_C, [
+            {'value': 'strawberry', 'name': 'Role1-1::Flavor'},
+            {'value': 'cherry', 'name': 'Role2-2::Flavor'}
         ])
 
     def test_update_plan_scale(self):
-        arglist = ['UUID1', '-S', 'Role 1 Name-1=2', '-S', 'Role 2 Name-2=3']
+        arglist = [fakes.UUID_C, '-S', 'Role1-1=2', '-S', 'Role2-2=3']
         verifylist = [
-            ('plan_uuid', "UUID1"),
+            ('plan', fakes.UUID_C),
             ('parameters', None),
             ('flavors', None),
-            ('scales', ['Role 1 Name-1=2', 'Role 2 Name-2=3']),
+            ('scales', ['Role1-1=2', 'Role2-2=3']),
         ]
 
         self.management_mock.plans.get.return_value = fakes.mock_plans[0]
@@ -207,12 +253,12 @@ class TestSetManagementPlan(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+            ('Plan 2', 'Plan2', [], fakes.UUID_D)
         ], list(result))
 
-        self.management_mock.plans.patch.assert_called_with('UUID1', [
-            {'value': '2', 'name': 'Role 1 Name-1::count'},
-            {'value': '3', 'name': 'Role 2 Name-2::count'}
+        self.management_mock.plans.patch.assert_called_with(fakes.UUID_C, [
+            {'value': '2', 'name': 'Role1-1::count'},
+            {'value': '3', 'name': 'Role2-2::count'}
         ])
 
 
@@ -223,7 +269,7 @@ class TestShowManagementPlan(TestPlans):
         self.cmd = plan.ShowManagementPlan(self.app, None)
 
     def test_show_plan(self):
-        arglist = ['UUID2', ]
+        arglist = [fakes.UUID_D, ]
         verifylist = [
             ('long', False),
         ]
@@ -236,11 +282,28 @@ class TestShowManagementPlan(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 1', 'Plan 1 Name', 'Role 1 Name, Role 2 Name', 'UUID1')
+            ('Plan 1', 'Plan1', 'Role1, Role2', fakes.UUID_C)
+        ], list(result))
+
+    def test_show_plan_by_name(self):
+        arglist = ['Plan1', ]
+        verifylist = [
+            ('long', False),
+        ]
+
+        self.management_mock.plans.get.return_value = fakes.mock_plans[0]
+
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 1', 'Plan1', 'Role1, Role2', fakes.UUID_C)
         ], list(result))
 
     def test_show_plan_verbose(self):
-        arglist = ['UUID1', '--long']
+        arglist = [fakes.UUID_C, '--long']
         verifylist = [
             ('long', True),
         ]
@@ -253,7 +316,7 @@ class TestShowManagementPlan(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 2', 'Plan 2 Name', [], 'UUID2')
+            ('Plan 2', 'Plan2', [], fakes.UUID_D)
         ], list(result))
 
 
@@ -264,10 +327,10 @@ class TestAddManagementPlanRole(TestPlans):
         self.cmd = plan.AddManagementPlanRole(self.app, None)
 
     def test_add_plan_role(self):
-        arglist = ['UUID1', 'UUID2']
+        arglist = [fakes.UUID_C, fakes.UUID_B]
         verifylist = [
-            ('plan_uuid', 'UUID1'),
-            ('role_uuid', 'UUID2'),
+            ('plan', fakes.UUID_C),
+            ('role', fakes.UUID_B),
         ]
 
         self.management_mock.plans.add_role.return_value = fakes.mock_plans[0]
@@ -278,8 +341,29 @@ class TestAddManagementPlanRole(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 1', 'Plan 1 Name', fakes.mock_roles, 'UUID1')
+            ('Plan 1', 'Plan1', fakes.mock_roles, fakes.UUID_C)
         ], list(result))
+
+    def test_add_plan_role_by_name(self):
+        arglist = ['Plan1', 'Role2']
+        verifylist = [
+            ('plan', 'Plan1'),
+            ('role', 'Role2'),
+        ]
+
+        self.management_mock.plans.add_role.return_value = fakes.mock_plans[0]
+
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 1', 'Plan1', fakes.mock_roles, fakes.UUID_C)
+        ], list(result))
+
+        self.management_mock.plans.add_role.assert_called_with(
+            fakes.UUID_C, fakes.UUID_B)
 
 
 class TestRemoveManagementPlanRole(TestPlans):
@@ -289,10 +373,10 @@ class TestRemoveManagementPlanRole(TestPlans):
         self.cmd = plan.RemoveManagementPlanRole(self.app, None)
 
     def test_remove_plan_role(self):
-        arglist = ['UUID1', 'UUID2']
+        arglist = [fakes.UUID_C, fakes.UUID_B]
         verifylist = [
-            ('plan_uuid', 'UUID1'),
-            ('role_uuid', 'UUID2'),
+            ('plan', fakes.UUID_C),
+            ('role', fakes.UUID_B),
         ]
 
         self.management_mock.plans.remove_role.return_value = (
@@ -304,7 +388,26 @@ class TestRemoveManagementPlanRole(TestPlans):
 
         self.assertEqual([
             ('description', 'name', 'roles', 'uuid'),
-            ('Plan 1', 'Plan 1 Name', fakes.mock_roles, 'UUID1')
+            ('Plan 1', 'Plan1', fakes.mock_roles, fakes.UUID_C)
+        ], list(result))
+
+    def test_remove_plan_role_by_name(self):
+        arglist = ['Plan1', 'Role2']
+        verifylist = [
+            ('plan', 'Plan1'),
+            ('role', 'Role2'),
+        ]
+
+        self.management_mock.plans.remove_role.return_value = (
+            fakes.mock_plans[0])
+
+        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+
+        result = self.cmd.take_action(parsed_args)
+
+        self.assertEqual([
+            ('description', 'name', 'roles', 'uuid'),
+            ('Plan 1', 'Plan1', fakes.mock_roles, fakes.UUID_C)
         ], list(result))
 
 
@@ -318,23 +421,26 @@ class TestDownloadManagementPlan(TestPlans):
 
         temp_dir = tempfile.mkdtemp()
 
-        arglist = ['UUID1', '-O', temp_dir]
-        verifylist = [
-            ('plan_uuid', 'UUID1'),
-            ('output_dir', temp_dir),
-        ]
+        try:
+            arglist = [fakes.UUID_C, '-O', temp_dir]
+            verifylist = [
+                ('plan', fakes.UUID_C),
+                ('output_dir', temp_dir),
+            ]
 
-        mock_result = {
-            'template-1-name': 'template 1 content',
-            'template-2-name': 'template 2 content',
-        }
+            mock_result = {
+                'template-1-name': 'template 1 content',
+                'template-2-name': 'template 2 content',
+            }
 
-        self.management_mock.plans.templates.return_value = mock_result
+            self.management_mock.plans.templates.return_value = mock_result
 
-        parsed_args = self.check_parser(self.cmd, arglist, verifylist)
+            parsed_args = self.check_parser(self.cmd, arglist, verifylist)
 
-        self.cmd.take_action(parsed_args)
+            self.cmd.take_action(parsed_args)
 
-        for template_name in mock_result:
-            full_path = os.path.join(temp_dir, template_name)
-            self.assertTrue(os.path.exists(full_path))
+            for template_name in mock_result:
+                full_path = os.path.join(temp_dir, template_name)
+                self.assertTrue(os.path.exists(full_path))
+        finally:
+            shutil.rmtree(temp_dir)

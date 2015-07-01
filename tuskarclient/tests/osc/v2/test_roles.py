@@ -41,6 +41,6 @@ class TestRoleList(TestRoles):
 
         self.assertEqual(titles, ('uuid', 'name', 'version', 'description'))
         self.assertEqual([
-            ('UUID1', 'Role 1 Name', 1, 'Mock Role 1'),
-            ('UUID2', 'Role 2 Name', 2, 'Mock Role 2')
+            (fakes.UUID_A, 'Role1', 1, 'Role 1'),
+            (fakes.UUID_B, 'Role2', 2, 'Role 2')
         ], list(rows))
