@@ -20,19 +20,24 @@ def _create_mock(**kwargs):
     mock_plan.to_dict.return_value = kwargs
     return mock_plan
 
+UUID_A = 'aaaaaaaa-aaaaaaaa-aaaaaaaa-aaaaaaaa'
+UUID_B = 'bbbbbbbb-bbbbbbbb-bbbbbbbb-bbbbbbbb'
+UUID_C = 'cccccccc-cccccccc-cccccccc-cccccccc'
+UUID_D = 'dddddddd-dddddddd-dddddddd-dddddddd'
+
 
 mock_roles = [
-    _create_mock(uuid="UUID1", name="Role 1 Name", version=1,
-                 description="Mock Role 1"),
-    _create_mock(uuid="UUID2", name="Role 2 Name", version=2,
-                 description="Mock Role 2"),
+    _create_mock(uuid=UUID_A, name="Role1", version=1,
+                 description="Role 1"),
+    _create_mock(uuid=UUID_B, name="Role2", version=2,
+                 description="Role 2"),
 ]
 
 mock_plans = [
-    _create_mock(uuid="UUID1", name="Plan 1 Name", description="Plan 1",
+    _create_mock(uuid=UUID_C, name="Plan1", description="Plan 1",
                  roles=mock_roles),
-    _create_mock(uuid="UUID2", name="Plan 2 Name", description="Plan 2",
-                 roles=[])
+    _create_mock(uuid=UUID_D, name="Plan2", description="Plan 2",
+                 roles=[]),
 ]
 
 

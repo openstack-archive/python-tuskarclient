@@ -72,8 +72,8 @@ class DeleteManagementPlan(command.Command):
         parser = super(DeleteManagementPlan, self).get_parser(prog_name)
 
         parser.add_argument(
-            'plan_uuid',
-            help="The UUID of the plan being deleted."
+            'plan',
+            help="The UUID or name of the plan being deleted."
         )
 
         return parser
@@ -83,7 +83,9 @@ class DeleteManagementPlan(command.Command):
 
         client = self.app.client_manager.management
 
-        client.plans.delete(parsed_args.plan_uuid)
+        plan = utils.find_resource(client.plans, parsed_args.plan)
+
+        client.plans.delete(plan.uuid)
 
 
 class ListManagementPlans(lister.Lister):
@@ -119,8 +121,8 @@ class SetManagementPlan(show.ShowOne):
         parser = super(SetManagementPlan, self).get_parser(prog_name)
 
         parser.add_argument(
-            'plan_uuid',
-            help="The UUID of the plan being updated."
+            'plan',
+            help="The UUID or name of the plan being updated."
         )
 
         parser.add_argument(
@@ -151,7 +153,7 @@ class SetManagementPlan(show.ShowOne):
 
         client = self.app.client_manager.management
 
-        plan = client.plans.get(parsed_args.plan_uuid)
+        plan = utils.find_resource(client.plans, parsed_args.plan)
         roles = plan.roles
 
         patch = []
@@ -161,7 +163,7 @@ class SetManagementPlan(show.ShowOne):
         patch.extend(utils.args_to_patch(parsed_args.scales, roles, "count"))
 
         if len(patch) > 0:
-            plan = client.plans.patch(parsed_args.plan_uuid, patch)
+            plan = client.plans.patch(plan.uuid, patch)
         else:
             print(("WARNING: No valid arguments passed. No update operation "
                    "has been performed."), file=sys.stderr)
@@ -178,8 +180,8 @@ class ShowManagementPlan(show.ShowOne):
         parser = super(ShowManagementPlan, self).get_parser(prog_name)
 
         parser.add_argument(
-            'plan_uuid',
-            help="The UUID of the plan to show."
+            'plan',
+            help="The UUID or name of the plan to show."
         )
 
         parser.add_argument(
@@ -193,7 +195,7 @@ class ShowManagementPlan(show.ShowOne):
         self.log.debug("take_action(%s)" % parsed_args)
 
         client = self.app.client_manager.management
-        plan = client.plans.get(parsed_args.plan_uuid)
+        plan = client.plans.get(parsed_args.plan)
         plan_dict = plan.to_dict()
 
         if not parsed_args.long:
@@ -214,13 +216,13 @@ class AddManagementPlanRole(show.ShowOne):
         parser = super(AddManagementPlanRole, self).get_parser(prog_name)
 
         parser.add_argument(
-            'plan_uuid',
-            help="The UUID of the plan."
+            'plan',
+            help="The UUID or name of the plan."
         )
 
         parser.add_argument(
-            'role_uuid',
-            help="The UUID of the Role being added to the Plan."
+            'role',
+            help="The UUID or name of the Role being added to the Plan."
         )
 
         return parser
@@ -230,10 +232,10 @@ class AddManagementPlanRole(show.ShowOne):
 
         client = self.app.client_manager.management
 
-        plan = client.plans.add_role(
-            parsed_args.plan_uuid,
-            parsed_args.role_uuid
-        )
+        plan = utils.find_resource(client.plans, parsed_args.plan)
+        role = utils.find_resource(client.roles, parsed_args.role)
+
+        plan = client.plans.add_role(plan.uuid, role.uuid)
 
         return self.dict2columns(filtered_plan_dict(plan.to_dict()))
 
@@ -247,13 +249,13 @@ class RemoveManagementPlanRole(show.ShowOne):
         parser = super(RemoveManagementPlanRole, self).get_parser(prog_name)
 
         parser.add_argument(
-            'plan_uuid',
-            help="The UUID of the plan."
+            'plan',
+            help="The UUID or name of the plan."
         )
 
         parser.add_argument(
-            'role_uuid',
-            help="The UUID of the Role being removed from the Plan."
+            'role',
+            help="The UUID or name of the Role being removed from the Plan."
         )
 
         return parser
@@ -263,10 +265,10 @@ class RemoveManagementPlanRole(show.ShowOne):
 
         client = self.app.client_manager.management
 
-        plan = client.plans.remove_role(
-            parsed_args.plan_uuid,
-            parsed_args.role_uuid
-        )
+        plan = utils.find_resource(client.plans, parsed_args.plan)
+        role = utils.find_resource(client.roles, parsed_args.role)
+
+        plan = client.plans.remove_role(plan.uuid, role.uuid)
 
         return self.dict2columns(filtered_plan_dict(plan.to_dict()))
 
@@ -280,8 +282,8 @@ class DownloadManagementPlan(command.Command):
         parser = super(DownloadManagementPlan, self).get_parser(prog_name)
 
         parser.add_argument(
-            'plan_uuid',
-            help="The UUID of the plan to download."
+            'plan',
+            help="The UUID or name of the plan to download."
         )
 
         parser.add_argument(
@@ -306,8 +308,10 @@ class DownloadManagementPlan(command.Command):
 
         os.mkdir(output_dir)
 
+        plan = utils.find_resource(client.plans, parsed_args.plan)
+
         # retrieve templates
-        templates = client.plans.templates(parsed_args.plan_uuid)
+        templates = client.plans.templates(plan.uuid)
 
         # write file for each key-value in templates
         print("The following templates will be written:")
