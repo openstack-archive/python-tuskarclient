@@ -20,9 +20,9 @@ import uuid
 
 from oslo_utils import importutils
 
+from tuskarclient.i18n import _
 from tuskarclient.openstack.common.apiclient import exceptions as exc
 from tuskarclient.openstack.common import cliutils
-from tuskarclient.openstack.common.gettextutils import _
 
 # Using common methods from oslo cliutils
 arg = cliutils.arg
