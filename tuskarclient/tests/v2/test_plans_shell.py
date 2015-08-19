@@ -176,7 +176,7 @@ class PlansShellTest(BasePlansShellTest):
         parameters = [{'name': 'compute-1::count', 'value': '9'}]
 
         self.shell.do_plan_scale(self.tuskar, args, outfile=self.outfile)
-        self.tuskar.plans.patch.assert_called_once()
+        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
         self.assertEqual('plan_uuid', self.tuskar.plans.patch.call_args[0][0])
         self.assertEqual(
             sorted(parameters, key=lambda k: k['name']),
@@ -199,7 +199,7 @@ class PlansShellTest(BasePlansShellTest):
         parameters = [{'name': 'compute-1::Flavor', 'value': 'baremetalssd'}]
 
         self.shell.do_plan_flavor(self.tuskar, args, outfile=self.outfile)
-        self.tuskar.plans.patch.assert_called_once()
+        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
         self.assertEqual('plan_uuid', self.tuskar.plans.patch.call_args[0][0])
         self.assertEqual(
             sorted(parameters, key=lambda k: k['name']),
@@ -216,7 +216,7 @@ class PlansShellTest(BasePlansShellTest):
         parameters = [{'name': 'foo_name', 'value': 'foo_value'},
                       {'name': 'bar_name', 'value': 'bar_value'}]
         self.shell.do_plan_patch(self.tuskar, args, outfile=self.outfile)
-        self.tuskar.plans.patch.assert_called_once()
+        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
         self.assertEqual('plan_uuid',
                          self.tuskar.plans.patch.call_args[0][0])
         self.assertEqual(
@@ -235,7 +235,7 @@ class PlansShellTest(BasePlansShellTest):
         parameters = [{'name': 'foo_name', 'value': 'foo_value'},
                       {'name': 'bar_name', 'value': 'bar_value'}]
         self.shell.do_plan_patch(self.tuskar, args, outfile=self.outfile)
-        self.tuskar.plans.patch.assert_called_once()
+        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
         self.assertEqual('plan_uuid',
                          self.tuskar.plans.patch.call_args[0][0])
         self.assertEqual(
@@ -253,7 +253,7 @@ class PlansShellTest(BasePlansShellTest):
                       {'name': 'bar_name', 'value': 'bar_value'}]
         args.attributes = None
         self.shell.do_plan_update(self.tuskar, args, outfile=self.outfile)
-        self.tuskar.plans.patch.assert_called_once()
+        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
         self.assertEqual('plan_uuid',
                          self.tuskar.plans.patch.call_args[0][0])
         self.assertEqual(
