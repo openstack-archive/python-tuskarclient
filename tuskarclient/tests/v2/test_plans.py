@@ -79,7 +79,7 @@ class PlanManagerTest(tutils.TestCase):
               'value': 'dummy plan data'}])
 
     def test_delete(self):
-        """Test deleting/removing an plan via DELETE."""
+        """Test deleting/removing a plan via DELETE."""
         self.assertThat('_delete', tutils.IsMethodOn(self.pm))
         self.pm._delete = mock.Mock(return_value=None)
 
