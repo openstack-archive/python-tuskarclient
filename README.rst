@@ -11,7 +11,7 @@ Getting Started
 
 Clone the repo::
 
-    $ git clone https://github.com/openstack/python-tuskarclient.git
+    $ git clone https://git.openstack.org/openstack/python-tuskarclient
 
 Then, use ``tox`` to set up a virtual environment and run tests::
 
