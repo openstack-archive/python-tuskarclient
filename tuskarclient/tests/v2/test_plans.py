@@ -31,7 +31,7 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('_get', tutils.IsMethodOn(self.pm))
         self.pm._get = mock.Mock(return_value='fake_plan')
 
-        self.assertEqual(self.pm.get('fake_plan'), 'fake_plan')
+        self.assertEqual('fake_plan', self.pm.get('fake_plan'))
         self.pm._get.assert_called_with('/plans/fake_plan')
 
     def test_get_404(self):
@@ -39,7 +39,7 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('_get', tutils.IsMethodOn(self.pm))
         self.pm._get = mock.Mock(return_value=None)
 
-        self.assertEqual(self.pm.get('fake_plan'), None)
+        self.assertEqual(None, self.pm.get('fake_plan'))
         self.pm._get.assert_called_with('/plans/fake_plan')
 
     def test_list(self):
@@ -47,7 +47,7 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('_list', tutils.IsMethodOn(self.pm))
         self.pm._list = mock.Mock(return_value=['fake_plan'])
 
-        self.assertEqual(self.pm.list(), ['fake_plan'])
+        self.assertEqual(['fake_plan'], self.pm.list())
         self.pm._list.assert_called_with('/plans')
 
     def test_create(self):
@@ -55,9 +55,8 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('_post', tutils.IsMethodOn(self.pm))
         self.pm._post = mock.Mock(return_value=['fake_plan'])
 
-        self.assertEqual(
-            self.pm.create(dummy='dummy plan data'),
-            ['fake_plan'])
+        self.assertEqual(['fake_plan'],
+                         self.pm.create(dummy='dummy plan data'))
 
         self.pm._post.assert_called_with(
             '/plans',
@@ -68,10 +67,9 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('_patch', tutils.IsMethodOn(self.pm))
         self.pm._patch = mock.Mock(return_value=['fake_plan'])
 
-        self.assertEqual(
-            self.pm.patch('42', [{'name': 'dummy',
-                                  'value': 'dummy plan data'}]),
-            ['fake_plan'])
+        self.assertEqual(['fake_plan'],
+                         self.pm.patch('42', [{'name': 'dummy',
+                                               'value': 'dummy plan data'}]))
 
         self.pm._patch.assert_called_with(
             '/plans/42',
@@ -83,26 +81,26 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('_delete', tutils.IsMethodOn(self.pm))
         self.pm._delete = mock.Mock(return_value=None)
 
-        self.assertEqual(self.pm.delete(42), None)
+        self.assertEqual(None, self.pm.delete(42))
         self.pm._delete.assert_called_with('/plans/42')
 
     def test_roles_path_with_role_id(self):
         """Test for building path for Role using UUID."""
-        self.assertEqual(self.pm._roles_path('plan_42', 'role_abc'),
-                         '/plans/plan_42/roles/role_abc')
+        self.assertEqual('/plans/plan_42/roles/role_abc',
+                         self.pm._roles_path('plan_42', 'role_abc'))
 
     def test_roles_path_without_role_id(self):
         """Test for building path for Role for POST requests."""
-        self.assertEqual(self.pm._roles_path('plan_42'),
-                         '/plans/plan_42/roles')
+        self.assertEqual('/plans/plan_42/roles',
+                         self.pm._roles_path('plan_42'))
 
     def test_add_role(self):
         """Test assigning Role to a Plan."""
         self.assertThat('_post', tutils.IsMethodOn(self.pm))
         self.pm._post = mock.Mock(return_value='dummy plan')
 
-        self.assertEqual(self.pm.add_role('42', role_uuid='qwert12345'),
-                         'dummy plan')
+        self.assertEqual('dummy plan',
+                         self.pm.add_role('42', role_uuid='qwert12345'))
         self.pm._post.assert_called_with(
             '/plans/42/roles',
             {'uuid': 'qwert12345'})
@@ -115,15 +113,15 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('resource_class', tutils.IsMethodOn(self.pm))
         self.pm.resource_class = mock.Mock(return_value='fake_plan')
 
-        self.assertEqual(self.pm.remove_role('42', role_uuid='qwert12345'),
-                         'fake_plan')
+        self.assertEqual('fake_plan',
+                         self.pm.remove_role('42', role_uuid='qwert12345'))
         self.api.delete.assert_called_with('/plans/42/roles/qwert12345')
         self.pm.resource_class.assert_called_with(
             self.pm, api_delete_return_mock.json())
 
     def test_templates_path(self):
-        self.assertEqual(self.pm._templates_path('42'),
-                         '/plans/42/templates')
+        self.assertEqual('/plans/42/templates',
+                         self.pm._templates_path('42'))
 
     def test_templates(self):
         """Test a GET operation to retrieve the plan's templates."""
@@ -131,7 +129,7 @@ class PlanManagerTest(tutils.TestCase):
         self.pm._get = mock.MagicMock()
         self.pm._get.return_value.to_dict.return_value = 'fake_templates_dict'
 
-        self.assertEqual(self.pm.templates('fake_plan'), 'fake_templates_dict')
+        self.assertEqual('fake_templates_dict', self.pm.templates('fake_plan'))
         self.pm._get.assert_called_with('/plans/fake_plan/templates')
 
     def test_roles_subresource(self):

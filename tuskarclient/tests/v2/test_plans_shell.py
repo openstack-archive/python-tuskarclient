@@ -176,7 +176,7 @@ class PlansShellTest(BasePlansShellTest):
         parameters = [{'name': 'compute-1::count', 'value': '9'}]
 
         self.shell.do_plan_scale(self.tuskar, args, outfile=self.outfile)
-        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
+        self.assertEqual(1, self.tuskar.plans.patch.call_count)
 
         self.assertEqual('plan_uuid', self.tuskar.plans.patch.call_args[0][0])
         self.assertEqual(
@@ -200,7 +200,7 @@ class PlansShellTest(BasePlansShellTest):
         parameters = [{'name': 'compute-1::Flavor', 'value': 'baremetalssd'}]
 
         self.shell.do_plan_flavor(self.tuskar, args, outfile=self.outfile)
-        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
+        self.assertEqual(1, self.tuskar.plans.patch.call_count)
 
         self.assertEqual('plan_uuid', self.tuskar.plans.patch.call_args[0][0])
         self.assertEqual(
@@ -218,7 +218,7 @@ class PlansShellTest(BasePlansShellTest):
         parameters = [{'name': 'foo_name', 'value': 'foo_value'},
                       {'name': 'bar_name', 'value': 'bar_value'}]
         self.shell.do_plan_patch(self.tuskar, args, outfile=self.outfile)
-        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
+        self.assertEqual(1, self.tuskar.plans.patch.call_count)
 
         self.assertEqual('plan_uuid',
                          self.tuskar.plans.patch.call_args[0][0])
@@ -238,7 +238,7 @@ class PlansShellTest(BasePlansShellTest):
         parameters = [{'name': 'foo_name', 'value': 'foo_value'},
                       {'name': 'bar_name', 'value': 'bar_value'}]
         self.shell.do_plan_patch(self.tuskar, args, outfile=self.outfile)
-        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
+        self.assertEqual(1, self.tuskar.plans.patch.call_count)
 
         self.assertEqual('plan_uuid',
                          self.tuskar.plans.patch.call_args[0][0])
@@ -257,7 +257,7 @@ class PlansShellTest(BasePlansShellTest):
                       {'name': 'bar_name', 'value': 'bar_value'}]
         args.attributes = None
         self.shell.do_plan_update(self.tuskar, args, outfile=self.outfile)
-        self.assertEqual(self.tuskar.plans.patch.call_count, 1)
+        self.assertEqual(1, self.tuskar.plans.patch.call_count)
 
         self.assertEqual('plan_uuid',
                          self.tuskar.plans.patch.call_args[0][0])
@@ -316,9 +316,8 @@ class PlansShellTest(BasePlansShellTest):
     def test_filter_parameters_to_dict(self):
         parameters = [{'name': 'compute-1::count', 'value': '2'}]
         self.assertEqual(
-            self.shell.filter_parameters_to_dict(parameters, 'count'),
-            {'compute-1': '2'}
-        )
+            {'compute-1': '2'},
+            self.shell.filter_parameters_to_dict(parameters, 'count'))
 
     @mock.patch('tuskarclient.v2.plans_shell.print', create=True)
     @mock.patch('tuskarclient.v2.plans_shell.os.mkdir', create=True)
@@ -357,8 +356,8 @@ class PlansShellTest(BasePlansShellTest):
         mock_mkdir.assert_any_call('outdir/subdir')
 
         # Checks and creation of nested directory
-        self.assertEqual(mock_exists.call_count, 2)
-        self.assertEqual(mock_makedirs.call_count, 1)
+        self.assertEqual(2, mock_exists.call_count)
+        self.assertEqual(1, mock_makedirs.call_count)
         mock_makedirs.assert_called_with('outdir/subdir/nested')
 
         self.tuskar.plans.templates.assert_called_with('plan_uuid')
@@ -367,18 +366,18 @@ class PlansShellTest(BasePlansShellTest):
         mock_open.assert_any_call('outdir/subdir/name_bar', 'w+')
         mock_open.assert_any_call('outdir/subdir/nested/name_baz', 'w+')
         mock_open.assert_any_call('outdir/subdir/nested/name_zom', 'w+')
-        self.assertEqual(mock_open.call_count, 4)
+        self.assertEqual(4, mock_open.call_count)
 
         mock_opened_file = mock_open.return_value.__enter__.return_value
         mock_opened_file.write.assert_any_call('value_foo')
         mock_opened_file.write.assert_any_call('value_bar')
         mock_opened_file.write.assert_any_call('value_baz')
         mock_opened_file.write.assert_any_call('value_zom')
-        self.assertEqual(mock_opened_file.write.call_count, 4)
+        self.assertEqual(4, mock_opened_file.write.call_count)
 
         mock_print.assert_any_call('The following templates will be written:')
         mock_print.assert_any_call('outdir/subdir/name_foo')
         mock_print.assert_any_call('outdir/subdir/name_bar')
         mock_print.assert_any_call('outdir/subdir/nested/name_baz')
         mock_print.assert_any_call('outdir/subdir/nested/name_zom')
-        self.assertEqual(mock_print.call_count, 5)
+        self.assertEqual(5, mock_print.call_count)

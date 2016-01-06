@@ -39,7 +39,7 @@ class TestRoleList(TestRoles):
 
         titles, rows = self.cmd.take_action(parsed_args)
 
-        self.assertEqual(titles, ('uuid', 'name', 'version', 'description'))
+        self.assertEqual(('uuid', 'name', 'version', 'description'), titles)
         self.assertEqual([
             ('UUID1', 'Role 1 Name', 1, 'Mock Role 1'),
             ('UUID2', 'Role 2 Name', 2, 'Mock Role 2')

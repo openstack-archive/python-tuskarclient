@@ -93,7 +93,7 @@ for test in tests:
 # which would result in only the last test being added.
 def _meta_verify_test_builder(self):
     self.assertEqual(
-        duplicated, [], "Expected no test identifiers to be "
+        [], duplicated, "Expected no test identifiers to be "
         "duplicated but found {0}".format(len(duplicated))
     )
 

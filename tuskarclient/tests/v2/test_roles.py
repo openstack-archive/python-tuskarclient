@@ -30,12 +30,12 @@ class RoleManagerTest(tutils.TestCase):
         self.assertThat('_list', tutils.IsMethodOn(self.rm))
         self.rm._list = mock.Mock(return_value=['fake_role'])
 
-        self.assertEqual(self.rm.list(), ['fake_role'])
+        self.assertEqual(['fake_role'], self.rm.list())
         self.rm._list.assert_called_with('/roles')
 
     def test_path_without_id(self):
         """Test _path returns list uri."""
-        self.assertEqual(self.rm._path(), '/roles')
+        self.assertEqual('/roles', self.rm._path())
 
     def test_path_with_id(self):
         """Test _path returns single item uri."""

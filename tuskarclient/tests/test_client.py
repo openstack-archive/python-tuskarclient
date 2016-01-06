@@ -48,8 +48,8 @@ class ClientGetClientTest(tutils.TestCase):
     @mock.patch.object(client, 'Client')
     def test_it_works(self, mocked_Client):
         mocked_Client.return_value = 'client'
-        self.assertEqual(client.get_client(self.api_version, **self.kwargs),
-                         'client')
+        self.assertEqual('client',
+                         client.get_client(self.api_version, **self.kwargs))
         mocked_Client.assert_called_with(self.api_version,
                                          **self.client_kwargs)
 
