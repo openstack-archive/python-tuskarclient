@@ -143,5 +143,5 @@ class PlanManagerTest(tutils.TestCase):
                                         {'name': 'bar_role'}
                                     ]}))
         test_roles = self.pm.get('42').roles
-        self.assertTrue(isinstance(test_roles, list))
-        self.assertTrue(isinstance(test_roles[0], roles.Role))
+        self.assertIsInstance(test_roles, list)
+        self.assertIsInstance(test_roles[0], roles.Role)
