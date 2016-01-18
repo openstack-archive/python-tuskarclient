@@ -39,7 +39,7 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('_get', tutils.IsMethodOn(self.pm))
         self.pm._get = mock.Mock(return_value=None)
 
-        self.assertEqual(self.pm.get('fake_plan'), None)
+        self.assertIsNone(self.pm.get('fake_plan'))
         self.pm._get.assert_called_with('/plans/fake_plan')
 
     def test_list(self):
@@ -83,7 +83,7 @@ class PlanManagerTest(tutils.TestCase):
         self.assertThat('_delete', tutils.IsMethodOn(self.pm))
         self.pm._delete = mock.Mock(return_value=None)
 
-        self.assertEqual(self.pm.delete(42), None)
+        self.assertIsNone(self.pm.delete(42))
         self.pm._delete.assert_called_with('/plans/42')
 
     def test_roles_path_with_role_id(self):
