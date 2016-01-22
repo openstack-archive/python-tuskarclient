@@ -1,0 +1,9 @@
+Code-Review+2: Derek Higgins <derekh@redhat.com>
+Code-Review+2: Giulio Fidente <gfidente@redhat.com>
+Workflow+1: Giulio Fidente <gfidente@redhat.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Fri, 22 Jan 2016 14:05:28 +0000
+Reviewed-on: https://review.openstack.org/270855
+Project: openstack/python-tuskarclient
+Branch: refs/heads/master
